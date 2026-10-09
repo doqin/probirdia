@@ -52,7 +52,7 @@ Rules:
 - A scene has **either** `next` **or** choices, not both.
 - A scene with neither is an **ending**. The player sees a recap of the proverbs they met.
 - A choice has **either** a label **or** a proverb.
-- A proverb choice always has a **?** button and shows its meaning when learners hover over it (or tap **?**), so they can look it up before answering. After they pick, the meaning is shown again as feedback.
+- After a learner picks a proverb choice, the proverb and its meaning are shown as feedback (the example sentence is not shown there). The proverb buttons themselves have no hover popup.
 - Hard words inside the text of a choice label are not hoverable (a button can't hold another button); keep label wording simple.
 
 ### Proverbs inside the story text

@@ -23,7 +23,7 @@ const ui = {
     'meaning': 'Meaning',
     'example': 'Example',
     'see_glossary': 'See in glossary',
-    'show_meaning': 'Show meaning',
+
     'tab.proverbs': 'Proverbs',
     'tab.words': 'Words',
   },

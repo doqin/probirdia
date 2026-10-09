@@ -7,7 +7,7 @@
   import { withBase } from '../lib/url';
   import { buildMatcher } from '../lib/words';
   import RichText from './RichText.svelte';
-  import Term from './Term.svelte';
+
 
   let {
     game,
@@ -106,7 +106,6 @@
       <div class="reveal">
         <h2>{revealed.term}</h2>
         <p>{pick(revealed.meaning, lang)}</p>
-        {#if revealed.example}<p class="example">{pick(revealed.example, lang)}</p>{/if}
         <button class="btn" onclick={() => (play = advance(play, game))}>{t('continue', lang)}</button>
       </div>
     {:else}
@@ -138,17 +137,9 @@
         <ul class="choices">
           {#each scene.choices as c, i}
             <li>
-              {#if c.proverb}
-                <Term
-                  variant="choice"
-                  display={glossary[c.proverb].term}
-                  entry={glossary[c.proverb]}
-                  {lang}
-                  onpick={() => (play = choose(play, game, i))}
-                />
-              {:else}
-                <button class="btn choice" onclick={() => (play = choose(play, game, i))}>{pick(c.label, lang)}</button>
-              {/if}
+              <button class="btn choice" onclick={() => (play = choose(play, game, i))}>
+                {c.proverb ? glossary[c.proverb].term : pick(c.label, lang)}
+              </button>
             </li>
           {/each}
         </ul>
@@ -263,7 +254,7 @@
   .choices { list-style: none; margin: 0; padding: 0; display: flex; flex-wrap: wrap; gap: .6rem; justify-content: center; }
   .choice { text-transform: none; font-size: 1.1rem; border-radius: 1rem; }
   .reveal h2 { font-size: 1.6rem; }
-  .example { font-style: italic; }
+
   .the-end { font-size: 2rem; text-transform: uppercase; }
   .recap { text-align: left; padding-left: 1.2rem; margin: 0 0 1rem; }
 

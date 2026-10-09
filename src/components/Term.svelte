@@ -7,16 +7,7 @@
     display,
     entry,
     lang = 'en',
-    variant = 'inline',
-    onpick,
-  }: {
-    display: string;
-    entry: GlossaryEntry;
-    lang?: Lang;
-    /** inline: a hoverable word or proverb in running text. choice: a proverb answer button with a meaning popup. */
-    variant?: 'inline' | 'choice';
-    onpick?: () => void;
-  } = $props();
+  }: { display: string; entry: GlossaryEntry; lang?: Lang } = $props();
 
   const id = $props.id();
   let wrap: HTMLElement;
@@ -59,40 +50,22 @@
 />
 
 <span
-  class="wrap {variant}"
+  class="wrap"
   bind:this={wrap}
   role="presentation"
   onpointerenter={(e) => { if (e.pointerType === 'mouse') hovered = true; }}
   onpointerleave={() => (hovered = false)}
   onkeydown={(e) => { if (e.key === 'Escape') close(); }}
 >
-  {#if variant === 'choice'}
-    <button
-      type="button"
-      class="btn pick"
-      aria-describedby={open ? id : undefined}
-      onclick={() => { close(); onpick?.(); }}
-      onfocus={(e) => { if (e.currentTarget.matches(':focus-visible')) pinned = true; }}
-      onblur={() => (pinned = false)}
-    >{display}</button>
-    <button
-      type="button"
-      class="info"
-      aria-label="{t('show_meaning', lang)}: {display}"
-      aria-expanded={open}
-      onclick={() => (pinned = !pinned)}
-    >?</button>
-  {:else}
-    <button
-      type="button"
-      class="term {entry.kind}"
-      aria-expanded={open}
-      aria-describedby={open ? id : undefined}
-      onclick={() => (pinned = !pinned)}
-      onfocus={(e) => { if (e.currentTarget.matches(':focus-visible')) pinned = true; }}
-      onblur={() => (pinned = false)}
-    >{display}</button>
-  {/if}
+  <button
+    type="button"
+    class="term {entry.kind}"
+    aria-expanded={open}
+    aria-describedby={open ? id : undefined}
+    onclick={() => (pinned = !pinned)}
+    onfocus={(e) => { if (e.currentTarget.matches(':focus-visible')) pinned = true; }}
+    onblur={() => (pinned = false)}
+  >{display}</button>
 
   {#if open}
     <span class="pop" class:up={flip} role="tooltip" {id} bind:this={pop} style:--shift="{shift}px">
@@ -108,7 +81,7 @@
 
 <style>
   .wrap { position: relative; display: inline; }
-  .wrap.choice { display: inline-flex; align-items: center; gap: .3rem; }
+
 
   .term {
     font: inherit;
@@ -123,19 +96,7 @@
   }
   .term.proverb { background: rgb(122 85 56 / .12); border-radius: .2em; }
 
-  .pick { text-transform: none; font-size: 1.1rem; border-radius: 1rem; }
-  .info {
-    font: inherit;
-    font-weight: 700;
-    width: 1.8rem;
-    height: 1.8rem;
-    padding: 0;
-    border-radius: 50%;
-    border: 2px solid var(--brown);
-    background: #fffaf0;
-    color: var(--brown);
-    cursor: help;
-  }
+
 
   .pop {
     position: absolute;
