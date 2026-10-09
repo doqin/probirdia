@@ -1,0 +1,39 @@
+{
+  "stages": {
+    "meadow":   { "background": "/games/slay-the-demon-king/bg-meadow.svg",   "ground": 87, "dialogue": "center" },
+    "temple":   { "background": "/games/slay-the-demon-king/bg-temple.svg",   "ground": 96, "dialogue": "top" },
+    "mountain": { "background": "/games/slay-the-demon-king/bg-mountain.svg", "ground": 98, "dialogue": "top" }
+  },
+  "characters": {
+    "hero":      { "image": "/games/slay-the-demon-king/hero.svg",      "width": 10, "alt": "The hero" },
+    "companion": { "image": "/games/slay-the-demon-king/companion.svg", "width": 10, "alt": "A companion" }
+  },
+  "props": {
+    "pedestal": { "image": "/games/slay-the-demon-king/pedestal.svg", "x": 38, "y": 70, "width": 10, "alt": "A pedestal with a glowing relic" },
+    "signpost": {
+      "image": "/games/slay-the-demon-king/signpost.svg", "x": 78, "y": 98, "width": 20, "alt": "A signpost",
+      "text": { "x": 4, "y": 5, "width": 92, "height": 42 }
+    }
+  },
+  "items": {
+    "Breastplate of Earth": { "image": "/games/slay-the-demon-king/item-breastplate.svg" },
+    "Shield of Frost": { "image": "/games/slay-the-demon-king/item-shield.svg" }
+  },
+  "scenes": [
+    { "ids": "*", "stage": "meadow" },
+    { "ids": ["intro1", "intro2"], "characters": { "left": "hero", "right": "companion" } },
+    {
+      "ids": ["temple", "search1", "note-missing", "advice1", "search2", "passage3", "trap", "escape"],
+      "stage": "temple",
+      "characters": { "left": "hero" }
+    },
+    {
+      "ids": ["barrier1", "barrier2", "advice2", "hay", "wait"],
+      "stage": "mountain",
+      "characters": { "left": "hero" },
+      "props": ["pedestal"],
+      "headingInArt": true
+    },
+    { "ids": ["barrier1", "barrier2", "advice2"], "props": ["pedestal", "signpost"], "noteOn": "signpost" }
+  ]
+}

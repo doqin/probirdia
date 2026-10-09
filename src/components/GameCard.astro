@@ -1,0 +1,29 @@
+---
+import type { Game } from '../lib/types';
+import { t } from '../i18n/ui';
+import { withBase } from '../lib/url';
+
+const { game } = Astro.props as { game: Game };
+const style = game.thumbnail ? `background-image: url(${withBase(game.thumbnail)})` : undefined;
+---
+
+<a class="card landscape" href={withBase(`/games/${game.slug}/`)} style={style}>
+  <span class="pill name">{game.title.en}</span>
+  <span class="pill play">{t('play')}</span>
+</a>
+
+<style>
+  .card {
+    position: relative;
+    display: block;
+    aspect-ratio: 16 / 10;
+    text-align: center;
+    text-decoration: none;
+    overflow: hidden;
+    border-radius: .4rem;
+  }
+  .name { position: absolute; left: 50%; top: 38%; transform: translate(-50%, -50%); font-size: 1.4rem; white-space: nowrap; max-width: 92%; overflow: hidden; text-overflow: ellipsis; }
+  .play { position: absolute; left: 50%; bottom: .6rem; transform: translateX(-50%); }
+  .card:hover .name, .card:focus-visible .name { filter: brightness(1.08); }
+  .card:hover .play { background: var(--brown); color: #fff6e6; }
+</style>

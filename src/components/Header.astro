@@ -1,0 +1,80 @@
+---
+import { Image } from 'astro:assets';
+import logo from '../assets/brand/logo.webp';
+import { t } from '../i18n/ui';
+import { stripBase, withBase } from '../lib/url';
+
+/** overlay: let the page's hero image slide up underneath the bar so the blur has something to blur. */
+const { overlay = false } = Astro.props as { overlay?: boolean };
+
+const path = stripBase(Astro.url.pathname);
+const links = [
+  { href: withBase('/'), label: t('nav.home'), active: path === '/' },
+  { href: withBase('/about/'), label: t('nav.about'), active: path.startsWith('/about') },
+  { href: withBase('/games/'), label: t('nav.games'), active: path.startsWith('/games') },
+  { href: withBase('/glossary/'), label: t('nav.glossary'), active: path.startsWith('/glossary') },
+];
+---
+
+<header class:list={['site', { overlay }]}>
+  <div class="inner">
+    <a class="brand" href={withBase('/')}><Image src={logo} width={44} height={44} alt="" loading="eager" /><span>PROBIRDIA</span></a>
+    <nav aria-label="Main">
+      {links.map((l) => <a href={l.href} aria-current={l.active ? 'page' : undefined}>{l.label}</a>)}
+    </nav>
+  </div>
+</header>
+
+<script>
+  // Tell the page how tall the bar is, so a hero image can slide up underneath it.
+  // Runs after every client-side navigation, because the header element is replaced.
+  let observer: ResizeObserver | undefined;
+  document.addEventListener('astro:page-load', () => {
+    observer?.disconnect();
+    const bar = document.querySelector<HTMLElement>('header.site');
+    if (!bar) return;
+    const set = () => document.documentElement.style.setProperty('--hdr', `${bar.offsetHeight}px`);
+    set();
+    observer = new ResizeObserver(set);
+    observer.observe(bar);
+  });
+</script>
+
+<style>
+  header {
+    position: sticky;
+    top: 0;
+    z-index: 50;
+  }
+  header.overlay { margin-bottom: calc(var(--hdr, 5rem) * -1); }
+
+  /* Blurred frosted layer that melts away towards its bottom edge. */
+  header::before {
+    content: '';
+    position: absolute;
+    z-index: -1;
+    inset: 0 0 -1.6rem 0;
+    pointer-events: none;
+    background: linear-gradient(to bottom, rgb(255 230 194 / .82), rgb(255 230 194 / .35) 70%, transparent);
+    -webkit-backdrop-filter: blur(14px);
+    backdrop-filter: blur(14px);
+    -webkit-mask-image: linear-gradient(to bottom, #000 55%, transparent);
+    mask-image: linear-gradient(to bottom, #000 55%, transparent);
+  }
+
+  .inner {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: .5rem 2rem;
+    max-width: var(--page);
+    margin: 0 auto;
+    padding: .75rem 1rem;
+  }
+  .brand { display: inline-flex; align-items: center; gap: .6rem; font-size: 1.6rem; font-weight: 700; text-decoration: none; letter-spacing: .02em; }
+  .brand img { border-radius: 50%; }
+  nav { display: flex; gap: 1.5rem; font-size: 1.3rem; font-weight: 600; }
+  nav a { text-decoration: none; }
+  nav a[aria-current='page'] { text-decoration: underline; text-underline-offset: .2em; }
+</style>

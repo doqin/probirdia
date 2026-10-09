@@ -1,0 +1,89 @@
+@import '@fontsource/zilla-slab/400.css';
+@import '@fontsource/zilla-slab/600.css';
+@import '@fontsource/zilla-slab/700.css';
+
+:root {
+  --cream: #ffe6c2;
+  --parchment: #c5bbab;
+  --pill: #a6a6a6;
+  --pill-light: #b8bfc4;
+  --brown: #7a5538;
+  --ink: #1a1208;
+  --sky-top: #c3e8ff;
+  --sky-bottom: #effcff;
+  --hill: #8ba500;
+  --hill-light: #c6e07f;
+  --danger: #a33b2a;
+  --radius: 1.1rem;
+  --page: 70rem;
+}
+
+*, *::before, *::after { box-sizing: border-box; }
+
+html { -webkit-text-size-adjust: 100%; }
+
+body {
+  margin: 0;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  background: var(--cream);
+  color: var(--ink);
+  font-family: 'Zilla Slab', Rockwell, Georgia, serif;
+  font-size: 1.15rem;
+  line-height: 1.5;
+}
+
+main { flex: 1; width: 100%; max-width: var(--page); margin: 0 auto; padding: 1rem 1rem 3rem; }
+
+a { color: inherit; }
+h1, h2, h3 { line-height: 1.15; margin: 0 0 .5em; }
+h1 { font-size: clamp(1.8rem, 4vw, 2.6rem); text-transform: uppercase; text-align: center; }
+.page-title { margin-top: .5rem; }
+
+.pill {
+  display: inline-block;
+  padding: .15em 1em;
+  border-radius: 999px;
+  font-weight: 700;
+  text-transform: uppercase;
+  background: var(--pill-light);
+}
+.pill.play { background: var(--pill); }
+
+/* Placeholder scenery; replaced by a game thumbnail when one is set. */
+.landscape {
+  background:
+    radial-gradient(90% 38% at 15% 105%, var(--hill) 98%, transparent 100%),
+    radial-gradient(90% 34% at 85% 108%, var(--hill) 98%, transparent 100%),
+    radial-gradient(130% 40% at 50% 112%, var(--hill-light) 98%, transparent 100%),
+    linear-gradient(var(--sky-top), var(--sky-bottom));
+  background-size: cover;
+  background-position: center;
+}
+
+.btn {
+  font: inherit;
+  font-weight: 700;
+  text-transform: uppercase;
+  border: 0;
+  border-radius: 999px;
+  padding: .45em 1.4em;
+  background: var(--brown);
+  color: #fff6e6;
+  cursor: pointer;
+  text-decoration: none;
+  display: inline-block;
+}
+.btn:hover { filter: brightness(1.12); }
+.btn.secondary { background: var(--pill); color: var(--ink); }
+
+:focus-visible { outline: 3px solid var(--brown); outline-offset: 2px; }
+
+.visually-hidden {
+  position: absolute; width: 1px; height: 1px; overflow: hidden;
+  clip: rect(0 0 0 0); white-space: nowrap;
+}
+/* Page transitions swap instantly; a cross-fade of two differently-sized pages looks like a flash. */
+::view-transition-old(root),
+::view-transition-new(root) { animation: none; mix-blend-mode: normal; }

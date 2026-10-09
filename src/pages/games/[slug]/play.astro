@@ -1,0 +1,17 @@
+---
+import Base from '../../../layouts/Base.astro';
+import Player from '../../../components/Player.svelte';
+import { loadAllGames, loadGlossary, loadWords, glossaryMap } from '../../../lib/content';
+
+export function getStaticPaths() {
+  return loadAllGames().map((game) => ({ params: { slug: game.slug }, props: { game } }));
+}
+const { game } = Astro.props;
+const glossary = glossaryMap(loadGlossary());
+const words = loadWords();
+---
+
+<Base title={game.title.en}>
+  <h1 class="page-title">{game.title.en}</h1>
+  <Player client:load game={game} glossary={glossary} words={words} lang="en" />
+</Base>

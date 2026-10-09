@@ -1,0 +1,30 @@
+---
+import Base from '../../../layouts/Base.astro';
+import GameCard from '../../../components/GameCard.astro';
+import { loadAllGames } from '../../../lib/content';
+import { t } from '../../../i18n/ui';
+import { withBase } from '../../../lib/url';
+
+export function getStaticPaths() {
+  return loadAllGames().map((game) => ({ params: { slug: game.slug }, props: { game } }));
+}
+const { game } = Astro.props;
+---
+
+<Base title={game.title.en} description={game.summary.en}>
+  <div class="layout">
+    <GameCard game={game} />
+    <section class="panel">
+      <h1>{game.title.en}</h1>
+      <p>{game.description.en}</p>
+      <a class="btn" href={withBase(`/games/${game.slug}/play/`)}>{t('play')}</a>
+    </section>
+  </div>
+</Base>
+
+<style>
+  .layout { display: grid; gap: 1.5rem; margin-top: 1.5rem; grid-template-columns: minmax(0, 5fr) minmax(0, 6fr); align-items: start; }
+  .panel { background: var(--parchment); border-radius: var(--radius); padding: 1.5rem; text-align: center; }
+  .panel h1 { font-size: clamp(1.8rem, 4vw, 3rem); }
+  @media (max-width: 40rem) { .layout { grid-template-columns: 1fr; } }
+</style>

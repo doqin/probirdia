@@ -1,0 +1,38 @@
+---
+import '../styles/global.css';
+import Header from '../components/Header.astro';
+import Footer from '../components/Footer.astro';
+import { getImage } from 'astro:assets';
+import { ClientRouter } from 'astro:transitions';
+import font400 from '@fontsource/zilla-slab/files/zilla-slab-latin-400-normal.woff2?url';
+import font600 from '@fontsource/zilla-slab/files/zilla-slab-latin-600-normal.woff2?url';
+import font700 from '@fontsource/zilla-slab/files/zilla-slab-latin-700-normal.woff2?url';
+import logo from '../assets/brand/logo.webp';
+
+interface Props {
+  title?: string;
+  description?: string;
+}
+const { title, description = 'Learn English proverbs by playing choose-your-own-adventure games.' } = Astro.props;
+const favicon = await getImage({ src: logo, width: 64, height: 64, format: 'png' });
+const fullTitle = title ? `${title} | Probirdia` : 'Probirdia';
+---
+
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="description" content={description} />
+    <link rel="icon" type="image/png" href={favicon.src} />
+    {[font400, font600, font700].map((href) => <link rel="preload" as="font" type="font/woff2" href={href} crossorigin />)}
+    <ClientRouter />
+    <title>{fullTitle}</title>
+  </head>
+  <body>
+    <Header overlay={Astro.slots.has('hero')} />
+    <slot name="hero" />
+    <main><slot /></main>
+    <Footer />
+  </body>
+</html>

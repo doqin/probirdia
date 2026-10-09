@@ -1,0 +1,12 @@
+---
+import Base from '../layouts/Base.astro';
+import Glossary from '../components/Glossary.svelte';
+import { loadGlossary, loadWords } from '../lib/content';
+
+const entries = loadGlossary();
+const words = loadWords();
+---
+
+<Base title="Glossary">
+  <Glossary client:load entries={entries} words={words} lang="en" />
+</Base>

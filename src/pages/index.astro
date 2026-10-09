@@ -1,0 +1,57 @@
+---
+import { Image } from 'astro:assets';
+import Base from '../layouts/Base.astro';
+import { t } from '../i18n/ui';
+import { withBase } from '../lib/url';
+import banner from '../assets/brand/banner.webp';
+import homeTile from '../assets/tiles/home.webp';
+import gamesTile from '../assets/tiles/games.webp';
+import glossaryTile from '../assets/tiles/glossary.webp';
+import aboutTile from '../assets/tiles/about.webp';
+
+const tiles = [
+  { href: withBase('/'), label: 'Home', image: homeTile, blurb: 'Back to the start.' },
+  { href: withBase('/games/'), label: 'Games', image: gamesTile, blurb: 'Choose your own adventure and meet proverbs along the way.' },
+  { href: withBase('/glossary/'), label: 'Glossary', image: glossaryTile, blurb: 'Look up the meaning of any proverb or hard word.' },
+  { href: withBase('/about/'), label: 'About us', image: aboutTile, blurb: 'Who we are and why we made Probirdia.' },
+];
+---
+
+<Base>
+  <section slot="hero" class="hero">
+    <h1 class="visually-hidden">Probirdia</h1>
+    <Image
+      src={banner}
+      widths={[640, 960, 1440, 1920]}
+      sizes="100vw"
+      loading="eager"
+      alt="Probirdia: a distinguished owl in a bowler hat, holding a cane."
+    />
+  </section>
+
+  <p class="tagline">{t('tagline')}</p>
+
+  <h2 class="welcome">Welcome</h2>
+  <ul class="tiles">
+    {tiles.map((tile) => (
+      <li>
+        <a href={tile.href} aria-label={tile.label}>
+          <Image src={tile.image} widths={[240, 360, 540]} sizes="(max-width: 40rem) 45vw, 17rem" alt="" />
+          <span>{tile.blurb}</span>
+        </a>
+      </li>
+    ))}
+  </ul>
+</Base>
+
+<style>
+  .hero { max-height: 28rem; overflow: hidden; background: #eadcb8; }
+  .hero img { display: block; width: 100%; height: auto; min-height: 12rem; max-height: 28rem; object-fit: cover; object-position: 28% 50%; }
+  .tagline { text-align: right; font-weight: 600; margin: 1.5rem 0 1rem; }
+  .welcome { text-align: center; text-transform: uppercase; font-size: 1.6rem; background: var(--parchment); padding: .3rem 1rem; margin: 1.5rem 0; }
+  .tiles { list-style: none; padding: 0; margin: 0 auto; display: grid; gap: 1.5rem 1.2rem; grid-template-columns: repeat(2, minmax(0, 1fr)); max-width: 34rem; }
+  .tiles a { display: block; text-decoration: none; text-align: center; font-size: .95rem; }
+  .tiles img { display: block; width: 100%; height: auto; aspect-ratio: 1; object-fit: cover; border-radius: var(--radius); transition: transform .15s ease, box-shadow .15s ease; }
+  .tiles a:hover img, .tiles a:focus-visible img { transform: translateY(-3px); box-shadow: 0 .6rem 1.2rem rgb(0 0 0 / .2); }
+  .tiles span { display: block; margin-top: .4rem; }
+</style>
