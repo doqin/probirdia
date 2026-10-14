@@ -49,15 +49,18 @@ Moving to a custom domain later: add `public/CNAME` containing the domain, set `
 Teachers only write story text in `content/`. How a scene looks lives in `src/presentation/<game-slug>.json`, keyed by scene `id`, with images in `public/games/<game-slug>/`.
 
 - `stages`: named backgrounds (`background`, `ground` = where characters stand as % from top, default `dialogue` position: `top` | `center` | `bottom`).
-- `characters`, `props`: images with sizes in % of the 16:9 stage. Characters stand in a `left` / `center` / `right` slot; props have a bottom-centre `x`/`y`. A prop with `text` can carry the scene note (e.g. a signpost).
+- `characters`, `props`: images with sizes in % of the 16:9 stage. Characters stand in a `left` / `center` / `right` slot; props have a bottom-centre `x`/`y` (the centre when `rotate` is set). A prop with `text` can carry the scene note (e.g. a signpost). A prop with `label` prints fixed text on itself (speech bubbles), `labelSize` is the font size in % of the stage width, and `rotate` turns it clockwise in degrees. Slay the Demon King uses props for everything so sprites can stand anywhere.
 - `items`: art for each item name used in the `gives` column (shown on the "You got" card).
+- `music`: audio files (`loop: true` repeats). A scene rule's `music` picks the track; `proverbSting` is played when a proverb is revealed. Music starts after the player's first click and can be muted (the choice is remembered).
 - `scenes`: an ordered list of rules. Each rule applies to `ids` (a list, or `"*"`) and later rules override earlier ones: `stage`, `dialogue`, `characters` (merged per slot; `null` empties a slot), `props` (replaced), `noteOn`, `headingInArt`.
 
 `npm run validate` checks that every referenced scene, stage, character, prop and image file exists. A game with no presentation file still plays (placeholder landscape, dialogue at the bottom).
 
 On phones (under 40rem) the artwork is shown on top and the dialogue below it, and a note printed on a prop moves into the dialogue box.
 
-The current art is placeholder SVG shapes copied from the mock scenes. Swap the files (WebP/AVIF recommended, about 1600px wide, transparent PNG/WebP for characters) and adjust the numbers in the JSON.
+Swap the files (WebP/AVIF recommended, about 1600px wide, transparent PNG/WebP for characters) and adjust the numbers in the JSON.
+
+Slay the Demon King's art comes from the artist's raw folder: `node scripts/build-art.mjs "<folder>"` trims every sprite, converts it to WebP, composes the six 16:9 stages from the tile pieces, makes the games-list thumbnail and copies the music into `public/games/slay-the-demon-king/`. It needs `sharp` (installed with Astro). Re-run it when the artwork changes.
 
 ## Not built yet
 

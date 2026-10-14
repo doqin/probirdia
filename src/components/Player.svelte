@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { onMount, setContext, untrack } from 'svelte';
+  import { onDestroy, onMount, setContext, untrack } from 'svelte';
   import { pick, type Game, type GlossaryEntry, type Lang } from '../lib/types';
   import { advance, choose, currentScene, isEnd, isValidState, startState, type PlayState } from '../lib/engine';
   import { SLOT_X, resolveScene } from '../lib/presentation';
@@ -37,6 +37,7 @@
   const revealed = $derived(play.reveal ? glossary[play.reveal.proverb] : undefined);
   const recap = $derived([...new Set(play.chosen)].map((slug) => glossary[slug]).filter(Boolean));
   const hasGains = $derived(scene.gives.length > 0 || scene.status.length > 0);
+  const isGood = (s: string) => game.positiveStatus.some((g) => g.toLowerCase() === s.toLowerCase());
   const itemImage = (name: string) => {
     const image = game.presentation?.items[name]?.image;
     return image ? withBase(image) : undefined;
@@ -63,7 +64,94 @@
   });
 
   const restart = () => (play = startState(game));
+
+  // ---- music: starts after the first click (browsers block autoplay), can be muted ----
+  const musicDefs = untrack(() => game.presentation?.music);
+  const mutedKey = 'probirdia:muted';
+  let started = $state(false);
+  let muted = $state(false);
+  let track: { key: string; el: HTMLAudioElement } | null = null;
+  let lastRevealed: string | null = null;
+
+  onMount(() => {
+    try {
+      muted = localStorage.getItem(mutedKey) === '1';
+    } catch {
+      /* ignore */
+    }
+  });
+
+  const toggleMusic = () => {
+    muted = !muted;
+    try {
+      localStorage.setItem(mutedKey, muted ? '1' : '0');
+    } catch {
+      /* ignore */
+    }
+  };
+
+  const BGM_VOLUME = 0.6;
+  const DUCKED_VOLUME = 0.12;
+  let fade: ReturnType<typeof setInterval> | undefined;
+
+  /** Quiets the background music while a sting plays, then fades it back up. */
+  const duckTrack = (down: boolean) => {
+    clearInterval(fade);
+    const from = track?.el.volume ?? BGM_VOLUME;
+    const target = down ? DUCKED_VOLUME : BGM_VOLUME;
+    const t0 = performance.now();
+    const duration = down ? 150 : 1200;
+    fade = setInterval(() => {
+      const el = track?.el;
+      const t = Math.min(1, (performance.now() - t0) / duration);
+      if (el) el.volume = from + (target - from) * t;
+      if (!el || t >= 1) clearInterval(fade);
+    }, 50);
+  };
+
+  const stopTrack = () => {
+    track?.el.pause();
+    track = null;
+  };
+
+  $effect(() => {
+    const key = view.music;
+    const def = key ? musicDefs?.[key] : undefined;
+    if (!started || muted || !key || !def) return stopTrack();
+    if (track?.key === key) {
+      if (track.el.paused && !track.el.ended) track.el.play().catch(() => {});
+      return;
+    }
+    stopTrack();
+    const el = new Audio(withBase(def.file));
+    el.loop = !!def.loop;
+    el.volume = BGM_VOLUME;
+    track = { key, el };
+    el.play().catch(() => {});
+  });
+
+  $effect(() => {
+    const proverb = play.reveal?.proverb ?? null;
+    const sting = game.presentation?.proverbSting;
+    if (proverb && proverb !== lastRevealed && started && !muted && sting && musicDefs?.[sting]) {
+      const el = new Audio(withBase(musicDefs[sting].file));
+      el.volume = 0.8;
+      duckTrack(true);
+      const restore = () => duckTrack(false);
+      el.addEventListener('ended', restore, { once: true });
+      el.addEventListener('error', restore, { once: true });
+      el.play().catch(restore);
+    }
+    lastRevealed = proverb;
+  });
+
+  onDestroy(() => {
+    clearInterval(fade);
+    stopTrack();
+  });
 </script>
+
+<svelte:window onpointerdown={() => (started = true)} />
 
 <section class="scene" aria-live="polite">
   <div
@@ -74,8 +162,14 @@
     aria-label={view.stage?.alt}
   >
     {#each view.props as p (p.id)}
-      <div class="prop" style="left:{p.def.x}%; top:{p.def.y}%; width:{p.def.width}%">
+      <div
+        class="prop"
+        style="left:{p.def.x}%; top:{p.def.y}%; width:{p.def.width}%{p.def.rotate ? `; transform: translate(-50%, -50%) rotate(${p.def.rotate}deg)` : ''}"
+      >
         <img src={withBase(p.def.image)} alt={p.def.alt ?? ''} />
+        {#if p.def.label}
+          <div class="prop-label" style="font-size:{p.def.labelSize ?? 1.5}cqw">{p.def.label}</div>
+        {/if}
         {#if noteProp?.id === p.id && p.def.text}
           <div
             class="prop-text"
@@ -129,7 +223,7 @@
               <span class="chip">{item}</span>
             {/if}
           {/each}
-          {#each scene.status as s}<span class="chip status">{s}</span>{/each}
+          {#each scene.status as s}<span class="chip status" class:good={isGood(s)}>{s}</span>{/each}
         </div>
       {/if}
 
@@ -163,8 +257,11 @@
   {#if play.items.length || play.status.length}
     <ul class="hud" aria-label={t('inventory', lang)}>
       {#each play.items as item}<li>{item}</li>{/each}
-      {#each play.status as s}<li class="status">{s}</li>{/each}
+      {#each play.status as s}<li class="status" class:good={isGood(s)}>{s}</li>{/each}
     </ul>
+  {/if}
+  {#if musicDefs}
+    <button class="btn secondary" onclick={toggleMusic} aria-pressed={!muted}>{muted ? t('music_off', lang) : t('music_on', lang)}</button>
   {/if}
   {#if !ended}
     <button class="btn secondary startover" onclick={restart}>{t('start_over', lang)}</button>
@@ -186,6 +283,18 @@
   }
   .char, .prop { position: absolute; transform: translate(-50%, -100%); }
   .char, .prop img { display: block; width: 100%; height: auto; }
+  .prop-label {
+    position: absolute;
+    inset: 0;
+    display: grid;
+    place-items: center;
+    padding-bottom: 12%;
+    text-align: center;
+    font-weight: 800;
+    line-height: 1.1;
+    white-space: pre-line;
+    color: var(--ink);
+  }
   .prop-text {
     position: absolute;
     display: grid;
@@ -249,6 +358,7 @@
     font-weight: 600;
   }
   .status { border-color: var(--danger) !important; color: var(--danger); }
+  .status.good { border-color: #2f7d3a !important; color: #2f7d3a; }
   .item { margin: 0; display: grid; justify-items: center; gap: .15rem; font-weight: 600; }
   .item img { width: 4.5rem; height: auto; }
   .choices { list-style: none; margin: 0; padding: 0; display: flex; flex-wrap: wrap; gap: .6rem; justify-content: center; }
@@ -260,7 +370,9 @@
 
   .bar { display: flex; flex-wrap: wrap; gap: .5rem 1rem; justify-content: space-between; align-items: center; margin-top: .75rem; }
   .hud { list-style: none; margin: 0; padding: 0; display: flex; flex-wrap: wrap; gap: .4rem; }
-  .startover { font-size: .9rem; margin-left: auto; }
+  .startover { font-size: .9rem; }
+  .bar :global(.btn.secondary) { font-size: .9rem; }
+  .bar > :last-child { margin-left: auto; }
 
   /* Phones: the 16:9 artwork is too small to hold text, so the dialogue sits underneath it. */
   @media (max-width: 40rem) {

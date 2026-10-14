@@ -1,39 +1,1562 @@
 {
   "stages": {
-    "meadow":   { "background": "/games/slay-the-demon-king/bg-meadow.svg",   "ground": 87, "dialogue": "center" },
-    "temple":   { "background": "/games/slay-the-demon-king/bg-temple.svg",   "ground": 96, "dialogue": "top" },
-    "mountain": { "background": "/games/slay-the-demon-king/bg-mountain.svg", "ground": 98, "dialogue": "top" }
+    "sky": {
+      "background": "/games/slay-the-demon-king/stage_sky.webp",
+      "dialogue": "center"
+    },
+    "temple": {
+      "background": "/games/slay-the-demon-king/stage_temple.webp",
+      "dialogue": "top"
+    },
+    "cave": {
+      "background": "/games/slay-the-demon-king/stage_cave.webp",
+      "dialogue": "top"
+    },
+    "village": {
+      "background": "/games/slay-the-demon-king/stage_village.webp",
+      "dialogue": "top"
+    },
+    "bridge": {
+      "background": "/games/slay-the-demon-king/stage_bridge.webp",
+      "dialogue": "top"
+    },
+    "desert": {
+      "background": "/games/slay-the-demon-king/stage_desert.webp",
+      "dialogue": "top"
+    }
   },
-  "characters": {
-    "hero":      { "image": "/games/slay-the-demon-king/hero.svg",      "width": 10, "alt": "The hero" },
-    "companion": { "image": "/games/slay-the-demon-king/companion.svg", "width": 10, "alt": "A companion" }
-  },
+  "characters": {},
   "props": {
-    "pedestal": { "image": "/games/slay-the-demon-king/pedestal.svg", "x": 38, "y": 70, "width": 10, "alt": "A pedestal with a glowing relic" },
-    "signpost": {
-      "image": "/games/slay-the-demon-king/signpost.svg", "x": 78, "y": 98, "width": 20, "alt": "A signpost",
-      "text": { "x": 4, "y": 5, "width": 92, "height": 42 }
+    "cloud": {
+      "image": "/games/slay-the-demon-king/cloud.webp",
+      "x": 50,
+      "y": 38,
+      "width": 26
+    },
+    "goddess": {
+      "image": "/games/slay-the-demon-king/goddess.webp",
+      "x": 50,
+      "y": 34,
+      "width": 8.02,
+      "alt": "The Goddess"
+    },
+    "hero_sky": {
+      "image": "/games/slay-the-demon-king/hero_idle.webp",
+      "x": 30,
+      "y": 97,
+      "width": 6.64,
+      "alt": "The hero"
+    },
+    "bird_sky": {
+      "image": "/games/slay-the-demon-king/bird_landed.webp",
+      "x": 70,
+      "y": 97,
+      "width": 5.77,
+      "alt": "Bird the Sage"
+    },
+    "gate1": {
+      "image": "/games/slay-the-demon-king/gate.webp",
+      "x": 17,
+      "y": 77,
+      "width": 26.54,
+      "alt": "A dark passage"
+    },
+    "gate2": {
+      "image": "/games/slay-the-demon-king/gate.webp",
+      "x": 50,
+      "y": 77,
+      "width": 26.54,
+      "alt": "A dark passage"
+    },
+    "gate3": {
+      "image": "/games/slay-the-demon-king/gate.webp",
+      "x": 83,
+      "y": 77,
+      "width": 26.54,
+      "alt": "A dark passage"
+    },
+    "hero_t": {
+      "image": "/games/slay-the-demon-king/hero_back.webp",
+      "x": 40,
+      "y": 95,
+      "width": 6.55,
+      "alt": "The hero"
+    },
+    "bird_t": {
+      "image": "/games/slay-the-demon-king/bird_landed.webp",
+      "x": 10,
+      "y": 95,
+      "width": 4.95,
+      "alt": "Bird the Sage"
+    },
+    "note_t": {
+      "image": "/games/slay-the-demon-king/torn_note.webp",
+      "x": 30,
+      "y": 66,
+      "width": 11,
+      "alt": "A torn note",
+      "label": "A TORN NOTE",
+      "labelSize": 1.1
+    },
+    "hero_g3": {
+      "image": "/games/slay-the-demon-king/hero_back.webp",
+      "x": 83,
+      "y": 95,
+      "width": 6.55,
+      "alt": "The hero"
+    },
+    "bird_g3": {
+      "image": "/games/slay-the-demon-king/bird_landed.webp",
+      "x": 72,
+      "y": 95,
+      "width": 4.95,
+      "alt": "Bird the Sage"
+    },
+    "hero_g2": {
+      "image": "/games/slay-the-demon-king/hero_back.webp",
+      "x": 50,
+      "y": 95,
+      "width": 6.55,
+      "alt": "The hero"
+    },
+    "bird_g2": {
+      "image": "/games/slay-the-demon-king/bird_landed.webp",
+      "x": 40,
+      "y": 95,
+      "width": 4.95,
+      "alt": "Bird the Sage"
+    },
+    "light_t": {
+      "image": "/games/slay-the-demon-king/light_chest.webp",
+      "x": 78,
+      "y": 96,
+      "width": 19.61
+    },
+    "chest_t": {
+      "image": "/games/slay-the-demon-king/chest_unopened.webp",
+      "x": 80,
+      "y": 95,
+      "width": 10.59,
+      "alt": "A treasure chest"
+    },
+    "hero_find": {
+      "image": "/games/slay-the-demon-king/hero_point.webp",
+      "x": 62,
+      "y": 95,
+      "width": 8.93,
+      "alt": "The hero"
+    },
+    "bird_find": {
+      "image": "/games/slay-the-demon-king/bird_landed.webp",
+      "x": 52,
+      "y": 95,
+      "width": 4.95,
+      "alt": "Bird the Sage"
+    },
+    "boulder": {
+      "image": "/games/slay-the-demon-king/boulder.webp",
+      "x": 80,
+      "y": 100,
+      "width": 34.88,
+      "alt": "A giant boulder"
+    },
+    "speed": {
+      "image": "/games/slay-the-demon-king/speed_line.webp",
+      "x": 86,
+      "y": 62,
+      "width": 33.75
+    },
+    "hero_flee": {
+      "image": "/games/slay-the-demon-king/hero_run.webp",
+      "x": 40,
+      "y": 98,
+      "width": 9.01,
+      "alt": "The hero running"
+    },
+    "bird_flee": {
+      "image": "/games/slay-the-demon-king/bird_fly_idle.webp",
+      "x": 24,
+      "y": 80,
+      "width": 7.24,
+      "alt": "Bird the Sage"
+    },
+    "barrier": {
+      "image": "/games/slay-the-demon-king/gate_magic_barrier.webp",
+      "x": 49,
+      "y": 77,
+      "width": 39.57,
+      "alt": "A magical barrier"
+    },
+    "cave_sign": {
+      "image": "/games/slay-the-demon-king/sign.webp",
+      "x": 12,
+      "y": 87,
+      "width": 9.79,
+      "alt": "A sign"
+    },
+    "hero_c": {
+      "image": "/games/slay-the-demon-king/hero_idle.webp",
+      "x": 62,
+      "y": 87,
+      "width": 6.64,
+      "alt": "The hero"
+    },
+    "bird_c": {
+      "image": "/games/slay-the-demon-king/bird_landed.webp",
+      "x": 74,
+      "y": 87,
+      "width": 4.95,
+      "alt": "Bird the Sage"
+    },
+    "hero_climb": {
+      "image": "/games/slay-the-demon-king/hero_climbing.webp",
+      "x": 86,
+      "y": 44,
+      "width": 9.12,
+      "alt": "The hero climbing"
+    },
+    "bird_climb": {
+      "image": "/games/slay-the-demon-king/bird_fly_idle.webp",
+      "x": 76,
+      "y": 34,
+      "width": 7.24,
+      "alt": "Bird the Sage"
+    },
+    "hero_fell": {
+      "image": "/games/slay-the-demon-king/hero_idle.webp",
+      "x": 32,
+      "y": 80,
+      "width": 6.64,
+      "alt": "The hero, lying hurt",
+      "rotate": 90
+    },
+    "bird_fell": {
+      "image": "/games/slay-the-demon-king/bird_fly_up.webp",
+      "x": 44,
+      "y": 66,
+      "width": 6.12,
+      "alt": "Bird the Sage"
+    },
+    "moon_light": {
+      "image": "/games/slay-the-demon-king/light_magic_barrier.webp",
+      "x": 49,
+      "y": 80,
+      "width": 12.64
+    },
+    "chest_c": {
+      "image": "/games/slay-the-demon-king/chest_unopened.webp",
+      "x": 26,
+      "y": 87,
+      "width": 8.6,
+      "alt": "A treasure chest"
+    },
+    "hero_c2": {
+      "image": "/games/slay-the-demon-king/hero_idle.webp",
+      "x": 55,
+      "y": 87,
+      "width": 6.64,
+      "alt": "The hero"
+    },
+    "fire1": {
+      "image": "/games/slay-the-demon-king/fire_big.webp",
+      "x": 38,
+      "y": 86,
+      "width": 16.94,
+      "alt": "Flames"
+    },
+    "fire2": {
+      "image": "/games/slay-the-demon-king/fire_big.webp",
+      "x": 56,
+      "y": 86,
+      "width": 16.94,
+      "alt": "Flames"
+    },
+    "fire3": {
+      "image": "/games/slay-the-demon-king/fire_big.webp",
+      "x": 74,
+      "y": 86,
+      "width": 16.94,
+      "alt": "Flames"
+    },
+    "burnt1": {
+      "image": "/games/slay-the-demon-king/house_burnt.webp",
+      "x": 38,
+      "y": 86,
+      "width": 19.82,
+      "alt": "A burnt house"
+    },
+    "burnt2": {
+      "image": "/games/slay-the-demon-king/house_burnt.webp",
+      "x": 56,
+      "y": 86,
+      "width": 19.82,
+      "alt": "A burnt house"
+    },
+    "burnt3": {
+      "image": "/games/slay-the-demon-king/house_burnt.webp",
+      "x": 74,
+      "y": 86,
+      "width": 19.82,
+      "alt": "A burnt house"
+    },
+    "home1": {
+      "image": "/games/slay-the-demon-king/house_normal.webp",
+      "x": 38,
+      "y": 86,
+      "width": 16.06,
+      "alt": "A house"
+    },
+    "home2": {
+      "image": "/games/slay-the-demon-king/house_normal.webp",
+      "x": 56,
+      "y": 86,
+      "width": 16.06,
+      "alt": "A house"
+    },
+    "home3": {
+      "image": "/games/slay-the-demon-king/house_normal.webp",
+      "x": 74,
+      "y": 86,
+      "width": 16.06,
+      "alt": "A house"
+    },
+    "hero_vr": {
+      "image": "/games/slay-the-demon-king/hero_run.webp",
+      "x": 16,
+      "y": 93,
+      "width": 9.01,
+      "alt": "The hero running"
+    },
+    "hero_vr2": {
+      "image": "/games/slay-the-demon-king/hero_run.webp",
+      "x": 28,
+      "y": 93,
+      "width": 9.01,
+      "alt": "The hero running"
+    },
+    "bird_v": {
+      "image": "/games/slay-the-demon-king/bird_fly_idle.webp",
+      "x": 8,
+      "y": 62,
+      "width": 6.63,
+      "alt": "Bird the Sage"
+    },
+    "bird_v2": {
+      "image": "/games/slay-the-demon-king/bird_fly_idle.webp",
+      "x": 20,
+      "y": 62,
+      "width": 6.63,
+      "alt": "Bird the Sage"
+    },
+    "villager_f": {
+      "image": "/games/slay-the-demon-king/villager_female.webp",
+      "x": 38,
+      "y": 93,
+      "width": 7.7,
+      "alt": "A villager"
+    },
+    "b_help": {
+      "image": "/games/slay-the-demon-king/speech_bubble_round.webp",
+      "x": 46,
+      "y": 68,
+      "width": 11,
+      "label": "HELP\nPLEASE",
+      "labelSize": 1.5
+    },
+    "b_no": {
+      "image": "/games/slay-the-demon-king/speech_bubble_round.webp",
+      "x": 24,
+      "y": 70,
+      "width": 11,
+      "label": "NO",
+      "labelSize": 1.5
+    },
+    "b_whyy": {
+      "image": "/games/slay-the-demon-king/speech_bubble_round.webp",
+      "x": 46,
+      "y": 68,
+      "width": 11,
+      "label": "WHYYYY?!?",
+      "labelSize": 1.5
+    },
+    "b_sorry": {
+      "image": "/games/slay-the-demon-king/speech_bubble_round.webp",
+      "x": 24,
+      "y": 70,
+      "width": 12,
+      "label": "SORRY\nGOTTA GO",
+      "labelSize": 1.5
+    },
+    "hero_vi": {
+      "image": "/games/slay-the-demon-king/hero_idle.webp",
+      "x": 52,
+      "y": 93,
+      "width": 6.64,
+      "alt": "The hero"
+    },
+    "bird_vl": {
+      "image": "/games/slay-the-demon-king/bird_landed.webp",
+      "x": 46,
+      "y": 93,
+      "width": 4.54,
+      "alt": "Bird the Sage"
+    },
+    "hero_burn": {
+      "image": "/games/slay-the-demon-king/hero_idle.webp",
+      "x": 44,
+      "y": 90,
+      "width": 6.64,
+      "alt": "The hero"
+    },
+    "fire_on_hero": {
+      "image": "/games/slay-the-demon-king/fire_small.webp",
+      "x": 44,
+      "y": 93,
+      "width": 10.43,
+      "alt": "Flames"
+    },
+    "hero_vb": {
+      "image": "/games/slay-the-demon-king/hero_back.webp",
+      "x": 50,
+      "y": 93,
+      "width": 6.55,
+      "alt": "The hero"
+    },
+    "hero_thx": {
+      "image": "/games/slay-the-demon-king/hero_idle.webp",
+      "x": 24,
+      "y": 93,
+      "width": 6.64,
+      "alt": "The hero"
+    },
+    "bird_thx": {
+      "image": "/games/slay-the-demon-king/bird_fly_idle.webp",
+      "x": 14,
+      "y": 66,
+      "width": 6.63,
+      "alt": "Bird the Sage"
+    },
+    "crowd1": {
+      "image": "/games/slay-the-demon-king/villager_female.webp",
+      "x": 68,
+      "y": 93,
+      "width": 6.52,
+      "alt": "A villager"
+    },
+    "crowd2": {
+      "image": "/games/slay-the-demon-king/villager_male.webp",
+      "x": 74,
+      "y": 96,
+      "width": 7.11,
+      "alt": "A villager"
+    },
+    "crowd3": {
+      "image": "/games/slay-the-demon-king/villager_male.webp",
+      "x": 80,
+      "y": 93,
+      "width": 6.52,
+      "alt": "A villager"
+    },
+    "crowd4": {
+      "image": "/games/slay-the-demon-king/villager_female.webp",
+      "x": 86,
+      "y": 96,
+      "width": 7.11,
+      "alt": "A villager"
+    },
+    "b_thx1": {
+      "image": "/games/slay-the-demon-king/speech_bubble_round.webp",
+      "x": 68,
+      "y": 66,
+      "width": 11,
+      "label": "THANK\nYOU",
+      "labelSize": 1.5
+    },
+    "b_thx2": {
+      "image": "/games/slay-the-demon-king/speech_bubble_round.webp",
+      "x": 84,
+      "y": 62,
+      "width": 11,
+      "label": "THANK\nYOU",
+      "labelSize": 1.5
+    },
+    "b_hero": {
+      "image": "/games/slay-the-demon-king/speech_bubble_round.webp",
+      "x": 84,
+      "y": 62,
+      "width": 11,
+      "label": "OUR\nHERO!",
+      "labelSize": 1.5
+    },
+    "bucket": {
+      "image": "/games/slay-the-demon-king/water_bucket.webp",
+      "x": 38,
+      "y": 80,
+      "width": 10.63,
+      "alt": "A water bucket"
+    },
+    "drops": {
+      "image": "/games/slay-the-demon-king/water_droplet.webp",
+      "x": 46,
+      "y": 84,
+      "width": 6.11
+    },
+    "smith": {
+      "image": "/games/slay-the-demon-king/blacksmith.webp",
+      "x": 10,
+      "y": 93,
+      "width": 10.78,
+      "alt": "A blacksmith"
+    },
+    "anvil": {
+      "image": "/games/slay-the-demon-king/anvil.webp",
+      "x": 36,
+      "y": 95,
+      "width": 9.42,
+      "alt": "An anvil"
+    },
+    "hero_f": {
+      "image": "/games/slay-the-demon-king/hero_idle.webp",
+      "x": 70,
+      "y": 93,
+      "width": 6.64,
+      "alt": "The hero"
+    },
+    "hero_anvil": {
+      "image": "/games/slay-the-demon-king/hero_idle.webp",
+      "x": 36,
+      "y": 90,
+      "width": 6.64,
+      "alt": "The hero"
+    },
+    "bird_f": {
+      "image": "/games/slay-the-demon-king/bird_fly_idle.webp",
+      "x": 90,
+      "y": 58,
+      "width": 6.63,
+      "alt": "Bird the Sage"
+    },
+    "bird_f2": {
+      "image": "/games/slay-the-demon-king/bird_fly_idle.webp",
+      "x": 46,
+      "y": 64,
+      "width": 6.63,
+      "alt": "Bird the Sage"
+    },
+    "b_diy": {
+      "image": "/games/slay-the-demon-king/speech_bubble_round.webp",
+      "x": 18,
+      "y": 66,
+      "width": 9,
+      "label": "DIY",
+      "labelSize": 1.5
+    },
+    "b_pls": {
+      "image": "/games/slay-the-demon-king/speech_bubble_round.webp",
+      "x": 74,
+      "y": 66,
+      "width": 10,
+      "label": "pls help",
+      "labelSize": 1.5
+    },
+    "b_sure": {
+      "image": "/games/slay-the-demon-king/speech_bubble_round.webp",
+      "x": 18,
+      "y": 66,
+      "width": 10,
+      "label": "SURE!",
+      "labelSize": 1.5
+    },
+    "b_nope": {
+      "image": "/games/slay-the-demon-king/speech_bubble_round.webp",
+      "x": 18,
+      "y": 66,
+      "width": 10,
+      "label": "NO!!!!",
+      "labelSize": 1.5
+    },
+    "b_yay": {
+      "image": "/games/slay-the-demon-king/speech_bubble_round.webp",
+      "x": 17,
+      "y": 66,
+      "width": 9,
+      "label": "YAY",
+      "labelSize": 1.5
+    },
+    "b_noob": {
+      "image": "/games/slay-the-demon-king/speech_bubble_round.webp",
+      "x": 17,
+      "y": 66,
+      "width": 10,
+      "label": "NOOB",
+      "labelSize": 1.5
+    },
+    "sweat": {
+      "image": "/games/slay-the-demon-king/water_droplet.webp",
+      "x": 31,
+      "y": 76,
+      "width": 4.89
+    },
+    "wind1": {
+      "image": "/games/slay-the-demon-king/wind_effect.webp",
+      "x": 32,
+      "y": 34,
+      "width": 9
+    },
+    "wind2": {
+      "image": "/games/slay-the-demon-king/wind_effect.webp",
+      "x": 62,
+      "y": 22,
+      "width": 8
+    },
+    "wind3": {
+      "image": "/games/slay-the-demon-king/wind_effect.webp",
+      "x": 40,
+      "y": 82,
+      "width": 9
+    },
+    "wind4": {
+      "image": "/games/slay-the-demon-king/wind_effect.webp",
+      "x": 68,
+      "y": 78,
+      "width": 9
+    },
+    "rope": {
+      "image": "/games/slay-the-demon-king/rope_bridge.webp",
+      "x": 50,
+      "y": 67,
+      "width": 64,
+      "alt": "A rope bridge"
+    },
+    "chest_b": {
+      "image": "/games/slay-the-demon-king/chest_unopened.webp",
+      "x": 86,
+      "y": 64,
+      "width": 8.6,
+      "alt": "A treasure chest"
+    },
+    "hero_b": {
+      "image": "/games/slay-the-demon-king/hero_idle.webp",
+      "x": 8,
+      "y": 64,
+      "width": 6.41,
+      "alt": "The hero"
+    },
+    "bird_b": {
+      "image": "/games/slay-the-demon-king/bird_fly_idle.webp",
+      "x": 3,
+      "y": 40,
+      "width": 6.63,
+      "alt": "Bird the Sage"
+    },
+    "hero_bm": {
+      "image": "/games/slay-the-demon-king/hero_run.webp",
+      "x": 50,
+      "y": 64,
+      "width": 7.72,
+      "alt": "The hero crossing"
+    },
+    "bird_bm": {
+      "image": "/games/slay-the-demon-king/bird_fly_idle.webp",
+      "x": 40,
+      "y": 46,
+      "width": 6.63,
+      "alt": "Bird the Sage"
+    },
+    "hero_blow": {
+      "image": "/games/slay-the-demon-king/hero_idle.webp",
+      "x": 60,
+      "y": 70,
+      "width": 5.7,
+      "alt": "The hero, blown off the bridge",
+      "rotate": 100
+    },
+    "bird_ledge": {
+      "image": "/games/slay-the-demon-king/bird_fly_idle.webp",
+      "x": 85,
+      "y": 70,
+      "width": 6.63,
+      "alt": "Bird the Sage"
+    },
+    "hero_ledge": {
+      "image": "/games/slay-the-demon-king/hero_climbing.webp",
+      "x": 92,
+      "y": 100,
+      "width": 7.3,
+      "alt": "The hero climbing"
+    },
+    "hero_end": {
+      "image": "/games/slay-the-demon-king/hero_idle.webp",
+      "x": 92,
+      "y": 64,
+      "width": 6.41,
+      "alt": "The hero"
+    },
+    "bird_end": {
+      "image": "/games/slay-the-demon-king/bird_fly_idle.webp",
+      "x": 83,
+      "y": 44,
+      "width": 6.63,
+      "alt": "Bird the Sage"
+    },
+    "hero_back_b": {
+      "image": "/games/slay-the-demon-king/hero_idle.webp",
+      "x": 8,
+      "y": 64,
+      "width": 6.41,
+      "alt": "The hero"
+    },
+    "hero_dead_b": {
+      "image": "/games/slay-the-demon-king/hero_idle.webp",
+      "x": 90,
+      "y": 74,
+      "width": 6.41,
+      "alt": "The hero, lying hurt",
+      "rotate": 90
+    },
+    "hero_k": {
+      "image": "/games/slay-the-demon-king/hero_idle.webp",
+      "x": 30,
+      "y": 92,
+      "width": 7.12,
+      "alt": "The hero"
+    },
+    "hero_kh": {
+      "image": "/games/slay-the-demon-king/hero_hold.webp",
+      "x": 30,
+      "y": 92,
+      "width": 8.75,
+      "alt": "The hero holding the sword"
+    },
+    "bird_k": {
+      "image": "/games/slay-the-demon-king/bird_fly_idle.webp",
+      "x": 17,
+      "y": 68,
+      "width": 6.63,
+      "alt": "Bird the Sage"
+    },
+    "king": {
+      "image": "/games/slay-the-demon-king/demon_king_healthy.webp",
+      "x": 78,
+      "y": 96,
+      "width": 27.01,
+      "alt": "The Demon King"
+    },
+    "king_b": {
+      "image": "/games/slay-the-demon-king/demon_king_blushing.webp",
+      "x": 78,
+      "y": 96,
+      "width": 27.05,
+      "alt": "The Demon King, blushing"
+    },
+    "king_dead": {
+      "image": "/games/slay-the-demon-king/demon_king_dead.webp",
+      "x": 28,
+      "y": 96,
+      "width": 12.23,
+      "alt": "The defeated Demon King"
+    },
+    "hero_win": {
+      "image": "/games/slay-the-demon-king/hero_hold.webp",
+      "x": 29,
+      "y": 78,
+      "width": 8.75,
+      "alt": "The victorious hero"
+    },
+    "bird_win": {
+      "image": "/games/slay-the-demon-king/bird_landed.webp",
+      "x": 31,
+      "y": 51,
+      "width": 4.54,
+      "alt": "Bird the Sage"
+    },
+    "hero_lost": {
+      "image": "/games/slay-the-demon-king/hero_idle.webp",
+      "x": 30,
+      "y": 89,
+      "width": 6.64,
+      "alt": "The fallen hero",
+      "rotate": 90
+    },
+    "bird_lost": {
+      "image": "/games/slay-the-demon-king/bird_fly_up.webp",
+      "x": 20,
+      "y": 84,
+      "width": 5.25,
+      "alt": "Bird the Sage",
+      "rotate": 80
+    },
+    "hero_k4": {
+      "image": "/games/slay-the-demon-king/hero_hold.webp",
+      "x": 38,
+      "y": 92,
+      "width": 8.75,
+      "alt": "The hero"
+    },
+    "king_b4": {
+      "image": "/games/slay-the-demon-king/demon_king_blushing.webp",
+      "x": 64,
+      "y": 96,
+      "width": 27.05,
+      "alt": "The Demon King, blushing"
+    },
+    "bird_k4": {
+      "image": "/games/slay-the-demon-king/bird_fly_idle.webp",
+      "x": 24,
+      "y": 66,
+      "width": 6.63,
+      "alt": "Bird the Sage"
     }
   },
   "items": {
-    "Breastplate of Earth": { "image": "/games/slay-the-demon-king/item-breastplate.svg" },
-    "Shield of Frost": { "image": "/games/slay-the-demon-king/item-shield.svg" }
+    "Breastplate of Earth": {
+      "image": "/games/slay-the-demon-king/relic_1_breastplate.webp"
+    },
+    "Shield of Frost": {
+      "image": "/games/slay-the-demon-king/relic_2_shield.webp"
+    },
+    "Sword of Flame": {
+      "image": "/games/slay-the-demon-king/relic_3_sword.webp"
+    },
+    "Ring of Light": {
+      "image": "/games/slay-the-demon-king/relic_4_ring.webp"
+    },
+    "Boots of Wind": {
+      "image": "/games/slay-the-demon-king/relic_5_boots.webp"
+    }
   },
+  "music": {
+    "bgm": {
+      "file": "/games/slay-the-demon-king/bgm.mp3",
+      "loop": true
+    },
+    "stinger": {
+      "file": "/games/slay-the-demon-king/bgm_stinger.mp3"
+    },
+    "ending_sting": {
+      "file": "/games/slay-the-demon-king/ending_stinger.mp3"
+    },
+    "ending": {
+      "file": "/games/slay-the-demon-king/ending.mp3"
+    },
+    "marriage": {
+      "file": "/games/slay-the-demon-king/ending_4_marriage.mp3"
+    }
+  },
+  "proverbSting": "stinger",
   "scenes": [
-    { "ids": "*", "stage": "meadow" },
-    { "ids": ["intro1", "intro2"], "characters": { "left": "hero", "right": "companion" } },
     {
-      "ids": ["temple", "search1", "note-missing", "advice1", "search2", "passage3", "trap", "escape"],
+      "ids": "*",
+      "stage": "sky",
+      "props": [],
+      "music": "bgm"
+    },
+    {
+      "ids": [
+        "intro1",
+        "intro2",
+        "intro3",
+        "intro4",
+        "intro5"
+      ],
+      "props": [
+        "cloud",
+        "goddess",
+        "hero_sky",
+        "bird_sky"
+      ]
+    },
+    {
+      "ids": [
+        "temple",
+        "note1",
+        "note_missing",
+        "advice1",
+        "note2"
+      ],
       "stage": "temple",
-      "characters": { "left": "hero" }
+      "props": [
+        "gate1",
+        "gate2",
+        "gate3",
+        "hero_t",
+        "bird_t"
+      ]
     },
     {
-      "ids": ["barrier1", "barrier2", "advice2", "hay", "wait"],
-      "stage": "mountain",
-      "characters": { "left": "hero" },
-      "props": ["pedestal"],
-      "headingInArt": true
+      "ids": [
+        "search1",
+        "search2"
+      ],
+      "stage": "temple",
+      "props": [
+        "gate1",
+        "gate2",
+        "gate3",
+        "note_t",
+        "hero_t",
+        "bird_t"
+      ]
     },
-    { "ids": ["barrier1", "barrier2", "advice2"], "props": ["pedestal", "signpost"], "noteOn": "signpost" }
+    {
+      "ids": [
+        "trust"
+      ],
+      "stage": "temple",
+      "props": [
+        "gate1",
+        "gate2",
+        "gate3",
+        "hero_g3",
+        "bird_g3"
+      ]
+    },
+    {
+      "ids": [
+        "breast"
+      ],
+      "stage": "temple",
+      "props": [
+        "light_t",
+        "chest_t",
+        "hero_find",
+        "bird_find"
+      ]
+    },
+    {
+      "ids": [
+        "hes1"
+      ],
+      "stage": "temple",
+      "props": [
+        "gate1",
+        "gate2",
+        "gate3",
+        "hero_g2",
+        "bird_g2"
+      ]
+    },
+    {
+      "ids": [
+        "hes2",
+        "hes3",
+        "hes4"
+      ],
+      "stage": "temple",
+      "props": [
+        "speed",
+        "boulder",
+        "hero_flee",
+        "bird_flee"
+      ]
+    },
+    {
+      "ids": [
+        "mtn1",
+        "mtn2",
+        "mtn3",
+        "mtn4",
+        "mtn5",
+        "advice2"
+      ],
+      "stage": "cave",
+      "props": [
+        "barrier",
+        "cave_sign",
+        "hero_c",
+        "bird_c"
+      ]
+    },
+    {
+      "ids": [
+        "climb1",
+        "climb2"
+      ],
+      "stage": "cave",
+      "props": [
+        "barrier",
+        "cave_sign",
+        "hero_climb",
+        "bird_climb"
+      ]
+    },
+    {
+      "ids": [
+        "climb3",
+        "climb4"
+      ],
+      "stage": "cave",
+      "props": [
+        "barrier",
+        "cave_sign",
+        "hero_fell",
+        "bird_fell"
+      ]
+    },
+    {
+      "ids": [
+        "wait1"
+      ],
+      "stage": "cave",
+      "props": [
+        "barrier",
+        "cave_sign",
+        "hero_c",
+        "bird_c"
+      ]
+    },
+    {
+      "ids": [
+        "wait2",
+        "wait3"
+      ],
+      "stage": "cave",
+      "props": [
+        "moon_light",
+        "cave_sign",
+        "chest_c",
+        "hero_c2",
+        "bird_c"
+      ]
+    },
+    {
+      "ids": [
+        "vil1"
+      ],
+      "stage": "village",
+      "props": [
+        "fire1",
+        "fire2",
+        "fire3",
+        "hero_vr",
+        "bird_v"
+      ]
+    },
+    {
+      "ids": [
+        "vil2",
+        "advice3"
+      ],
+      "stage": "village",
+      "props": [
+        "fire1",
+        "fire2",
+        "fire3",
+        "hero_vr",
+        "bird_v",
+        "villager_f",
+        "b_help"
+      ]
+    },
+    {
+      "ids": [
+        "leave1"
+      ],
+      "stage": "village",
+      "props": [
+        "fire1",
+        "fire2",
+        "fire3",
+        "hero_vr",
+        "bird_v",
+        "villager_f",
+        "b_no",
+        "b_whyy"
+      ]
+    },
+    {
+      "ids": [
+        "leave2"
+      ],
+      "stage": "village",
+      "props": [
+        "fire1",
+        "fire2",
+        "fire3",
+        "hero_vr",
+        "bird_v",
+        "villager_f",
+        "b_sorry",
+        "b_whyy"
+      ]
+    },
+    {
+      "ids": [
+        "leave3",
+        "leave4"
+      ],
+      "stage": "village",
+      "props": [
+        "burnt1",
+        "burnt2",
+        "burnt3",
+        "hero_vi",
+        "bird_vl"
+      ]
+    },
+    {
+      "ids": [
+        "hurt1",
+        "fine1"
+      ],
+      "stage": "village",
+      "props": [
+        "fire1",
+        "fire2",
+        "fire3",
+        "hero_vr2",
+        "bird_v2"
+      ]
+    },
+    {
+      "ids": [
+        "hurt2"
+      ],
+      "stage": "village",
+      "props": [
+        "fire1",
+        "fire2",
+        "fire3",
+        "hero_burn",
+        "fire_on_hero",
+        "bird_v2"
+      ]
+    },
+    {
+      "ids": [
+        "hurt3"
+      ],
+      "stage": "village",
+      "props": [
+        "burnt1",
+        "burnt2",
+        "burnt3",
+        "hero_vb",
+        "bird_vl"
+      ]
+    },
+    {
+      "ids": [
+        "hurt4",
+        "hurt5"
+      ],
+      "stage": "village",
+      "props": [
+        "burnt1",
+        "burnt2",
+        "burnt3",
+        "hero_thx",
+        "bird_thx",
+        "crowd1",
+        "crowd2",
+        "crowd3",
+        "crowd4",
+        "b_thx1",
+        "b_thx2"
+      ]
+    },
+    {
+      "ids": [
+        "hurt6"
+      ],
+      "stage": "village",
+      "props": [
+        "burnt1",
+        "burnt2",
+        "burnt3",
+        "hero_thx",
+        "bird_thx",
+        "crowd1",
+        "crowd2",
+        "crowd3",
+        "crowd4",
+        "b_thx1",
+        "b_thx2"
+      ]
+    },
+    {
+      "ids": [
+        "fine2"
+      ],
+      "stage": "village",
+      "props": [
+        "fire1",
+        "fire2",
+        "fire3",
+        "hero_vr2",
+        "bucket",
+        "drops",
+        "bird_v2"
+      ]
+    },
+    {
+      "ids": [
+        "fine3"
+      ],
+      "stage": "village",
+      "props": [
+        "home1",
+        "home2",
+        "home3",
+        "hero_vb",
+        "bird_vl"
+      ]
+    },
+    {
+      "ids": [
+        "fine4",
+        "fine5"
+      ],
+      "stage": "village",
+      "props": [
+        "home1",
+        "home2",
+        "home3",
+        "hero_thx",
+        "bird_thx",
+        "crowd1",
+        "crowd2",
+        "crowd3",
+        "crowd4",
+        "b_thx1",
+        "b_hero"
+      ]
+    },
+    {
+      "ids": [
+        "forge1"
+      ],
+      "stage": "village",
+      "props": [
+        "smith",
+        "anvil",
+        "hero_f",
+        "bird_f",
+        "b_diy"
+      ]
+    },
+    {
+      "ids": [
+        "advice4"
+      ],
+      "stage": "village",
+      "props": [
+        "smith",
+        "anvil",
+        "hero_f",
+        "bird_f"
+      ]
+    },
+    {
+      "ids": [
+        "hands1"
+      ],
+      "stage": "village",
+      "props": [
+        "smith",
+        "anvil",
+        "hero_f",
+        "bird_f",
+        "b_pls"
+      ]
+    },
+    {
+      "ids": [
+        "hands_yes1",
+        "hands_yes2"
+      ],
+      "stage": "village",
+      "props": [
+        "smith",
+        "anvil",
+        "hero_f",
+        "bird_f",
+        "b_sure"
+      ]
+    },
+    {
+      "ids": [
+        "hands_no1",
+        "hands_no2"
+      ],
+      "stage": "village",
+      "props": [
+        "smith",
+        "anvil",
+        "hero_f",
+        "bird_f",
+        "b_nope"
+      ]
+    },
+    {
+      "ids": [
+        "prac1"
+      ],
+      "stage": "village",
+      "props": [
+        "smith",
+        "hero_anvil",
+        "anvil",
+        "bird_f2"
+      ]
+    },
+    {
+      "ids": [
+        "prac_yes1"
+      ],
+      "stage": "village",
+      "props": [
+        "smith",
+        "hero_anvil",
+        "anvil",
+        "bird_f2"
+      ]
+    },
+    {
+      "ids": [
+        "prac_yes2",
+        "prac_yes3"
+      ],
+      "stage": "village",
+      "props": [
+        "smith",
+        "hero_anvil",
+        "anvil",
+        "bird_f2",
+        "b_yay"
+      ]
+    },
+    {
+      "ids": [
+        "prac_no1"
+      ],
+      "stage": "village",
+      "props": [
+        "smith",
+        "hero_anvil",
+        "anvil",
+        "bird_f2"
+      ]
+    },
+    {
+      "ids": [
+        "prac_no2",
+        "prac_no3"
+      ],
+      "stage": "village",
+      "props": [
+        "smith",
+        "hero_anvil",
+        "anvil",
+        "bird_f2",
+        "sweat",
+        "b_noob"
+      ]
+    },
+    {
+      "ids": [
+        "br1",
+        "br2",
+        "br3",
+        "advice5"
+      ],
+      "stage": "bridge",
+      "props": [
+        "wind1",
+        "wind2",
+        "wind3",
+        "wind4",
+        "rope",
+        "chest_b",
+        "hero_b",
+        "bird_b"
+      ]
+    },
+    {
+      "ids": [
+        "bold1",
+        "cross1"
+      ],
+      "stage": "bridge",
+      "props": [
+        "wind1",
+        "wind2",
+        "wind3",
+        "wind4",
+        "rope",
+        "chest_b",
+        "hero_bm",
+        "bird_bm"
+      ]
+    },
+    {
+      "ids": [
+        "fall1"
+      ],
+      "stage": "bridge",
+      "props": [
+        "wind1",
+        "wind2",
+        "wind3",
+        "wind4",
+        "rope",
+        "chest_b",
+        "hero_blow",
+        "bird_bm"
+      ]
+    },
+    {
+      "ids": [
+        "fall2"
+      ],
+      "stage": "bridge",
+      "props": [
+        "wind1",
+        "wind2",
+        "wind3",
+        "wind4",
+        "rope",
+        "chest_b",
+        "hero_ledge",
+        "bird_ledge"
+      ]
+    },
+    {
+      "ids": [
+        "fall3",
+        "boots_hurt",
+        "cross2",
+        "cross3"
+      ],
+      "stage": "bridge",
+      "props": [
+        "wind1",
+        "wind2",
+        "wind3",
+        "wind4",
+        "rope",
+        "chest_b",
+        "hero_end",
+        "bird_end"
+      ]
+    },
+    {
+      "ids": [
+        "safe1"
+      ],
+      "stage": "bridge",
+      "props": [
+        "wind1",
+        "wind2",
+        "wind3",
+        "wind4",
+        "rope",
+        "chest_b",
+        "hero_back_b",
+        "bird_b"
+      ]
+    },
+    {
+      "ids": [
+        "end0"
+      ],
+      "stage": "bridge",
+      "props": [
+        "wind1",
+        "wind2",
+        "wind3",
+        "wind4",
+        "rope",
+        "chest_b",
+        "hero_dead_b",
+        "bird_end"
+      ],
+      "music": "ending_sting"
+    },
+    {
+      "ids": [
+        "castle1"
+      ],
+      "stage": "desert",
+      "props": [
+        "hero_k",
+        "bird_k"
+      ]
+    },
+    {
+      "ids": [
+        "castle2"
+      ],
+      "stage": "desert",
+      "props": [
+        "hero_kh",
+        "bird_k",
+        "king"
+      ]
+    },
+    {
+      "ids": [
+        "end1",
+        "end2"
+      ],
+      "stage": "desert",
+      "props": [
+        "hero_lost",
+        "bird_lost",
+        "king"
+      ],
+      "music": "ending_sting"
+    },
+    {
+      "ids": [
+        "end3"
+      ],
+      "stage": "desert",
+      "props": [
+        "king_dead",
+        "hero_win",
+        "bird_win"
+      ],
+      "music": "ending"
+    },
+    {
+      "ids": [
+        "end4a",
+        "end4b"
+      ],
+      "stage": "desert",
+      "props": [
+        "hero_k4",
+        "bird_k4",
+        "king"
+      ]
+    },
+    {
+      "ids": [
+        "end4c",
+        "end4d"
+      ],
+      "stage": "desert",
+      "props": [
+        "hero_k4",
+        "bird_k4",
+        "king_b4"
+      ]
+    },
+    {
+      "ids": [
+        "end4e",
+        "end4f",
+        "end4g",
+        "end4h"
+      ],
+      "stage": "desert",
+      "props": [
+        "hero_k4",
+        "bird_k4",
+        "king_b4"
+      ],
+      "music": "marriage"
+    }
   ]
 }

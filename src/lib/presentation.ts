@@ -9,6 +9,7 @@ export interface ResolvedScene {
   props: { id: string; def: PropDef }[];
   noteOn?: string;
   headingInArt: boolean;
+  music?: string;
 }
 
 /** Merges every matching rule, in file order, into what one scene should look like. */
@@ -29,6 +30,7 @@ export function resolveScene(presentation: Presentation | undefined, sceneId: st
     if (rule.props !== undefined) props = rule.props;
     if (rule.noteOn !== undefined) out.noteOn = rule.noteOn;
     if (rule.headingInArt !== undefined) out.headingInArt = rule.headingInArt;
+    if (rule.music !== undefined) out.music = rule.music;
   }
 
   out.stage = stageId ? presentation.stages[stageId] : undefined;
