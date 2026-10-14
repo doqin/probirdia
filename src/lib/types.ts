@@ -30,6 +30,12 @@ export interface Choice {
   next: string;
 }
 
+/** One branch of a route scene: the first whose condition holds is taken (no condition = fallback). */
+export interface Route {
+  if?: string;
+  next: string;
+}
+
 export interface Scene {
   id: string;
   heading?: Localized;
@@ -38,8 +44,12 @@ export interface Scene {
   note?: Localized;
   gives: string[];
   status: string[];
+  /** Statuses removed on entry (e.g. "Injured" is replaced by "Severely injured"). */
+  clears: string[];
   choices: Choice[];
   next?: string;
+  /** A route scene shows nothing: it sends the player on to the first branch whose condition holds. */
+  routes?: Route[];
 }
 
 // ---- Presentation (dev-owned; teachers never edit this) ----
@@ -68,6 +78,12 @@ export interface PropDef {
   y: number;
   width: number;
   alt?: string;
+  /** Fixed text printed on the prop (e.g. a speech bubble), centred in `text` or over the whole image. */
+  label?: string;
+  /** Size of the label in % of the stage width (default 1.5). */
+  labelSize?: number;
+  /** Degrees clockwise, e.g. 90 for a hero lying on the ground. When set, x/y is the centre of the image, not the bottom. */
+  rotate?: number;
   /** Area (in % of the prop image) where the scene note is printed, e.g. the face of a signpost. */
   text?: { x: number; y: number; width: number; height: number };
 }
@@ -84,6 +100,8 @@ export interface SceneRule {
   noteOn?: string;
   /** Show the scene heading as a title inside the artwork. */
   headingInArt?: boolean;
+  /** Background music for these scenes (a key of `music`); stays playing across scenes with the same track. */
+  music?: string;
 }
 export interface Presentation {
   stages: Record<string, StageDef>;
@@ -91,6 +109,10 @@ export interface Presentation {
   props: Record<string, PropDef>;
   /** Keyed by the item name used in the `gives` column. */
   items: Record<string, { image: string }>;
+  /** Audio files under /public. `loop` tracks repeat; others play once (stingers). */
+  music?: Record<string, { file: string; loop?: boolean }>;
+  /** Short sound played when a proverb is revealed (a key of `music`). */
+  proverbSting?: string;
   scenes: SceneRule[];
 }
 
@@ -101,6 +123,10 @@ export interface Game {
   description: Localized;
   thumbnail?: string;
   start: string;
+  /** Item names that count as relics for `relics>=N` conditions. */
+  relics: string[];
+  /** Statuses that are good news (shown green instead of red). */
+  positiveStatus: string[];
   scenes: Record<string, Scene>;
   presentation?: Presentation;
 }

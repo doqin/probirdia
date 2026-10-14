@@ -1,7 +1,8 @@
 import { readFileSync, readdirSync, existsSync } from 'node:fs';
 import path from 'node:path';
 import { parse } from 'csv-parse/sync';
-import { LANGS, type Choice, type Game, type GlossaryEntry, type Localized, type Scene } from './types';
+import { LANGS, type Choice, type Game, type GlossaryEntry, type Localized, type Route, type Scene } from './types';
+import { namesIn, parseCondition } from './condition';
 import { parseMarkup } from './markup';
 import { slugify } from './slug';
 import { SLOT_X } from './presentation';
@@ -16,6 +17,7 @@ export class ContentError extends Error {
 }
 
 const MAX_CHOICES = 4;
+const MAX_ROUTES = 6;
 export const contentDir = () => path.resolve(process.cwd(), 'content');
 
 type Row = Record<string, string>;
@@ -138,6 +140,8 @@ function loadPresentation(slug: string, scenes: Record<string, Scene>, opts: Pre
     characters: raw.characters ?? {},
     props: raw.props ?? {},
     items: raw.items ?? {},
+    music: raw.music,
+    proverbSting: raw.proverbSting,
     scenes: raw.scenes ?? [],
   };
 
@@ -153,6 +157,12 @@ function loadPresentation(slug: string, scenes: Record<string, Scene>, opts: Pre
   for (const [id, pr] of Object.entries(p.props)) checkImage(`prop "${id}"`, pr.image);
   for (const [id, it] of Object.entries(p.items)) checkImage(`item "${id}"`, it.image);
 
+  for (const [id, m] of Object.entries(p.music ?? {})) {
+    if (!m.file) bad(`music "${id}" has no file`);
+    else if (m.file.startsWith('/') && !existsSync(path.join(publicDir, m.file))) bad(`music "${id}": file "${m.file}" is not in public/`);
+  }
+  if (p.proverbSting && !(p.proverbSting in (p.music ?? {}))) bad(`proverbSting: unknown music "${p.proverbSting}"`);
+
   p.scenes.forEach((rule, i) => {
     const r = `scenes[${i}]`;
     if (rule.ids !== '*') {
@@ -165,6 +175,7 @@ function loadPresentation(slug: string, scenes: Record<string, Scene>, opts: Pre
       if (id && !(id in p.characters)) bad(`${r}: unknown character "${id}"`);
     }
     for (const id of rule.props ?? []) if (!(id in p.props)) bad(`${r}: unknown prop "${id}"`);
+    if (rule.music && !(rule.music in (p.music ?? {}))) bad(`${r}: unknown music "${rule.music}"`);
     if (rule.noteOn && !(rule.noteOn in p.props)) bad(`${r}: unknown prop "${rule.noteOn}" in noteOn`);
   });
 
@@ -172,7 +183,11 @@ function loadPresentation(slug: string, scenes: Record<string, Scene>, opts: Pre
   return p;
 }
 
-const targetsOf = (s: Scene) => [...(s.next ? [s.next] : []), ...s.choices.map((c) => c.next)];
+const targetsOf = (s: Scene) => [
+  ...(s.next ? [s.next] : []),
+  ...s.choices.map((c) => c.next),
+  ...(s.routes ?? []).map((r) => r.next),
+];
 
 export function loadGame(slug: string, glossary: GlossaryEntry[], dir = contentDir(), opts: PresentationOptions = {}): Game {
   const gameDir = path.join(dir, 'games', slug);
@@ -194,7 +209,15 @@ export function loadGame(slug: string, glossary: GlossaryEntry[], dir = contentD
     const id = row.id?.trim();
     if (!id) return at(n, 'the "id" column is empty');
     if (id in scenes) return at(n, `the id "${id}" is already used on row ${rowOf[id]}`);
-    const text = localized(row, 'text');
+    const routes: Route[] = [];
+    for (let r = 1; r <= MAX_ROUTES; r++) {
+      const cond = row[`route_${r}_if`]?.trim();
+      const target = row[`route_${r}_next`]?.trim();
+      if (!cond && !target) continue;
+      if (!target) { at(n, `route ${r} has no "route_${r}_next"`); continue; }
+      routes.push({ if: cond || undefined, next: target });
+    }
+    const text = localized(row, 'text') ?? (routes.length ? { en: '' } : undefined);
     if (!text) return at(n, `scene "${id}" has no text`);
 
     const choices: Choice[] = [];
@@ -217,6 +240,17 @@ export function loadGame(slug: string, glossary: GlossaryEntry[], dir = contentD
 
     const next = row.next?.trim() || undefined;
     if (next && choices.length) at(n, `scene "${id}" has both "next" and choices; use one`);
+    if (routes.length) {
+      if (next || choices.length) at(n, `scene "${id}" has routes, so it cannot also have "next" or choices`);
+      if (row.text?.trim()) at(n, `scene "${id}" has routes, so it is never shown: leave "text" empty`);
+      if (routes.filter((r) => !r.if).length !== 1 || routes[routes.length - 1].if) {
+        at(n, `scene "${id}": the last route must be the only one without a condition (the fallback)`);
+      }
+      for (const r of routes) {
+        if (!r.if) continue;
+        try { parseCondition(r.if); } catch (e) { at(n, `scene "${id}": ${(e as Error).message}`); }
+      }
+    }
 
     rowOf[id] = n;
     scenes[id] = {
@@ -226,8 +260,10 @@ export function loadGame(slug: string, glossary: GlossaryEntry[], dir = contentD
       note: localized(row, 'note'),
       gives: list(row.gives),
       status: list(row.status),
+      clears: list(row.clears),
       choices,
       next,
+      routes: routes.length ? routes : undefined,
     };
   });
 
@@ -247,6 +283,23 @@ export function loadGame(slug: string, glossary: GlossaryEntry[], dir = contentD
       }
     }
   }
+
+  // Conditions must mention items and statuses that some scene actually gives.
+  const givenItems = new Set(Object.values(scenes).flatMap((sc) => sc.gives.map((g) => g.toLowerCase())));
+  const givenStatus = new Set(Object.values(scenes).flatMap((sc) => sc.status.map((g) => g.toLowerCase())));
+  for (const scene of Object.values(scenes)) {
+    for (const route of scene.routes ?? []) {
+      if (!route.if) continue;
+      let names;
+      try { names = namesIn(parseCondition(route.if)); } catch { continue; }
+      for (const i of names.items) if (!givenItems.has(i.toLowerCase())) at(rowOf[scene.id], `scene "${scene.id}": no scene gives the item "${i}"`);
+      for (const st of names.status) if (!givenStatus.has(st.toLowerCase())) at(rowOf[scene.id], `scene "${scene.id}": no scene sets the status "${st}"`);
+    }
+  }
+
+  const stringList = (v: unknown) => (Array.isArray(v) ? v.filter((x): x is string => typeof x === 'string') : []);
+  const relics = stringList(meta.relics);
+  for (const r of relics) if (!givenItems.has(r.toLowerCase())) problems.push(`${slug}/game.json: relic "${r}" is never given by any scene`);
 
   const start = rows[0]?.id?.trim();
   if (start && start in scenes) {
@@ -276,6 +329,8 @@ export function loadGame(slug: string, glossary: GlossaryEntry[], dir = contentD
     description: localized(meta, 'description') ?? localized(meta, 'summary') ?? title!,
     thumbnail: typeof meta.thumbnail === 'string' ? meta.thumbnail : undefined,
     start: start!,
+    relics,
+    positiveStatus: stringList(meta.positive_status),
     scenes,
     presentation,
   };

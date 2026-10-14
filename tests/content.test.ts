@@ -4,7 +4,8 @@ import { tmpdir } from 'node:os';
 import path from 'node:path';
 import { ContentError, loadAllGames, loadGame, loadGlossary, loadWords } from '../src/lib/content';
 import { parseMarkup } from '../src/lib/markup';
-import { advance, choose, isEnd, startState } from '../src/lib/engine';
+import { advance, choose, isEnd, isValidState, startState } from '../src/lib/engine';
+import { evaluate, parseCondition } from '../src/lib/condition';
 
 const glossary = loadGlossary();
 const demo = loadAllGames(glossary).find((g) => g.slug === 'slay-the-demon-king')!;
@@ -40,7 +41,7 @@ describe('markup', () => {
 
 describe('validation', () => {
   it('accepts the demo game', () => {
-    expect(Object.keys(demo.scenes)).toHaveLength(17);
+    expect(Object.keys(demo.scenes)).toHaveLength(101);
     expect(demo.start).toBe('intro1');
   });
 
@@ -70,56 +71,182 @@ describe('validation', () => {
   });
 });
 
-describe('engine: demo playthroughs', () => {
-  const run = (...picks: number[]) => {
+describe('conditions', () => {
+  const facts = { items: ['Ring of Light'], status: ["Villagers' respect", 'Injured'], relics: 3 };
+  const ok = (src: string) => evaluate(parseCondition(src), facts);
+
+  it('evaluates atoms, not, and, or', () => {
+    expect(ok("status:Villagers' respect")).toBe(true);
+    expect(ok('status:injured')).toBe(true);
+    expect(ok('status:Exhausted')).toBe(false);
+    expect(ok('has:Ring of Light and not status:Exhausted')).toBe(true);
+    expect(ok('status:Exhausted or relics>=3')).toBe(true);
+    expect(ok('relics>3')).toBe(false);
+    expect(ok('relics=3 and relics<=3 and relics<4')).toBe(true);
+  });
+
+  it('rejects things it cannot understand', () => {
+    expect(() => parseCondition('')).toThrow();
+    expect(() => parseCondition('injured')).toThrow(/cannot understand/);
+    expect(() => parseCondition('relics>=many')).toThrow();
+  });
+});
+
+describe('routes', () => {
+  const head = 'id,text,gives,status,clears,next,route_1_if,route_1_next,route_2_if,route_2_next\n';
+
+  it('rejects routes without a final fallback, with bad conditions, or with unknown names', () => {
+    const noFallback = problemsOf(head + 'a,,,,,,status:Hurt,b,,\nb,B,,Hurt,,,,,,\n');
+    expect(noFallback.some((x) => x.includes('fallback'))).toBe(true);
+    const bad = problemsOf(head + 'a,,,,,,whatever,b,,b\nb,B,,Hurt,,,,,,\n');
+    expect(bad.some((x) => x.includes('cannot understand'))).toBe(true);
+    const unknown = problemsOf(head + 'a,,,,,,status:Cursed,b,,b\nb,B,,Hurt,,,,,,\n');
+    expect(unknown.some((x) => x.includes('no scene sets the status "Cursed"'))).toBe(true);
+    const missing = problemsOf(head + 'a,,,,,,,nowhere,,\n');
+    expect(missing.some((x) => x.includes('"nowhere"'))).toBe(true);
+  });
+
+  const gameWith = (scenes: string) => {
+    const dir = fixture(scenes);
+    return loadGame('g', loadGlossary(dir), dir);
+  };
+
+  it('sends the player down the first branch that fits, and clears statuses', () => {
+    const game = gameWith(
+      head +
+        'a,Start,,Hurt,,r,,,,\n' +
+        'r,,,,,,status:Hurt,hurt,,ok\n' +
+        'hurt,You are hurt,,Worse,Hurt,,,,,\n' +
+        'ok,You are fine,,,,,,,,\n',
+    );
+    const st = startState(game);
+    expect(st.sceneId).toBe('a');
+    const after = advance(st, game);
+    expect(after.sceneId).toBe('hurt');
+    expect(after.status).toEqual(['Worse']);
+  });
+
+  it('uses the fallback when nothing else fits', () => {
+    const game = gameWith(
+      head + 'a,Start,,,,r,,,,\nr,,,,,,status:Hurt,hurt,,ok\nhurt,Hurt,,Hurt,,,,,,\nok,Fine,,,,,,,,\n',
+    );
+    expect(advance(startState(game), game).sceneId).toBe('ok');
+  });
+});
+
+describe('engine: playthroughs of Slay the Demon King', () => {
+  const ADV = {
+    little: 'a-little-knowledge-is-a-dangerous-thing',
+    hesitate: 'he-who-hesitates-is-lost',
+    hay: 'make-hay-while-the-sun-shines',
+    wait: 'good-things-come-to-those-who-wait',
+    look: 'look-before-you-leap',
+    virtue: 'virtue-is-its-own-reward',
+    hands: 'many-hands-make-light-work',
+    practise: 'practise-makes-perfect',
+    bold: 'fortune-favors-the-bold',
+    safe: 'better-safe-than-sorry',
+  };
+  /** Plays to the end, answering each proverb question with the named proverb. */
+  const run = (...picks: (keyof typeof ADV)[]) => {
     let s = startState(demo);
-    for (let guard = 0; guard < 50 && !isEnd(demo, s); guard++) {
-      if (s.reveal || demo.scenes[s.sceneId].choices.length === 0) s = advance(s, demo);
-      else s = choose(s, demo, picks.shift() ?? 0);
+    const queue = [...picks];
+    for (let guard = 0; guard < 300 && !isEnd(demo, s); guard++) {
+      const choices = demo.scenes[s.sceneId].choices;
+      if (s.reveal || choices.length === 0) s = advance(s, demo);
+      else {
+        const want = ADV[queue.shift()!];
+        s = choose(s, demo, choices.findIndex((c) => c.proverb === want));
+      }
     }
     return s;
   };
+  const RESPECT = "Villagers' respect";
 
-  it('patient path: breastplate, shield, no injury', () => {
-    const s = run(0, 1);
-    expect(s.items).toEqual(['Breastplate of Earth', 'Shield of Frost']);
-    expect(s.status).toEqual([]);
-    expect(s.chosen).toEqual(['a-little-knowledge-is-a-dangerous-thing', 'good-things-come-to-those-who-wait']);
+  it('Ending 4: the perfect run ends in marriage', () => {
+    const s = run('little', 'wait', 'virtue', 'hands', 'bold');
+    expect(s.sceneId).toBe('end4h');
+    expect(s.items).toHaveLength(5);
+    expect(s.status).toEqual([RESPECT]);
   });
 
-  it('hasty path: trap, no breastplate, injury', () => {
-    const s = run(1, 0);
-    expect(s.items).toEqual(['Shield of Frost']);
-    expect(s.status).toEqual(['Injury']);
+  it('Ending 3: four relics or more wins', () => {
+    const s = run('little', 'wait', 'virtue', 'practise', 'safe');
+    expect(s.sceneId).toBe('end3');
+    expect(s.items).toHaveLength(4);
+  });
+
+  it('Ending 2: three relics or fewer loses', () => {
+    const s = run('hesitate', 'wait', 'look', 'hands', 'safe');
+    expect(s.sceneId).toBe('end2');
+    expect(s.items).toEqual(['Shield of Frost', 'Sword of Flame']);
+    expect(s.status).toEqual(["Villagers' contempt"]);
+  });
+
+  it('being severely injured alone does not stop a win', () => {
+    const s = run('little', 'hay', 'virtue', 'practise', 'safe');
+    expect(s.status).toEqual(expect.arrayContaining(['Severely injured', RESPECT]));
+    expect(s.sceneId).toBe('end3');
+  });
+
+  it('Ending 1 needs both exhaustion and severe injury', () => {
+    // contempt makes practising exhausting; being hurt twice makes the injury severe
+    const s = run('little', 'hay', 'look', 'practise', 'bold');
+    expect(s.status).toEqual(expect.arrayContaining(['Severely injured', 'Exhausted']));
+    expect(s.sceneId).toBe('end1');
+  });
+
+  it('Ending 0: crossing the bridge when already severely injured is fatal', () => {
+    const s = run('little', 'hay', 'virtue', 'hands', 'bold');
+    expect(s.status).toEqual(['Severely injured', RESPECT]);
+    expect(s.sceneId).toBe('end0');
+  });
+
+  it('crossing while only injured gives the boots but a severe injury', () => {
+    const s = run('little', 'hay', 'look', 'hands', 'bold');
+    expect(s.items).toContain('Boots of Wind');
+    expect(s.status).toEqual(expect.arrayContaining(['Severely injured', "Villagers' contempt"]));
+    expect(s.status).not.toContain('Injured');
   });
 
   it('shows the proverb reveal before moving on', () => {
     let s = startState(demo);
     while (demo.scenes[s.sceneId].choices.length === 0) s = advance(s, demo);
     s = choose(s, demo, 0);
-    expect(s.reveal?.proverb).toBe('a-little-knowledge-is-a-dangerous-thing');
+    expect(s.reveal?.proverb).toBe(ADV.little);
     expect(s.sceneId).toBe('advice1');
     expect(advance(s, demo).sceneId).toBe('search2');
   });
+
+  it('never accepts a saved game resting on a route scene', () => {
+    for (const scene of Object.values(demo.scenes)) {
+      if (scene.routes) expect(isValidState(demo, { ...startState(demo), sceneId: scene.id })).toBe(false);
+    }
+  });
 });
+
 describe('presentation', () => {
-  it('loads the demo presentation and resolves layered rules per scene', async () => {
+  it('loads the presentation and resolves layered rules per scene', async () => {
     const { resolveScene } = await import('../src/lib/presentation');
     const p = demo.presentation!;
     const intro = resolveScene(p, 'intro1');
-    expect(intro.stage?.background).toContain('bg-meadow');
-    expect(intro.characters.map((c) => c.slot)).toEqual(['left', 'right']);
+    expect(intro.stage?.background).toContain('stage_sky');
+    expect(intro.props.map((x) => x.id)).toEqual(['cloud', 'goddess', 'hero_sky', 'bird_sky']);
     expect(intro.dialogue).toBe('center');
+    expect(intro.music).toBe('bgm');
 
-    const gate = resolveScene(p, 'barrier2');
-    expect(gate.stage?.background).toContain('bg-mountain');
-    expect(gate.dialogue).toBe('top');
-    expect(gate.props.map((x) => x.id)).toEqual(['pedestal', 'signpost']);
-    expect(gate.noteOn).toBe('signpost');
-
-    expect(resolveScene(p, 'hay').props.map((x) => x.id)).toEqual(['pedestal']);
-    expect(resolveScene(p, 'hay').noteOn).toBeUndefined();
+    const cave = resolveScene(p, 'mtn5');
+    expect(cave.stage?.background).toContain('stage_cave');
+    expect(cave.dialogue).toBe('top');
+    expect(resolveScene(p, 'end3').music).toBe('ending');
     expect(resolveScene(undefined, 'x').dialogue).toBe('bottom');
+  });
+
+  it('gives every shown scene a stage', async () => {
+    const { resolveScene } = await import('../src/lib/presentation');
+    for (const scene of Object.values(demo.scenes)) {
+      if (!scene.routes) expect(resolveScene(demo.presentation, scene.id).stage, scene.id).toBeDefined();
+    }
   });
 
   it('reports presentation mistakes with friendly messages', () => {
@@ -130,7 +257,8 @@ describe('presentation', () => {
       JSON.stringify({
         stages: { s: { background: '/missing.svg' } },
         characters: {},
-        scenes: [{ ids: ['nope'], stage: 'zzz', characters: { left: 'ghost', middle: null } }],
+        music: { m: { file: '/missing.mp3' } },
+        scenes: [{ ids: ['nope'], stage: 'zzz', music: 'nomusic', characters: { left: 'ghost', middle: null } }],
       }),
     );
     let problems: string[] = [];
@@ -141,6 +269,8 @@ describe('presentation', () => {
     }
     const all = problems.join('\n');
     expect(all).toContain('"/missing.svg" is not in public/');
+    expect(all).toContain('"/missing.mp3" is not in public/');
+    expect(all).toContain('unknown music "nomusic"');
     expect(all).toContain('no scene "nope"');
     expect(all).toContain('unknown stage "zzz"');
     expect(all).toContain('unknown character "ghost"');
