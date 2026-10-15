@@ -130,7 +130,8 @@
       "image": "/games/slay-the-demon-king/light_chest.webp",
       "x": 78,
       "y": 96,
-      "width": 19.61
+      "width": 24,
+      "height": 125
     },
     "chest_t": {
       "image": "/games/slay-the-demon-king/chest_unopened.webp",
@@ -182,9 +183,9 @@
     },
     "barrier": {
       "image": "/games/slay-the-demon-king/gate_magic_barrier.webp",
-      "x": 49,
-      "y": 77,
-      "width": 39.57,
+      "x": 40.2,
+      "y": 76.4,
+      "width": 40.6,
       "alt": "A magical barrier"
     },
     "cave_sign": {
@@ -196,14 +197,14 @@
     },
     "hero_c": {
       "image": "/games/slay-the-demon-king/hero_idle.webp",
-      "x": 62,
+      "x": 52,
       "y": 87,
       "width": 6.64,
       "alt": "The hero"
     },
     "bird_c": {
       "image": "/games/slay-the-demon-king/bird_landed.webp",
-      "x": 74,
+      "x": 64,
       "y": 87,
       "width": 4.95,
       "alt": "Bird the Sage"
@@ -239,20 +240,21 @@
     },
     "moon_light": {
       "image": "/games/slay-the-demon-king/light_magic_barrier.webp",
-      "x": 49,
-      "y": 80,
-      "width": 12.64
+      "x": 40.2,
+      "y": 78,
+      "width": 40.6,
+      "height": 63
     },
     "chest_c": {
       "image": "/games/slay-the-demon-king/chest_unopened.webp",
-      "x": 26,
-      "y": 87,
+      "x": 27,
+      "y": 85,
       "width": 8.6,
       "alt": "A treasure chest"
     },
     "hero_c2": {
       "image": "/games/slay-the-demon-king/hero_idle.webp",
-      "x": 55,
+      "x": 42,
       "y": 87,
       "width": 6.64,
       "alt": "The hero"
@@ -357,32 +359,32 @@
     },
     "b_help": {
       "image": "/games/slay-the-demon-king/speech_bubble_round.webp",
-      "x": 46,
-      "y": 68,
+      "x": 40.77,
+      "y": 66.5,
       "width": 11,
       "label": "HELP\nPLEASE",
       "labelSize": 1.5
     },
     "b_no": {
       "image": "/games/slay-the-demon-king/speech_bubble_round.webp",
-      "x": 24,
-      "y": 70,
-      "width": 11,
+      "x": 18.02,
+      "y": 64.5,
+      "width": 8,
       "label": "NO",
       "labelSize": 1.5
     },
     "b_whyy": {
       "image": "/games/slay-the-demon-king/speech_bubble_round.webp",
-      "x": 46,
-      "y": 68,
-      "width": 11,
+      "x": 41.02,
+      "y": 66.5,
+      "width": 12,
       "label": "WHYYYY?!?",
       "labelSize": 1.5
     },
     "b_sorry": {
       "image": "/games/slay-the-demon-king/speech_bubble_round.webp",
-      "x": 24,
-      "y": 70,
+      "x": 19.02,
+      "y": 64.5,
       "width": 12,
       "label": "SORRY\nGOTTA GO",
       "labelSize": 1.5
@@ -466,24 +468,24 @@
     },
     "b_thx1": {
       "image": "/games/slay-the-demon-king/speech_bubble_round.webp",
-      "x": 68,
-      "y": 66,
+      "x": 70.77,
+      "y": 70.5,
       "width": 11,
       "label": "THANK\nYOU",
       "labelSize": 1.5
     },
     "b_thx2": {
       "image": "/games/slay-the-demon-king/speech_bubble_round.webp",
-      "x": 84,
-      "y": 62,
+      "x": 82.77,
+      "y": 70.5,
       "width": 11,
       "label": "THANK\nYOU",
       "labelSize": 1.5
     },
     "b_hero": {
       "image": "/games/slay-the-demon-king/speech_bubble_round.webp",
-      "x": 84,
-      "y": 62,
+      "x": 88.77,
+      "y": 71.5,
       "width": 11,
       "label": "OUR\nHERO!",
       "labelSize": 1.5
@@ -545,48 +547,48 @@
     },
     "b_diy": {
       "image": "/games/slay-the-demon-king/speech_bubble_round.webp",
-      "x": 18,
-      "y": 66,
+      "x": 12.27,
+      "y": 64.5,
       "width": 9,
       "label": "DIY",
       "labelSize": 1.5
     },
     "b_pls": {
       "image": "/games/slay-the-demon-king/speech_bubble_round.webp",
-      "x": 74,
-      "y": 66,
+      "x": 72.52,
+      "y": 64.5,
       "width": 10,
       "label": "pls help",
       "labelSize": 1.5
     },
     "b_sure": {
       "image": "/games/slay-the-demon-king/speech_bubble_round.webp",
-      "x": 18,
-      "y": 66,
+      "x": 12.52,
+      "y": 64.5,
       "width": 10,
       "label": "SURE!",
       "labelSize": 1.5
     },
     "b_nope": {
       "image": "/games/slay-the-demon-king/speech_bubble_round.webp",
-      "x": 18,
-      "y": 66,
+      "x": 12.52,
+      "y": 64.5,
       "width": 10,
       "label": "NO!!!!",
       "labelSize": 1.5
     },
     "b_yay": {
       "image": "/games/slay-the-demon-king/speech_bubble_round.webp",
-      "x": 17,
-      "y": 66,
+      "x": 12.27,
+      "y": 64.5,
       "width": 9,
       "label": "YAY",
       "labelSize": 1.5
     },
     "b_noob": {
       "image": "/games/slay-the-demon-king/speech_bubble_round.webp",
-      "x": 17,
-      "y": 66,
+      "x": 12.52,
+      "y": 64.5,
       "width": 10,
       "label": "NOOB",
       "labelSize": 1.5
@@ -806,6 +808,38 @@
       "y": 66,
       "width": 6.63,
       "alt": "Bird the Sage"
+    },
+    "sword_kh": {
+      "image": "/games/slay-the-demon-king/relic_3_sword.webp",
+      "x": 34.8,
+      "y": 65.68,
+      "width": 11,
+      "alt": "The Sword of Flame",
+      "rotate": -40
+    },
+    "sword_win": {
+      "image": "/games/slay-the-demon-king/relic_3_sword.webp",
+      "x": 33.8,
+      "y": 51.68,
+      "width": 11,
+      "alt": "The Sword of Flame",
+      "rotate": -40
+    },
+    "sword_k4": {
+      "image": "/games/slay-the-demon-king/relic_3_sword.webp",
+      "x": 42.8,
+      "y": 65.68,
+      "width": 11,
+      "alt": "The Sword of Flame",
+      "rotate": -40
+    },
+    "sword_lost": {
+      "image": "/games/slay-the-demon-king/relic_3_sword.webp",
+      "x": 42,
+      "y": 91,
+      "width": 9,
+      "alt": "The Sword of Flame, on the ground",
+      "rotate": 75
     }
   },
   "items": {
@@ -1490,6 +1524,7 @@
       "stage": "desert",
       "props": [
         "hero_kh",
+        "sword_kh",
         "bird_k",
         "king"
       ]
@@ -1502,6 +1537,7 @@
       "stage": "desert",
       "props": [
         "hero_lost",
+        "sword_lost",
         "bird_lost",
         "king"
       ],
@@ -1515,6 +1551,7 @@
       "props": [
         "king_dead",
         "hero_win",
+        "sword_win",
         "bird_win"
       ],
       "music": "ending"
@@ -1527,6 +1564,7 @@
       "stage": "desert",
       "props": [
         "hero_k4",
+        "sword_k4",
         "bird_k4",
         "king"
       ]
@@ -1539,6 +1577,7 @@
       "stage": "desert",
       "props": [
         "hero_k4",
+        "sword_k4",
         "bird_k4",
         "king_b4"
       ]
@@ -1553,6 +1592,7 @@
       "stage": "desert",
       "props": [
         "hero_k4",
+        "sword_k4",
         "bird_k4",
         "king_b4"
       ],

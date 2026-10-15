@@ -258,6 +258,7 @@ export function loadGame(slug: string, glossary: GlossaryEntry[], dir = contentD
       heading: localized(row, 'heading'),
       text,
       note: localized(row, 'note'),
+      noteSimple: localized(row, 'note_simple'),
       gives: list(row.gives),
       status: list(row.status),
       clears: list(row.clears),
@@ -273,7 +274,8 @@ export function loadGame(slug: string, glossary: GlossaryEntry[], dir = contentD
     for (const target of targetsOf(scene)) {
       if (!(target in scenes)) at(n, `scene "${scene.id}" points to "${target}", which does not exist`);
     }
-    for (const field of [scene.text, scene.note, scene.heading]) {
+    if (scene.noteSimple && !scene.note) at(n, `scene "${scene.id}" has a "note_simple" but no "note"`);
+    for (const field of [scene.text, scene.note, scene.noteSimple, scene.heading]) {
       for (const value of Object.values(field ?? {})) {
         for (const seg of parseMarkup(value ?? '')) {
           if (seg.kind === 'proverb' && !known.has(seg.slug)) {

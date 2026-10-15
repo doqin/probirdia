@@ -92,6 +92,21 @@ describe('conditions', () => {
   });
 });
 
+describe('simple notes', () => {
+  it('loads the plain-words version of both poems', () => {
+    for (const id of ['note1', 'advice1', 'note2', 'mtn5', 'advice2']) {
+      expect(demo.scenes[id].noteSimple?.en, id).toBeTruthy();
+    }
+    expect(demo.scenes.note2.noteSimple?.en).toContain('only an idiot would blindly trust');
+    expect(demo.scenes.mtn5.noteSimple?.en).toContain('moonlight');
+  });
+
+  it('rejects a simple note without a note', () => {
+    const p = problemsOf('id,text,note_simple\na,Hello,Plain words\n');
+    expect(p.some((x) => x.includes('"note_simple" but no "note"'))).toBe(true);
+  });
+});
+
 describe('routes', () => {
   const head = 'id,text,gives,status,clears,next,route_1_if,route_1_next,route_2_if,route_2_next\n';
 
