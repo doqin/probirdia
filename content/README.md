@@ -41,6 +41,7 @@ Each game is a folder with two files.
 | `heading` | (optional) A title above the text, e.g. `MAGIC BARRIER` |
 | `text` | What the player reads |
 | `note` | (optional) A parchment note that stays on screen: a riddle, a sign, a letter |
+| `note_simple` | (optional) The note in plain words. Learners see it when they hover over (or tap) the note. Needs a `note` |
 | `gives` | (optional) Items the player receives, separated by `;` e.g. `Shield of Frost; Map` |
 | `status` | (optional) Conditions the player gains, separated by `;`, e.g. `Injured; Villagers' respect`. Shown in red (green if listed under `positive_status` in `game.json`) |
 | `clears` | (optional) Statuses removed when the scene is entered, separated by `;`. Use it to replace a status, e.g. `Injured` becomes `Severely injured` |

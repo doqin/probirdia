@@ -42,6 +42,8 @@ export interface Scene {
   text: Localized;
   /** Persistent parchment note (riddles, signs, letters). */
   note?: Localized;
+  /** The note in plain words, shown when the player hovers over or taps the note. */
+  noteSimple?: Localized;
   gives: string[];
   status: string[];
   /** Statuses removed on entry (e.g. "Injured" is replaced by "Severely injured"). */
@@ -77,6 +79,8 @@ export interface PropDef {
   x: number;
   y: number;
   width: number;
+  /** Stretches the image to this height (% of the stage height) instead of keeping its proportions. */
+  height?: number;
   alt?: string;
   /** Fixed text printed on the prop (e.g. a speech bubble), centred in `text` or over the whole image. */
   label?: string;
