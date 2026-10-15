@@ -26,6 +26,7 @@
 
   let play = $state<PlayState>(startState(untrack(() => game)));
   let loaded = $state(false);
+  let simpleOpen = $state(false);
 
   const scene = $derived(currentScene(game, play));
   const view = $derived(resolveScene(game.presentation, scene.id));
@@ -64,6 +65,12 @@
   });
 
   const restart = () => (play = startState(game));
+
+  // a new scene starts with the poem in its original wording
+  $effect(() => {
+    scene.id;
+    simpleOpen = false;
+  });
 
   // ---- music: starts after the first click (browsers block autoplay), can be muted ----
   const musicDefs = untrack(() => game.presentation?.music);
@@ -164,9 +171,9 @@
     {#each view.props as p (p.id)}
       <div
         class="prop"
-        style="left:{p.def.x}%; top:{p.def.y}%; width:{p.def.width}%{p.def.rotate ? `; transform: translate(-50%, -50%) rotate(${p.def.rotate}deg)` : ''}"
+        style="left:{p.def.x}%; top:{p.def.y}%; width:{p.def.width}%{p.def.height ? `; aspect-ratio: ${(p.def.width * 16) / (p.def.height * 9)}` : ''}{p.def.rotate ? `; transform: translate(-50%, -50%) rotate(${p.def.rotate}deg)` : ''}"
       >
-        <img src={withBase(p.def.image)} alt={p.def.alt ?? ''} />
+        <img class:stretch={!!p.def.height} src={withBase(p.def.image)} alt={p.def.alt ?? ''} />
         {#if p.def.label}
           <div class="prop-label" style="font-size:{p.def.labelSize ?? 1.5}cqw">{p.def.label}</div>
         {/if}
@@ -205,7 +212,21 @@
     {:else}
       {#if scene.heading && !view.headingInArt}<h2 class="heading">{pick(scene.heading, lang)}</h2>{/if}
 
-      {#if scene.note}
+      {#if scene.note && scene.noteSimple}
+        <!-- the poem stays as it is (its hard words keep their popups); the button beneath opens the plain-words version -->
+        <div class="note simple-capable" class:mobile-only={!!noteProp}>
+          <RichText text={pick(scene.note, lang)} {glossary} {lang} />
+          <div class="simple-wrap" class:open={simpleOpen}>
+            <button type="button" class="simple-btn" aria-expanded={simpleOpen} onclick={() => (simpleOpen = !simpleOpen)}>
+              {t('simple_hint', lang)}
+            </button>
+            <div class="simple-pop">
+              <span class="simple-label">{t('simple_label', lang)}</span>
+              <RichText text={pick(scene.noteSimple, lang)} {glossary} {lang} />
+            </div>
+          </div>
+        </div>
+      {:else if scene.note}
         <blockquote class="note" class:mobile-only={!!noteProp}>
           <RichText text={pick(scene.note, lang)} {glossary} {lang} />
         </blockquote>
@@ -238,20 +259,26 @@
           {/each}
         </ul>
       {:else if ended}
-        <h2 class="the-end">{t('the_end', lang)}</h2>
-        {#if recap.length}
-          <h3>{t('recap', lang)}</h3>
-          <ul class="recap">
-            {#each recap as e}<li><strong>{e.term}</strong>: {pick(e.meaning, lang)}</li>{/each}
-          </ul>
-        {/if}
-        <button class="btn" onclick={restart}>{t('restart', lang)}</button>
+        <!-- the recap and "play again" sit under the artwork so the final scene stays visible -->
       {:else}
         <button class="btn" onclick={() => (play = advance(play, game))}>{t('continue', lang)}</button>
       {/if}
     {/if}
   </div>
 </section>
+
+{#if ended && !revealed}
+  <section class="finale">
+    <h2 class="the-end">{t('the_end', lang)}</h2>
+    {#if recap.length}
+      <h3>{t('recap', lang)}</h3>
+      <ul class="recap">
+        {#each recap as e}<li><strong>{e.term}</strong>: {pick(e.meaning, lang)}</li>{/each}
+      </ul>
+    {/if}
+    <button class="btn" onclick={restart}>{t('restart', lang)}</button>
+  </section>
+{/if}
 
 <div class="bar">
   {#if play.items.length || play.status.length}
@@ -283,6 +310,7 @@
   }
   .char, .prop { position: absolute; transform: translate(-50%, -100%); }
   .char, .prop img { display: block; width: 100%; height: auto; }
+  .prop img.stretch { height: 100%; object-fit: fill; }
   .prop-label {
     position: absolute;
     inset: 0;
@@ -346,6 +374,47 @@
     font-style: italic;
     white-space: pre-line;
   }
+  .simple-capable { position: relative; }
+  .simple-wrap { position: relative; margin-top: .5rem; }
+  .simple-btn {
+    font: inherit;
+    font-size: .8rem;
+    font-weight: 700;
+    font-style: normal;
+    padding: .1em .8em;
+    border: 2px solid var(--brown);
+    border-radius: 999px;
+    background: #fffaf0;
+    color: var(--brown);
+    cursor: help;
+  }
+  .simple-btn:hover, .simple-wrap.open .simple-btn { background: var(--brown); color: #fff6e6; }
+  .simple-pop {
+    display: none;
+    position: absolute;
+    z-index: 5;
+    top: 100%;
+    left: 0;
+    right: 0;
+    padding: .7rem 1rem .8rem;
+    background: #fffdf3;
+    border: 2px solid var(--brown);
+    border-radius: .5rem;
+    box-shadow: 0 .4rem 1rem rgb(26 18 8 / .3);
+    font-style: normal;
+    text-align: center;
+  }
+  /* the wrap is the hover target, so the pointer can travel from the button into the popover */
+  .simple-wrap:hover .simple-pop, .simple-btn:focus-visible + .simple-pop, .simple-wrap.open .simple-pop { display: block; }
+  .simple-label {
+    display: block;
+    margin-bottom: .2rem;
+    font-size: .75rem;
+    font-weight: 700;
+    letter-spacing: .06em;
+    text-transform: uppercase;
+    color: #7a5a1e;
+  }
   .mobile-only { display: none; }
   .gains { margin: 0 0 .8rem; display: flex; flex-wrap: wrap; gap: .6rem; justify-content: center; align-items: center; }
   .chip, .hud li {
@@ -365,6 +434,14 @@
   .choice { text-transform: none; font-size: 1.1rem; border-radius: 1rem; }
   .reveal h2 { font-size: 1.6rem; }
 
+  .finale {
+    margin-top: .75rem;
+    padding: 1rem 1.4rem 1.2rem;
+    text-align: center;
+    background: rgb(197 187 171 / .96);
+    border: 2px solid rgb(26 18 8 / .6);
+    border-radius: var(--radius);
+  }
   .the-end { font-size: 2rem; text-transform: uppercase; }
   .recap { text-align: left; padding-left: 1.2rem; margin: 0 0 1rem; }
 

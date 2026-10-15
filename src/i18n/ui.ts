@@ -14,6 +14,8 @@ const ui = {
     'start_over': 'Start over',
     'you_got': 'You got',
     'inventory': 'Inventory',
+    'simple_hint': 'Simple words',
+    'simple_label': 'In simple words',
     'music_on': 'Music: on',
     'music_off': 'Music: off',
     'the_end': 'The End',
