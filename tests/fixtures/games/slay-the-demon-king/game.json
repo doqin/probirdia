@@ -1,0 +1,16 @@
+{
+  "title": "Slay the Demon King (test fixture)",
+  "summary": "Gather the five holy relics and face the Demon King.",
+  "description": "A branching game kept only as a fixture for the loader and engine tests. It is not part of the site.",
+  "relics": [
+    "Breastplate of Earth",
+    "Shield of Frost",
+    "Sword of Flame",
+    "Ring of Light",
+    "Boots of Wind"
+  ],
+  "positive_status": [
+    "Villagers' respect"
+  ],
+  "published": true
+}

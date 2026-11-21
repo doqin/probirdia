@@ -28,6 +28,10 @@ export interface Choice {
   /** Glossary slug. When set, the proverb is shown as the choice and revealed after picking. */
   proverb?: string;
   next: string;
+  /** The right answer. A wrong pick costs the player one confidence heart. */
+  correct?: boolean;
+  /** Why this proverb does or does not fit the situation, shown on the reveal card. */
+  why?: Localized;
 }
 
 /** One branch of a route scene: the first whose condition holds is taken (no condition = fallback). */
@@ -44,6 +48,15 @@ export interface Scene {
   note?: Localized;
   /** The note in plain words, shown when the player hovers over or taps the note. */
   noteSimple?: Localized;
+  /** The chapter/section this screen belongs to; the editor groups by it. */
+  chapter?: Localized;
+  /** Artwork for this screen (public URL). Turns into a stage when the game is loaded. */
+  image?: string;
+  imageAlt?: string;
+  /** Which segment of the lesson this screen belongs to. Missing means 'game'. */
+  phase?: 'preview' | 'game' | 'review';
+  /** Review segment: why this proverb does or does not suit the scene. */
+  explanation?: Localized;
   gives: string[];
   status: string[];
   /** Statuses removed on entry (e.g. "Injured" is replaced by "Severely injured"). */

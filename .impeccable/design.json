@@ -1,0 +1,462 @@
+{
+  "schemaVersion": 2,
+  "generatedAt": "2026-11-21T17:19:55Z",
+  "title": "Design System: Probirdia",
+  "extensions": {
+    "colorMeta": {
+      "cream": {
+        "role": "neutral",
+        "displayName": "Warm Paper Cream",
+        "canonical": "#ffe6c2",
+        "tonalRamp": [
+          "oklch(15% 0.017 77)",
+          "oklch(26% 0.034 77)",
+          "oklch(38% 0.048 77)",
+          "oklch(49% 0.054 77)",
+          "oklch(61% 0.052 77)",
+          "oklch(72% 0.043 77)",
+          "oklch(84% 0.028 77)",
+          "oklch(95% 0.017 77)"
+        ]
+      },
+      "parchment": {
+        "role": "neutral",
+        "displayName": "Aged Parchment",
+        "canonical": "#c5bbab",
+        "tonalRamp": [
+          "oklch(15% 0.008 80)",
+          "oklch(26% 0.016 80)",
+          "oklch(38% 0.022 80)",
+          "oklch(49% 0.025 80)",
+          "oklch(61% 0.024 80)",
+          "oklch(72% 0.020 80)",
+          "oklch(84% 0.013 80)",
+          "oklch(95% 0.008 80)"
+        ]
+      },
+      "ink": {
+        "role": "neutral",
+        "displayName": "Ink Brown-Black",
+        "canonical": "#1a1208",
+        "tonalRamp": [
+          "oklch(15% 0.007 72)",
+          "oklch(26% 0.014 72)",
+          "oklch(38% 0.020 72)",
+          "oklch(49% 0.023 72)",
+          "oklch(61% 0.022 72)",
+          "oklch(72% 0.018 72)",
+          "oklch(84% 0.012 72)",
+          "oklch(95% 0.007 72)"
+        ]
+      },
+      "brown": {
+        "role": "primary",
+        "displayName": "Saddle Leather Brown",
+        "canonical": "#7a5538",
+        "tonalRamp": [
+          "oklch(15% 0.021 59)",
+          "oklch(26% 0.041 59)",
+          "oklch(38% 0.057 59)",
+          "oklch(49% 0.065 59)",
+          "oklch(61% 0.063 59)",
+          "oklch(72% 0.051 59)",
+          "oklch(84% 0.033 59)",
+          "oklch(95% 0.021 59)"
+        ]
+      },
+      "paper": {
+        "role": "neutral",
+        "displayName": "Bubble Paper",
+        "canonical": "#fffaf0",
+        "tonalRamp": [
+          "oklch(15% 0.005 85)",
+          "oklch(26% 0.009 85)",
+          "oklch(38% 0.012 85)",
+          "oklch(49% 0.014 85)",
+          "oklch(61% 0.014 85)",
+          "oklch(72% 0.011 85)",
+          "oklch(84% 0.007 85)",
+          "oklch(95% 0.005 85)"
+        ]
+      },
+      "choice-cream": {
+        "role": "neutral",
+        "displayName": "Choice Card Cream",
+        "canonical": "#f2ecdd",
+        "tonalRamp": [
+          "oklch(15% 0.007 89)",
+          "oklch(26% 0.013 89)",
+          "oklch(38% 0.018 89)",
+          "oklch(49% 0.021 89)",
+          "oklch(61% 0.020 89)",
+          "oklch(72% 0.017 89)",
+          "oklch(84% 0.011 89)",
+          "oklch(95% 0.007 89)"
+        ]
+      },
+      "butter": {
+        "role": "primary",
+        "displayName": "Butter Highlight",
+        "canonical": "#fff6e6",
+        "tonalRamp": [
+          "oklch(15% 0.007 82)",
+          "oklch(26% 0.015 82)",
+          "oklch(38% 0.020 82)",
+          "oklch(49% 0.023 82)",
+          "oklch(61% 0.022 82)",
+          "oklch(72% 0.018 82)",
+          "oklch(84% 0.012 82)",
+          "oklch(95% 0.007 82)"
+        ]
+      },
+      "pebble": {
+        "role": "secondary",
+        "displayName": "Pebble Grey",
+        "canonical": "#a6a6a6",
+        "tonalRamp": [
+          "oklch(15% 0.000 90)",
+          "oklch(26% 0.000 90)",
+          "oklch(38% 0.000 90)",
+          "oklch(49% 0.000 90)",
+          "oklch(61% 0.000 90)",
+          "oklch(72% 0.000 90)",
+          "oklch(84% 0.000 90)",
+          "oklch(95% 0.000 90)"
+        ]
+      },
+      "stone": {
+        "role": "secondary",
+        "displayName": "Cool Stone Grey",
+        "canonical": "#b8bfc4",
+        "tonalRamp": [
+          "oklch(15% 0.003 239)",
+          "oklch(26% 0.007 239)",
+          "oklch(38% 0.009 239)",
+          "oklch(49% 0.010 239)",
+          "oklch(61% 0.010 239)",
+          "oklch(72% 0.008 239)",
+          "oklch(84% 0.005 239)",
+          "oklch(95% 0.003 239)"
+        ]
+      },
+      "umber": {
+        "role": "neutral",
+        "displayName": "Umber Ink",
+        "canonical": "#5a4630",
+        "tonalRamp": [
+          "oklch(15% 0.014 69)",
+          "oklch(26% 0.028 69)",
+          "oklch(38% 0.038 69)",
+          "oklch(49% 0.043 69)",
+          "oklch(61% 0.042 69)",
+          "oklch(72% 0.035 69)",
+          "oklch(84% 0.022 69)",
+          "oklch(95% 0.014 69)"
+        ]
+      },
+      "sky-top": {
+        "role": "tertiary",
+        "displayName": "Morning Sky Blue",
+        "canonical": "#c3e8ff",
+        "tonalRamp": [
+          "oklch(15% 0.016 235)",
+          "oklch(26% 0.032 235)",
+          "oklch(38% 0.044 235)",
+          "oklch(49% 0.050 235)",
+          "oklch(61% 0.048 235)",
+          "oklch(72% 0.039 235)",
+          "oklch(84% 0.026 235)",
+          "oklch(95% 0.016 235)"
+        ]
+      },
+      "sky-bottom": {
+        "role": "tertiary",
+        "displayName": "Haze White",
+        "canonical": "#effcff",
+        "tonalRamp": [
+          "oklch(15% 0.005 213)",
+          "oklch(26% 0.009 213)",
+          "oklch(38% 0.012 213)",
+          "oklch(49% 0.014 213)",
+          "oklch(61% 0.014 213)",
+          "oklch(72% 0.011 213)",
+          "oklch(84% 0.007 213)",
+          "oklch(95% 0.005 213)"
+        ]
+      },
+      "hill": {
+        "role": "tertiary",
+        "displayName": "Rice-Paddy Green",
+        "canonical": "#8ba500",
+        "tonalRamp": [
+          "oklch(15% 0.052 120)",
+          "oklch(26% 0.102 120)",
+          "oklch(38% 0.141 120)",
+          "oklch(49% 0.160 120)",
+          "oklch(61% 0.155 120)",
+          "oklch(72% 0.127 120)",
+          "oklch(84% 0.083 120)",
+          "oklch(95% 0.052 120)"
+        ]
+      },
+      "hill-light": {
+        "role": "tertiary",
+        "displayName": "Young Shoot Green",
+        "canonical": "#c6e07f",
+        "tonalRamp": [
+          "oklch(15% 0.040 121)",
+          "oklch(26% 0.080 121)",
+          "oklch(38% 0.110 121)",
+          "oklch(49% 0.125 121)",
+          "oklch(61% 0.122 121)",
+          "oklch(72% 0.100 121)",
+          "oklch(84% 0.065 121)",
+          "oklch(95% 0.040 121)"
+        ]
+      },
+      "danger": {
+        "role": "tertiary",
+        "displayName": "Chili Brick Red",
+        "canonical": "#a33b2a",
+        "tonalRamp": [
+          "oklch(15% 0.045 32)",
+          "oklch(26% 0.089 32)",
+          "oklch(38% 0.123 32)",
+          "oklch(49% 0.140 32)",
+          "oklch(61% 0.136 32)",
+          "oklch(72% 0.112 32)",
+          "oklch(84% 0.072 32)",
+          "oklch(95% 0.045 32)"
+        ]
+      },
+      "positive": {
+        "role": "tertiary",
+        "displayName": "Positive Green",
+        "canonical": "#2f7d3a",
+        "tonalRamp": [
+          "oklch(15% 0.041 146)",
+          "oklch(26% 0.080 146)",
+          "oklch(38% 0.111 146)",
+          "oklch(49% 0.126 146)",
+          "oklch(61% 0.122 146)",
+          "oklch(72% 0.100 146)",
+          "oklch(84% 0.065 146)",
+          "oklch(95% 0.041 146)"
+        ]
+      }
+    },
+    "typographyMeta": {
+      "display": {
+        "displayName": "Page Title",
+        "purpose": "Page titles only: Games, Glossary, About. Uppercase, centred, the only centred type on a page."
+      },
+      "headline": {
+        "displayName": "Section Head",
+        "purpose": "Glossary letter headings and long-page sections, with a 2px ink underline."
+      },
+      "title": {
+        "displayName": "Brand / Band Title",
+        "purpose": "Header brand, the Welcome band, headings inside a story bubble."
+      },
+      "body": {
+        "displayName": "Reading Text",
+        "purpose": "Story text, meanings, examples and editor fields; runs to ~70ch."
+      },
+      "label": {
+        "displayName": "Interface Label",
+        "purpose": "Buttons, chips, name plates, the choice instruction. Always uppercase."
+      }
+    },
+    "shadows": [
+      {
+        "name": "sticker-bubble",
+        "value": "0 .35rem 0 rgb(26 18 8 / .25)",
+        "purpose": "Speech bubbles resting on the story stage."
+      },
+      {
+        "name": "sticker-card",
+        "value": "0 .25rem 0 rgb(26 18 8 / .55)",
+        "purpose": "Choice cards and other pressable paper; reads as lifted."
+      },
+      {
+        "name": "floating-popover",
+        "value": "0 .4rem 1rem rgb(0 0 0 / .2)",
+        "purpose": "Proverb popovers and hover lifts; the only blurred shadows."
+      },
+      {
+        "name": "tile-hover",
+        "value": "0 .6rem 1.2rem rgb(0 0 0 / .2)",
+        "purpose": "Home tile lift with translateY(-3px)."
+      }
+    ],
+    "motion": [
+      {
+        "name": "hover-lift",
+        "value": "transform .15s ease, box-shadow .15s ease",
+        "purpose": "Home tiles rising on hover/focus."
+      },
+      {
+        "name": "button-hover",
+        "value": "filter .12s ease (brightness 1.12)",
+        "purpose": "Primary and secondary button hover; no movement."
+      },
+      {
+        "name": "page-transition",
+        "value": "none",
+        "purpose": "View transitions are disabled on purpose: a cross-fade of differently-sized pages reads as a flash."
+      }
+    ],
+    "breakpoints": [
+      {
+        "name": "phone",
+        "value": "40rem",
+        "purpose": "Player unstacks: artwork above, bubble or cards below; prop text hidden."
+      },
+      {
+        "name": "page",
+        "value": "70rem",
+        "purpose": "Main column max width (--page)."
+      },
+      {
+        "name": "games-grid",
+        "value": "56rem",
+        "purpose": "Games grid max width, 15rem min card."
+      },
+      {
+        "name": "tiles-grid",
+        "value": "34rem",
+        "purpose": "Home tiles, two columns."
+      }
+    ]
+  },
+  "components": [
+    {
+      "name": "Primary Button",
+      "kind": "button",
+      "refersTo": "button-primary",
+      "description": "The single interaction accent: Continue, Play, Check answers, Publish.",
+      "html": "<button class=\"ds-btn-primary\">CONTINUE</button>",
+      "css": ".ds-btn-primary{font-family:'Zilla Slab',Rockwell,Georgia,serif;font-size:1.15rem;font-weight:700;text-transform:uppercase;letter-spacing:.04em;padding:.45em 1.4em;border:0;border-radius:999px;background:#7a5538;color:#fff6e6;cursor:pointer;transition:filter .12s ease;}.ds-btn-primary:hover{filter:brightness(1.12);}.ds-btn-primary:focus-visible{outline:3px solid #7a5538;outline-offset:2px;}"
+    },
+    {
+      "name": "Secondary Button",
+      "kind": "button",
+      "refersTo": "button-secondary",
+      "description": "Quieter action beside a primary: cancel, reset, secondary editor actions.",
+      "html": "<button class=\"ds-btn-secondary\">CANCEL</button>",
+      "css": ".ds-btn-secondary{font-family:'Zilla Slab',Rockwell,Georgia,serif;font-size:1.15rem;font-weight:700;text-transform:uppercase;letter-spacing:.04em;padding:.45em 1.4em;border:0;border-radius:999px;background:#a6a6a6;color:#1a1208;cursor:pointer;transition:filter .12s ease;}.ds-btn-secondary:hover{filter:brightness(1.12);}.ds-btn-secondary:focus-visible{outline:3px solid #7a5538;outline-offset:2px;}"
+    },
+    {
+      "name": "Choice Card",
+      "kind": "button",
+      "refersTo": "choice-card",
+      "description": "A proverb offered as a branch in the story. Paper stock, not a pill.",
+      "html": "<button class=\"ds-choice-card\">A WISE MAN TAKES ADVICE</button>",
+      "css": ".ds-choice-card{display:block;width:100%;font-family:'Zilla Slab',Rockwell,Georgia,serif;font-size:1rem;font-weight:700;line-height:1.2;text-transform:uppercase;letter-spacing:.03em;text-align:center;padding:.85rem 1rem;background:#f2ecdd;color:#1a1208;border:3px solid #1a1208;border-radius:.9rem;box-shadow:0 .25rem 0 rgb(26 18 8 / .55);cursor:pointer;transition:background .12s ease,color .12s ease;}.ds-choice-card:hover{background:#7a5538;color:#fff6e6;}.ds-choice-card:focus-visible{outline:3px solid #7a5538;outline-offset:3px;}"
+    },
+    {
+      "name": "Speech Bubble with Name Plate",
+      "kind": "custom",
+      "description": "The signature component: what a character says, hanging beside them on stage.",
+      "html": "<div class=\"ds-bubble\"><span class=\"ds-plate\">MINH</span><p class=\"ds-bubble-text\">I applied to UFLS weeks ago, but my admission letter still hasn't arrived.</p><button class=\"ds-bubble-btn\">CONTINUE</button></div>",
+      "css": ".ds-bubble{position:relative;max-width:34rem;padding:1rem 1.3rem 1.1rem;background:rgb(255 250 240 / .97);border:3px solid #1a1208;border-radius:1rem;box-shadow:0 .35rem 0 rgb(26 18 8 / .25);font-family:'Zilla Slab',Rockwell,Georgia,serif;color:#1a1208;}.ds-bubble::after{content:'';position:absolute;left:-25px;top:2.1rem;border:14px solid transparent;border-right-color:#1a1208;}.ds-plate{position:absolute;top:-1.15rem;left:1.1rem;padding:.1rem .7rem .16rem;background:#7a5538;border:3px solid #1a1208;border-radius:.5rem;color:#fff6e6;font-size:.8rem;font-weight:700;letter-spacing:.08em;text-transform:uppercase;}.ds-bubble-text{font-size:1.25rem;line-height:1.45;margin:.35rem 0 .8rem;}.ds-bubble-btn{display:block;margin-left:auto;font-family:inherit;font-size:.82rem;font-weight:700;text-transform:uppercase;letter-spacing:.06em;padding:.35rem 1rem;border:0;border-radius:999px;background:#7a5538;color:#fff6e6;cursor:pointer;}.ds-bubble-btn:hover{filter:brightness(1.12);}"
+    },
+    {
+      "name": "Game Card",
+      "kind": "card",
+      "description": "A game in the list: 16:10 artwork, title at 38% height, Play pill at the bottom.",
+      "html": "<a class=\"ds-game-card\" href=\"#\"><span class=\"ds-game-name\">Starting University</span><span class=\"ds-game-play\">PLAY</span></a>",
+      "css": ".ds-game-card{position:relative;display:block;aspect-ratio:16/10;overflow:hidden;border-radius:.4rem;text-align:center;text-decoration:none;background:linear-gradient(#c3e8ff,#effcff);font-family:'Zilla Slab',Rockwell,Georgia,serif;color:#1a1208;}.ds-game-name{position:absolute;left:50%;top:38%;transform:translate(-50%,-50%);font-size:1.4rem;font-weight:700;white-space:nowrap;max-width:92%;overflow:hidden;text-overflow:ellipsis;}.ds-game-play{position:absolute;left:50%;bottom:.6rem;transform:translateX(-50%);padding:.15em 1em;border-radius:999px;background:#b8bfc4;font-size:.8rem;font-weight:700;text-transform:uppercase;}.ds-game-card:hover .ds-game-play,.ds-game-card:focus-visible .ds-game-play{background:#7a5538;color:#fff6e6;}"
+    },
+    {
+      "name": "Search Input",
+      "kind": "input",
+      "refersTo": "input-search",
+      "description": "The glossary search: a grey capsule, no border, white uppercase placeholder.",
+      "html": "<input class=\"ds-input\" type=\"search\" placeholder=\"SEARCH PROVERBS\" aria-label=\"Search\" />",
+      "css": ".ds-input{width:100%;font-family:'Zilla Slab',Rockwell,Georgia,serif;font-size:1.15rem;font-weight:600;padding:.6rem 1.2rem;border:0;border-radius:999px;background:#a6a6a6;color:#1a1208;}.ds-input::placeholder{color:#fff;text-transform:uppercase;}.ds-input:focus-visible{outline:3px solid #7a5538;outline-offset:2px;}"
+    },
+    {
+      "name": "Chips",
+      "kind": "chip",
+      "refersTo": "chip",
+      "description": "Capsule labels in two settings: grey no-border in list UI, Bubble Paper with a brown border on the story stage.",
+      "html": "<span class=\"ds-chip\">INJURED</span> <span class=\"ds-chip ds-chip-stage\">CONFIDENT</span> <span class=\"ds-chip ds-chip-stage ds-chip-good\">HELPED</span> <span class=\"ds-chip ds-chip-stage ds-chip-bad\">LATE</span>",
+      "css": ".ds-chip{display:inline-block;padding:.15em 1em;border-radius:999px;background:#b8bfc4;color:#1a1208;font-family:'Zilla Slab',Rockwell,Georgia,serif;font-size:.8rem;font-weight:700;text-transform:uppercase;letter-spacing:.04em;}.ds-chip-stage{padding:.1em .8em;background:#fffaf0;border:2px solid #7a5538;color:#1a1208;font-size:.95rem;font-weight:600;letter-spacing:0;text-transform:none;}.ds-chip-good{border-color:#2f7d3a;color:#2f7d3a;}.ds-chip-bad{border-color:#a33b2a;color:#a33b2a;}"
+    },
+    {
+      "name": "Header / Navigation",
+      "kind": "nav",
+      "description": "Sticky frosted band that dissolves at its bottom edge; current page underlined, not coloured.",
+      "html": "<header class=\"ds-header\"><div class=\"ds-header-inner\"><a class=\"ds-brand\" href=\"#\">Probirdia</a><nav class=\"ds-nav\"><a href=\"#\">Home</a><a href=\"#\" aria-current=\"page\">Games</a><a href=\"#\">Glossary</a><a href=\"#\">About us</a></nav></div></header>",
+      "css": ".ds-header{position:relative;background:#ffe6c2;font-family:'Zilla Slab',Rockwell,Georgia,serif;color:#1a1208;}.ds-header::before{content:'';position:absolute;inset:0 0 -1.6rem 0;pointer-events:none;background:linear-gradient(to bottom,rgb(255 230 194 / .82),rgb(255 230 194 / .35) 70%,transparent);backdrop-filter:blur(14px);}.ds-header-inner{position:relative;display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:.5rem 2rem;max-width:70rem;margin:0 auto;padding:.75rem 1rem;}.ds-brand{font-size:1.6rem;font-weight:700;letter-spacing:.02em;text-decoration:none;color:inherit;}.ds-nav{display:flex;gap:1.5rem;font-size:1.3rem;font-weight:600;}.ds-nav a{color:inherit;text-decoration:none;}.ds-nav a[aria-current='page']{text-decoration:underline;text-underline-offset:.2em;}.ds-nav a:hover{text-decoration:underline;text-underline-offset:.2em;}"
+    },
+    {
+      "name": "Proverb Popover",
+      "kind": "custom",
+      "description": "The hover/tap meaning card behind every dotted-underlined term.",
+      "html": "<span class=\"ds-term\">a blessing in disguise</span><div class=\"ds-pop\"><span class=\"ds-pop-term\">A blessing in disguise</span><p class=\"ds-pop-meaning\">Something that looks bad at first but turns out to be good.</p><p class=\"ds-pop-example\">Losing that job was a blessing in disguise.</p></div>",
+      "css": ".ds-term{font-family:'Zilla Slab',Rockwell,Georgia,serif;color:#1a1208;text-decoration:underline dotted #7a5538;text-decoration-thickness:.12em;text-underline-offset:.2em;background:rgb(122 85 56 / .12);border-radius:.2em;cursor:help;}.ds-pop{display:block;max-width:21rem;margin-top:.4rem;padding:.8rem 1rem;border-radius:.8rem;background:#fffaf0;border:2px solid #7a5538;box-shadow:0 .4rem 1rem rgb(0 0 0 / .2);font-family:'Zilla Slab',Rockwell,Georgia,serif;font-size:1rem;line-height:1.4;color:#1a1208;}.ds-pop-term{display:block;font-weight:700;text-transform:uppercase;font-size:.8rem;letter-spacing:.08em;}.ds-pop-meaning{margin:.25rem 0;}.ds-pop-example{margin:0;color:#5a4630;font-style:italic;}"
+    }
+  ],
+  "narrative": {
+    "northStar": "The Proverb Storybook",
+    "overview": "Probirdia looks like a printed picture-book that someone has been reading in class: a warm cream page, ink outlines, chunky slabs of Zilla Slab, and things that sit on the paper rather than float above it. Nothing is glossy or app-like. A screen is a page; a character is a cut-out standing on it; the dialogue is a note pinned beside whoever is talking. The system is deliberately two-tier. Chrome (header, footer, page headings, glossary lists) stays quiet and flat — cream ground, ink text, one blurred band at the top. Story objects (speech bubbles, name plates, choice cards, pops) are tactile: 3px ink outline, offset shadow, paper surface. That split is what keeps the game feeling hand-made while the glossary and the editor still read as usable software. Every colour decision follows from the setting too. The palette is paper, leather and ink with a single interactive accent — a saddle brown. The sky blues and rice-paddy greens exist only in scenery, never behind or inside a control, so a button can never be mistaken for a background.",
+    "keyCharacteristics": [
+      "Cream page, ink text, one brown accent — a three-colour system, not a palette.",
+      "Ink outlines plus a hard offset shadow on anything pickable: sticker, not glass.",
+      "All-caps labels and headings; sentence-case reading text.",
+      "Zilla Slab throughout — a typewriter-slab voice, never a geometric sans.",
+      "Scenery (sky, hills, Canva art) is the only place saturated colour appears."
+    ],
+    "rules": [
+      {
+        "name": "The One Accent Rule",
+        "body": "Saddle Leather Brown is the interaction colour and nothing else. Sky blue and paddy green may never fill a button, a chip, a card or a heading: they belong to scenery, so a control is never camouflaged as background.",
+        "section": "colors"
+      },
+      {
+        "name": "The Paper-Or-Object Rule",
+        "body": "Each surface is either the page (Warm Paper Cream) or an object lying on it (Bubble Paper / Choice Card Cream with an ink outline). There is no mid-grey panel tier between them.",
+        "section": "colors"
+      },
+      {
+        "name": "The Caps Label Rule",
+        "body": "Anything that is an interface label is uppercase; anything that is prose stays sentence case. A sentence in caps is always a mistake, and a button in lower case is too.",
+        "section": "typography"
+      },
+      {
+        "name": "The One Family Rule",
+        "body": "No second typeface is introduced for accent, code or captions. Weight and case carry the contrast.",
+        "section": "typography"
+      },
+      {
+        "name": "The Sticker Offset Rule",
+        "body": "Shadows on a control are 0-offset-x, small-y, zero blur. A blurred shadow on a button or card is off-brand; blur is reserved for things that actually float above the page.",
+        "section": "elevation"
+      },
+      {
+        "name": "The Flat Chrome Rule",
+        "body": "Header, footer, page headings, glossary lists and form labels get no shadow and no card treatment. If it is not part of the story, it does not lift.",
+        "section": "elevation"
+      }
+    ],
+    "dos": [
+      "Do put a 3px Ink Brown-Black outline on every story object and give it 0 .35rem 0 rgb(26 18 8 / .25) — no blur.",
+      "Do keep the page on Warm Paper Cream and let story objects use Bubble Paper or Choice Card Cream so they read as paper laid on paper.",
+      "Do set every interface label in uppercase 700 with ~0.08em tracking, and every sentence in sentence case.",
+      "Do use full pills (999px) for controls and soft rectangles (0.8–1.1rem) for paper.",
+      "Do reserve Saddle Leather Brown for interaction; the only other brown on a page is the footer band.",
+      "Do verify story type at both ends: 1280px desktop and 420px phone, where the bubble drops below the artwork."
+    ],
+    "donts": [
+      "Don't introduce a second typeface, a geometric sans, or a monospace code style.",
+      "Don't fill buttons, chips or headings with sky blue or paddy green — those are scenery.",
+      "Don't use pure white (#fff) or pure black (#000) surfaces or text; the coldest neutral in use is Cool Stone Grey.",
+      "Don't apply blurred, ambient shadows to controls; blur belongs to popovers and hover lifts only.",
+      "Don't add gradients, glassmorphism or coloured glows to UI chrome.",
+      "Don't centre body prose — centring is for page titles, cards and the game stage.",
+      "Don't use red (Chili Brick Red) for anything but a negative state."
+    ]
+  }
+}

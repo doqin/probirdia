@@ -48,15 +48,22 @@ Each game is a folder with two files.
 | `next` | The `id` of the scene that follows, for scenes with a Continue button |
 | `choice_1_label`, `choice_1_next` | A normal choice: button text, and the `id` it leads to |
 | `choice_1_proverb`, `choice_1_next` | A **proverb choice**: the proverb (as written in the glossary) is the button, and its meaning is shown after the player picks it |
+| `choice_1_correct` | `yes` on the one proverb that fits, `no` on the other. Required on any screen with proverb choices |
+| `choice_1_why` | One or two sentences saying why that proverb does or does not fit **here**. Shown on the reveal card |
 | `choice_2_...`, `choice_3_...`, `choice_4_...` | More choices, up to 4 |
 
 | `route_1_if`, `route_1_next`, ... `route_6_*` | A **route** (see below): where to go depending on what the player has |
 
 Rules:
 - A scene has **either** `next` **or** choices **or** routes, not more than one.
-- A scene with neither is an **ending**. The player sees a recap of the proverbs they met.
+- A scene with neither is an **ending**. The player sees a recap split into the proverbs
+  they used well and the ones to try again (with the proverb that fitted).
+- Give each ending its own row: a story that branches usually needs one ending for the
+  good path and one for the bad, e.g. `end_win` and `end_loss`.
 - A choice has **either** a label **or** a proverb.
-- After a learner picks a proverb choice, the proverb and its meaning are shown as feedback (the example sentence is not shown there). The proverb buttons themselves have no hover popup.
+- After a learner picks a proverb choice, the reveal card shows the verdict (that fits / not quite),
+  the `choice_N_why` explanation, the proverb that would have fitted, then the proverb's meaning,
+  Vietnamese meaning (if filled) and example.
 - Hard words inside the text of a choice label are not hoverable (a button can't hold another button); keep label wording simple.
 
 ### Routes: different outcomes depending on earlier choices
@@ -98,4 +105,4 @@ npm run validate
 ```
 
 It reports problems by spreadsheet row, for example:
-`slay-the-demon-king/scenes.csv row 7: scene "trap" points to "escap", which does not exist`.
+`games/my-game/scenes.csv row 7: scene "trap" points to "escap", which does not exist`.

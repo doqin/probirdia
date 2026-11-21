@@ -1,0 +1,912 @@
+{
+  "stages": {
+    "ch1": {
+      "background": "/games/starting-university/bg-bedroom.webp",
+      "ground": 96,
+      "dialogue": "bottom",
+      "alt": "Minh's bedroom: shelves, a window and a desk"
+    },
+    "ch2": {
+      "background": "/games/starting-university/bg-laptop.webp",
+      "ground": 96,
+      "dialogue": "bottom",
+      "alt": "A laptop open on a map screen"
+    },
+    "ch3": {
+      "background": "/games/starting-university/bg-campus.webp",
+      "ground": 96,
+      "dialogue": "bottom",
+      "alt": "The Da Nang monument square"
+    },
+    "ch4": {
+      "background": "/games/starting-university/bg-laptop.webp",
+      "ground": 96,
+      "dialogue": "bottom",
+      "alt": "A laptop open on a map screen"
+    },
+    "ch5": {
+      "background": "/games/starting-university/bg-desk.webp",
+      "ground": 96,
+      "dialogue": "bottom",
+      "alt": "A laptop showing the tuition portal"
+    },
+    "end": {
+      "background": "/games/starting-university/bg-desk.webp",
+      "ground": 96,
+      "dialogue": "bottom",
+      "alt": "A laptop showing the tuition portal"
+    }
+  },
+  "characters": {
+    "minh": {
+      "image": "/games/starting-university/minh.webp",
+      "width": 34,
+      "alt": "Minh"
+    },
+    "minh-happy": {
+      "image": "/games/starting-university/minh-happy.webp",
+      "width": 34,
+      "alt": "Minh, pleased"
+    },
+    "bird": {
+      "image": "/games/starting-university/bird.webp",
+      "width": 30,
+      "alt": "Dr. Bird"
+    }
+  },
+  "props": {},
+  "items": {},
+  "scenes": [
+    {
+      "ids": [
+        "ch1a"
+      ],
+      "stage": "ch1",
+      "characters": {
+        "left": null,
+        "right": "bird"
+      }
+    },
+    {
+      "ids": [
+        "ch1b1"
+      ],
+      "stage": "ch1",
+      "characters": {
+        "left": "minh",
+        "right": null
+      }
+    },
+    {
+      "ids": [
+        "ch1b2"
+      ],
+      "stage": "ch1",
+      "characters": {
+        "left": "minh",
+        "right": null
+      }
+    },
+    {
+      "ids": [
+        "ch1b3"
+      ],
+      "stage": "ch1",
+      "characters": {
+        "left": "minh",
+        "right": null
+      }
+    },
+    {
+      "ids": [
+        "ch1b4"
+      ],
+      "stage": "ch1",
+      "characters": {
+        "left": "minh",
+        "right": null
+      }
+    },
+    {
+      "ids": [
+        "ch1b5"
+      ],
+      "stage": "ch1",
+      "characters": {
+        "left": "minh",
+        "right": null
+      }
+    },
+    {
+      "ids": [
+        "ch1b6"
+      ],
+      "stage": "ch1",
+      "characters": {
+        "left": "minh",
+        "right": null
+      }
+    },
+    {
+      "ids": [
+        "ch1choice"
+      ],
+      "stage": "ch1",
+      "characters": {
+        "left": null,
+        "right": "bird"
+      }
+    },
+    {
+      "ids": [
+        "ch1w1"
+      ],
+      "stage": "ch1",
+      "characters": {
+        "left": null,
+        "right": "bird"
+      }
+    },
+    {
+      "ids": [
+        "ch1w2"
+      ],
+      "stage": "ch1",
+      "characters": {
+        "left": "minh",
+        "right": null
+      }
+    },
+    {
+      "ids": [
+        "ch1w3"
+      ],
+      "stage": "ch1",
+      "characters": {
+        "left": null,
+        "right": "bird"
+      }
+    },
+    {
+      "ids": [
+        "ch1w4"
+      ],
+      "stage": "ch1",
+      "characters": {
+        "left": null,
+        "right": "bird"
+      }
+    },
+    {
+      "ids": [
+        "ch1w5"
+      ],
+      "stage": "ch1",
+      "characters": {
+        "left": null,
+        "right": "bird"
+      }
+    },
+    {
+      "ids": [
+        "ch1r1"
+      ],
+      "stage": "ch1",
+      "characters": {
+        "left": null,
+        "right": "bird"
+      }
+    },
+    {
+      "ids": [
+        "ch1r2"
+      ],
+      "stage": "ch1",
+      "characters": {
+        "left": "minh",
+        "right": null
+      }
+    },
+    {
+      "ids": [
+        "ch1r3"
+      ],
+      "stage": "ch1",
+      "characters": {
+        "left": null,
+        "right": "bird"
+      }
+    },
+    {
+      "ids": [
+        "ch1r4"
+      ],
+      "stage": "ch1",
+      "characters": {
+        "left": null,
+        "right": "bird"
+      }
+    },
+    {
+      "ids": [
+        "ch1r5"
+      ],
+      "stage": "ch1",
+      "characters": {
+        "left": "minh-happy",
+        "right": null
+      }
+    },
+    {
+      "ids": [
+        "ch2a"
+      ],
+      "stage": "ch2",
+      "characters": {
+        "left": null,
+        "right": "bird"
+      }
+    },
+    {
+      "ids": [
+        "ch2b1"
+      ],
+      "stage": "ch2",
+      "characters": {
+        "left": "minh",
+        "right": null
+      }
+    },
+    {
+      "ids": [
+        "ch2b2"
+      ],
+      "stage": "ch2",
+      "characters": {
+        "left": "minh",
+        "right": null
+      }
+    },
+    {
+      "ids": [
+        "ch2b3"
+      ],
+      "stage": "ch2",
+      "characters": {
+        "left": "minh",
+        "right": null
+      }
+    },
+    {
+      "ids": [
+        "ch2choice"
+      ],
+      "stage": "ch2",
+      "characters": {
+        "left": null,
+        "right": "bird"
+      }
+    },
+    {
+      "ids": [
+        "ch2w1"
+      ],
+      "stage": "ch2",
+      "characters": {
+        "left": null,
+        "right": "bird"
+      }
+    },
+    {
+      "ids": [
+        "ch2w2"
+      ],
+      "stage": "ch2",
+      "characters": {
+        "left": "minh",
+        "right": null
+      }
+    },
+    {
+      "ids": [
+        "ch2w3"
+      ],
+      "stage": "ch2",
+      "characters": {
+        "left": null,
+        "right": "bird"
+      }
+    },
+    {
+      "ids": [
+        "ch2w4"
+      ],
+      "stage": "ch2",
+      "characters": {
+        "left": null,
+        "right": "bird"
+      }
+    },
+    {
+      "ids": [
+        "ch2w5"
+      ],
+      "stage": "ch2",
+      "characters": {
+        "left": null,
+        "right": "bird"
+      }
+    },
+    {
+      "ids": [
+        "ch2r1"
+      ],
+      "stage": "ch2",
+      "characters": {
+        "left": null,
+        "right": "bird"
+      }
+    },
+    {
+      "ids": [
+        "ch2r2"
+      ],
+      "stage": "ch2",
+      "characters": {
+        "left": "minh",
+        "right": null
+      }
+    },
+    {
+      "ids": [
+        "ch2r3"
+      ],
+      "stage": "ch2",
+      "characters": {
+        "left": null,
+        "right": "bird"
+      }
+    },
+    {
+      "ids": [
+        "ch2r4"
+      ],
+      "stage": "ch2",
+      "characters": {
+        "left": null,
+        "right": "bird"
+      }
+    },
+    {
+      "ids": [
+        "ch2r5"
+      ],
+      "stage": "ch2",
+      "characters": {
+        "left": "minh-happy",
+        "right": null
+      }
+    },
+    {
+      "ids": [
+        "ch3a"
+      ],
+      "stage": "ch3",
+      "characters": {
+        "left": null,
+        "right": "bird"
+      }
+    },
+    {
+      "ids": [
+        "ch3b1"
+      ],
+      "stage": "ch3",
+      "characters": {
+        "left": "minh",
+        "right": null
+      }
+    },
+    {
+      "ids": [
+        "ch3b2"
+      ],
+      "stage": "ch3",
+      "characters": {
+        "left": "minh",
+        "right": null
+      }
+    },
+    {
+      "ids": [
+        "ch3b3"
+      ],
+      "stage": "ch3",
+      "characters": {
+        "left": "minh",
+        "right": null
+      }
+    },
+    {
+      "ids": [
+        "ch3choice"
+      ],
+      "stage": "ch3",
+      "characters": {
+        "left": null,
+        "right": "bird"
+      }
+    },
+    {
+      "ids": [
+        "ch3w1"
+      ],
+      "stage": "ch3",
+      "characters": {
+        "left": null,
+        "right": "bird"
+      }
+    },
+    {
+      "ids": [
+        "ch3w2"
+      ],
+      "stage": "ch3",
+      "characters": {
+        "left": "minh",
+        "right": null
+      }
+    },
+    {
+      "ids": [
+        "ch3w3"
+      ],
+      "stage": "ch3",
+      "characters": {
+        "left": null,
+        "right": "bird"
+      }
+    },
+    {
+      "ids": [
+        "ch3w4"
+      ],
+      "stage": "ch3",
+      "characters": {
+        "left": null,
+        "right": "bird"
+      }
+    },
+    {
+      "ids": [
+        "ch3w5"
+      ],
+      "stage": "ch3",
+      "characters": {
+        "left": null,
+        "right": "bird"
+      }
+    },
+    {
+      "ids": [
+        "ch3r1"
+      ],
+      "stage": "ch3",
+      "characters": {
+        "left": null,
+        "right": "bird"
+      }
+    },
+    {
+      "ids": [
+        "ch3r2"
+      ],
+      "stage": "ch3",
+      "characters": {
+        "left": "minh",
+        "right": null
+      }
+    },
+    {
+      "ids": [
+        "ch3r3"
+      ],
+      "stage": "ch3",
+      "characters": {
+        "left": "minh-happy",
+        "right": null
+      }
+    },
+    {
+      "ids": [
+        "ch3r4"
+      ],
+      "stage": "ch3",
+      "characters": {
+        "left": null,
+        "right": "bird"
+      }
+    },
+    {
+      "ids": [
+        "ch3r5"
+      ],
+      "stage": "ch3",
+      "characters": {
+        "left": "minh-happy",
+        "right": null
+      }
+    },
+    {
+      "ids": [
+        "ch4a"
+      ],
+      "stage": "ch4",
+      "characters": {
+        "left": null,
+        "right": "bird"
+      }
+    },
+    {
+      "ids": [
+        "ch4b1"
+      ],
+      "stage": "ch4",
+      "characters": {
+        "left": "minh",
+        "right": null
+      }
+    },
+    {
+      "ids": [
+        "ch4b2"
+      ],
+      "stage": "ch4",
+      "characters": {
+        "left": "minh",
+        "right": null
+      }
+    },
+    {
+      "ids": [
+        "ch4b3"
+      ],
+      "stage": "ch4",
+      "characters": {
+        "left": "minh",
+        "right": null
+      }
+    },
+    {
+      "ids": [
+        "ch4b4"
+      ],
+      "stage": "ch4",
+      "characters": {
+        "left": "minh",
+        "right": null
+      }
+    },
+    {
+      "ids": [
+        "ch4b5"
+      ],
+      "stage": "ch4",
+      "characters": {
+        "left": "minh",
+        "right": null
+      }
+    },
+    {
+      "ids": [
+        "ch4b6"
+      ],
+      "stage": "ch4",
+      "characters": {
+        "left": "minh",
+        "right": null
+      }
+    },
+    {
+      "ids": [
+        "ch4choice"
+      ],
+      "stage": "ch4",
+      "characters": {
+        "left": null,
+        "right": "bird"
+      }
+    },
+    {
+      "ids": [
+        "ch4w1"
+      ],
+      "stage": "ch4",
+      "characters": {
+        "left": null,
+        "right": "bird"
+      }
+    },
+    {
+      "ids": [
+        "ch4w2"
+      ],
+      "stage": "ch4",
+      "characters": {
+        "left": "minh",
+        "right": null
+      }
+    },
+    {
+      "ids": [
+        "ch4w3"
+      ],
+      "stage": "ch4",
+      "characters": {
+        "left": null,
+        "right": "bird"
+      }
+    },
+    {
+      "ids": [
+        "ch4w4"
+      ],
+      "stage": "ch4",
+      "characters": {
+        "left": null,
+        "right": "bird"
+      }
+    },
+    {
+      "ids": [
+        "ch4w5"
+      ],
+      "stage": "ch4",
+      "characters": {
+        "left": null,
+        "right": "bird"
+      }
+    },
+    {
+      "ids": [
+        "ch4r1"
+      ],
+      "stage": "ch4",
+      "characters": {
+        "left": null,
+        "right": "bird"
+      }
+    },
+    {
+      "ids": [
+        "ch4r2"
+      ],
+      "stage": "ch4",
+      "characters": {
+        "left": "minh",
+        "right": null
+      }
+    },
+    {
+      "ids": [
+        "ch4r3"
+      ],
+      "stage": "ch4",
+      "characters": {
+        "left": null,
+        "right": "bird"
+      }
+    },
+    {
+      "ids": [
+        "ch4r4"
+      ],
+      "stage": "ch4",
+      "characters": {
+        "left": null,
+        "right": "bird"
+      }
+    },
+    {
+      "ids": [
+        "ch4r5"
+      ],
+      "stage": "ch4",
+      "characters": {
+        "left": "minh-happy",
+        "right": null
+      }
+    },
+    {
+      "ids": [
+        "ch5a"
+      ],
+      "stage": "ch5",
+      "characters": {
+        "left": null,
+        "right": "bird"
+      }
+    },
+    {
+      "ids": [
+        "ch5b1"
+      ],
+      "stage": "ch5",
+      "characters": {
+        "left": "minh",
+        "right": null
+      }
+    },
+    {
+      "ids": [
+        "ch5b2"
+      ],
+      "stage": "ch5",
+      "characters": {
+        "left": "minh",
+        "right": null
+      }
+    },
+    {
+      "ids": [
+        "ch5b3"
+      ],
+      "stage": "ch5",
+      "characters": {
+        "left": "minh",
+        "right": null
+      }
+    },
+    {
+      "ids": [
+        "ch5b4"
+      ],
+      "stage": "ch5",
+      "characters": {
+        "left": "minh",
+        "right": null
+      }
+    },
+    {
+      "ids": [
+        "ch5b5"
+      ],
+      "stage": "ch5",
+      "characters": {
+        "left": "minh",
+        "right": null
+      }
+    },
+    {
+      "ids": [
+        "ch5choice"
+      ],
+      "stage": "ch5",
+      "characters": {
+        "left": null,
+        "right": "bird"
+      }
+    },
+    {
+      "ids": [
+        "ch5w1"
+      ],
+      "stage": "ch5",
+      "characters": {
+        "left": null,
+        "right": "bird"
+      }
+    },
+    {
+      "ids": [
+        "ch5w2"
+      ],
+      "stage": "ch5",
+      "characters": {
+        "left": "minh",
+        "right": null
+      }
+    },
+    {
+      "ids": [
+        "ch5w3"
+      ],
+      "stage": "ch5",
+      "characters": {
+        "left": null,
+        "right": "bird"
+      }
+    },
+    {
+      "ids": [
+        "ch5w4"
+      ],
+      "stage": "ch5",
+      "characters": {
+        "left": null,
+        "right": "bird"
+      }
+    },
+    {
+      "ids": [
+        "ch5w5"
+      ],
+      "stage": "ch5",
+      "characters": {
+        "left": "minh",
+        "right": null
+      }
+    },
+    {
+      "ids": [
+        "ch5w6"
+      ],
+      "stage": "ch5",
+      "characters": {
+        "left": null,
+        "right": "bird"
+      }
+    },
+    {
+      "ids": [
+        "ch5r1"
+      ],
+      "stage": "ch5",
+      "characters": {
+        "left": null,
+        "right": "bird"
+      }
+    },
+    {
+      "ids": [
+        "ch5r2"
+      ],
+      "stage": "ch5",
+      "characters": {
+        "left": "minh",
+        "right": null
+      }
+    },
+    {
+      "ids": [
+        "ch5r3"
+      ],
+      "stage": "ch5",
+      "characters": {
+        "left": null,
+        "right": "bird"
+      }
+    },
+    {
+      "ids": [
+        "ch5r4"
+      ],
+      "stage": "ch5",
+      "characters": {
+        "left": null,
+        "right": "bird"
+      }
+    },
+    {
+      "ids": [
+        "ch5r5"
+      ],
+      "stage": "ch5",
+      "characters": {
+        "left": "minh-happy",
+        "right": null
+      }
+    },
+    {
+      "ids": [
+        "end_win",
+        "end_loss"
+      ],
+      "stage": "end",
+      "characters": {
+        "left": "minh",
+        "right": null
+      }
+    }
+  ]
+}

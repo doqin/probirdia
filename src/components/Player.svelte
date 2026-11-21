@@ -1,7 +1,7 @@
 <script lang="ts">
   import { onDestroy, onMount, setContext, untrack } from 'svelte';
   import { pick, type Game, type GlossaryEntry, type Lang } from '../lib/types';
-  import { advance, choose, currentScene, isEnd, isValidState, startState, type PlayState } from '../lib/engine';
+  import { advance, choose, currentScene, isEnd, isValidState, recapOf, startState, type PlayState } from '../lib/engine';
   import { SLOT_X, resolveScene } from '../lib/presentation';
   import { t } from '../i18n/ui';
   import { withBase } from '../lib/url';
@@ -36,8 +36,25 @@
   );
   const ended = $derived(isEnd(game, play));
   const revealed = $derived(play.reveal ? glossary[play.reveal.proverb] : undefined);
-  const recap = $derived([...new Set(play.chosen)].map((slug) => glossary[slug]).filter(Boolean));
+  /** The run split by verdict: proverbs taken well, and the ones to try again. */
+  const recap = $derived(recapOf(play));
+  const well = $derived(recap.well.map((slug) => glossary[slug]).filter(Boolean));
+  const revisit = $derived(
+    recap.revisit
+      .map((p) => ({ picked: glossary[p.slug], intended: p.intended ? glossary[p.intended] : undefined }))
+      .filter((p) => p.picked),
+  );
   const hasGains = $derived(scene.gives.length > 0 || scene.status.length > 0);
+  /** A choice screen is drawn as cards beside the character, not as dialogue. */
+  const isChoice = $derived(!revealed && !ended && scene.choices.length > 0);
+  /** The speech bubble hangs on the side where the speaker stands. */
+  const speakerSide = $derived(
+    view.characters.some((c) => c.slot === 'left')
+      ? 'left'
+      : view.characters.some((c) => c.slot === 'right')
+        ? 'right'
+        : 'center',
+  );
   const isGood = (s: string) => game.positiveStatus.some((g) => g.toLowerCase() === s.toLowerCase());
   const itemImage = (name: string) => {
     const image = game.presentation?.items[name]?.image;
@@ -164,9 +181,13 @@
   <div
     class="art"
     class:landscape={!view.stage}
+    class:clickable={!isChoice && !revealed && !ended}
     style:background-image={view.stage ? `url(${withBase(view.stage.background)})` : undefined}
     role={view.stage?.alt ? 'img' : undefined}
     aria-label={view.stage?.alt}
+    onclick={() => {
+      if (!isChoice && !revealed && !ended) play = advance(play, game);
+    }}
   >
     {#each view.props as p (p.id)}
       <div
@@ -202,78 +223,110 @@
     {/if}
   </div>
 
-  <div class="dialogue {view.dialogue}">
-    {#if revealed}
-      <div class="reveal">
-        <h2>{revealed.term}</h2>
-        <p>{pick(revealed.meaning, lang)}</p>
-        <button class="btn" onclick={() => (play = advance(play, game))}>{t('continue', lang)}</button>
-      </div>
-    {:else}
-      {#if scene.heading && !view.headingInArt}<h2 class="heading">{pick(scene.heading, lang)}</h2>{/if}
-
-      {#if scene.note && scene.noteSimple}
-        <!-- the poem stays as it is (its hard words keep their popups); the button beneath opens the plain-words version -->
-        <div class="note simple-capable" class:mobile-only={!!noteProp}>
-          <RichText text={pick(scene.note, lang)} {glossary} {lang} />
-          <div class="simple-wrap" class:open={simpleOpen}>
-            <button type="button" class="simple-btn" aria-expanded={simpleOpen} onclick={() => (simpleOpen = !simpleOpen)}>
-              {t('simple_hint', lang)}
+  {#if isChoice}
+    <div class="choice-panel">
+      <ul class="choice-cards">
+        {#each scene.choices as c, i}
+          <li>
+            <button class="btn choice" onclick={() => (play = choose(play, game, i))}>
+              {c.proverb ? glossary[c.proverb].term : pick(c.label, lang)}
             </button>
-            <div class="simple-pop">
-              <span class="simple-label">{t('simple_label', lang)}</span>
-              <RichText text={pick(scene.noteSimple, lang)} {glossary} {lang} />
+          </li>
+        {/each}
+      </ul>
+      {#if scene.text.en}<p class="choice-hint">{pick(scene.text, lang)}</p>{/if}
+    </div>
+  {:else}
+    <div class="bubble {speakerSide}" class:center={speakerSide === 'center'}>
+      {#if revealed}
+        <div class="reveal-head">
+          <h3 class="reveal-term">{revealed.term}</h3>
+          {#if play.reveal}
+            <span class="chip status" class:good={play.reveal.correct}>{play.reveal.correct ? t('fits', lang) : t('not_quite', lang)}</span>
+          {/if}
+        </div>
+
+        {#if play.reveal?.why}
+          <p class="why"><RichText text={pick(play.reveal.why, lang)} {glossary} {lang} /></p>
+        {/if}
+        {#if play.reveal?.intended && glossary[play.reveal.intended]}
+          <p class="why"><strong>{t('called_for', lang)}:</strong> {glossary[play.reveal.intended].term}</p>
+        {/if}
+
+        <p class="text meaning">{pick(revealed.meaning, lang)}</p>
+        {#if lang === 'en' && revealed.meaning.vi}
+          <p class="aside"><span class="aside-tag">VI</span> {revealed.meaning.vi}</p>
+        {/if}
+        {#if revealed.example}
+          <p class="aside example"><span class="aside-tag">{t('example', lang)}</span> {pick(revealed.example, lang)}</p>
+        {/if}
+
+        <button class="btn" onclick={() => (play = advance(play, game))}>{t('continue', lang)}</button>
+      {:else}
+        {#if scene.heading && !view.headingInArt}<span class="plate">{pick(scene.heading, lang)}</span>{/if}
+
+        {#if scene.note && scene.noteSimple}
+          <!-- the poem stays as it is (its hard words keep their popups); the button beneath opens the plain-words version -->
+          <div class="note simple-capable" class:mobile-only={!!noteProp}>
+            <RichText text={pick(scene.note, lang)} {glossary} {lang} />
+            <div class="simple-wrap" class:open={simpleOpen}>
+              <button type="button" class="simple-btn" aria-expanded={simpleOpen} onclick={() => (simpleOpen = !simpleOpen)}>
+                {t('simple_hint', lang)}
+              </button>
+              <div class="simple-pop">
+                <span class="simple-label">{t('simple_label', lang)}</span>
+                <RichText text={pick(scene.noteSimple, lang)} {glossary} {lang} />
+              </div>
             </div>
           </div>
-        </div>
-      {:else if scene.note}
-        <blockquote class="note" class:mobile-only={!!noteProp}>
-          <RichText text={pick(scene.note, lang)} {glossary} {lang} />
-        </blockquote>
-      {/if}
+        {:else if scene.note}
+          <blockquote class="note" class:mobile-only={!!noteProp}>
+            <RichText text={pick(scene.note, lang)} {glossary} {lang} />
+          </blockquote>
+        {/if}
 
-      <p class="text"><RichText text={pick(scene.text, lang)} {glossary} {lang} /></p>
+        <p class="text"><RichText text={pick(scene.text, lang)} {glossary} {lang} /></p>
 
-      {#if hasGains}
-        <div class="gains">
-          <strong>{t('you_got', lang)}:</strong>
-          {#each scene.gives as item}
-            {#if itemImage(item)}
-              <figure class="item"><img src={itemImage(item)} alt="" /><figcaption>{item}</figcaption></figure>
-            {:else}
-              <span class="chip">{item}</span>
-            {/if}
-          {/each}
-          {#each scene.status as s}<span class="chip status" class:good={isGood(s)}>{s}</span>{/each}
-        </div>
-      {/if}
+        {#if hasGains}
+          <div class="gains">
+            <strong>{t('you_got', lang)}:</strong>
+            {#each scene.gives as item}
+              {#if itemImage(item)}
+                <figure class="item"><img src={itemImage(item)} alt="" /><figcaption>{item}</figcaption></figure>
+              {:else}
+                <span class="chip">{item}</span>
+              {/if}
+            {/each}
+            {#each scene.status as s}<span class="chip status" class:good={isGood(s)}>{s}</span>{/each}
+          </div>
+        {/if}
 
-      {#if scene.choices.length}
-        <ul class="choices">
-          {#each scene.choices as c, i}
-            <li>
-              <button class="btn choice" onclick={() => (play = choose(play, game, i))}>
-                {c.proverb ? glossary[c.proverb].term : pick(c.label, lang)}
-              </button>
-            </li>
-          {/each}
-        </ul>
-      {:else if ended}
-        <!-- the recap and "play again" sit under the artwork so the final scene stays visible -->
-      {:else}
-        <button class="btn" onclick={() => (play = advance(play, game))}>{t('continue', lang)}</button>
+        {#if !ended}
+          <button class="btn" onclick={() => (play = advance(play, game))}>{t('continue', lang)}</button>
+        {/if}
       {/if}
-    {/if}
-  </div>
+    </div>
+  {/if}
 </section>
 
 {#if ended && !revealed}
   <section class="finale">
     <h2 class="the-end">{t('the_end', lang)}</h2>
-    {#if recap.length}
-      <h3>{t('recap', lang)}</h3>
+    {#if well.length}
+      <h3>{t('recap_well', lang)}</h3>
       <ul class="recap">
-        {#each recap as e}<li><strong>{e.term}</strong>: {pick(e.meaning, lang)}</li>{/each}
+        {#each well as e}<li><strong>{e.term}</strong>: {pick(e.meaning, lang)}</li>{/each}
+      </ul>
+    {/if}
+    {#if revisit.length}
+      <h3>{t('recap_revisit', lang)}</h3>
+      <ul class="recap revisit">
+        {#each revisit as m}
+          <li>
+            <strong>{m.picked.term}</strong>
+            {#if m.intended} — {t('called_for', lang).toLowerCase()} <em>{m.intended.term}</em>{/if}
+          </li>
+        {/each}
       </ul>
     {/if}
     <button class="btn" onclick={restart}>{t('restart', lang)}</button>
@@ -347,23 +400,117 @@
     text-shadow: 0 0 .3em #fff6e6;
   }
 
-  .dialogue {
+  /* A speech bubble that hangs beside whoever is talking, as in the design. */
+  .bubble {
     position: absolute;
-    left: 50%;
-    width: min(46rem, 66%);
-    transform: translateX(-50%);
-    background: rgb(197 187 171 / .96);
-    border: 2px solid rgb(26 18 8 / .6);
-    border-radius: var(--radius);
-    padding: 1rem 1.4rem 1.2rem;
-    text-align: center;
+    width: min(40rem, 46%);
+    padding: 1rem 1.3rem 1.1rem;
+    background: rgb(255 250 240 / .97);
+    border: 3px solid #1a1208;
+    border-radius: 1rem;
+    box-shadow: 0 .35rem 0 rgb(26 18 8 / .25);
   }
-  .dialogue.top { top: 4%; }
-  .dialogue.center { top: 50%; transform: translate(-50%, -50%); }
-  .dialogue.bottom { bottom: 4%; }
+  .bubble.left { left: 31%; top: 15%; }
+  .bubble.right { right: 31%; top: 15%; }
+  .bubble.center { left: 50%; bottom: 5%; transform: translateX(-50%); width: min(46rem, 62%); }
+  .bubble::after {
+    content: '';
+    position: absolute;
+    top: 2.1rem;
+    border: 14px solid transparent;
+  }
+  .bubble.left::after { left: -25px; border-right-color: #1a1208; }
+  .bubble.right::after { right: -25px; border-left-color: #1a1208; }
 
-  .heading { text-transform: uppercase; letter-spacing: .06em; font-size: 1.2rem; }
-  .text { font-size: 1.3rem; margin: .4rem 0 .8rem; }
+  .plate {
+    position: absolute;
+    top: -1.15rem;
+    left: 1.1rem;
+    padding: .1rem .7rem .16rem;
+    background: var(--brown);
+    border: 3px solid #1a1208;
+    border-radius: .5rem;
+    color: #fff6e6;
+    font-size: .8rem;
+    font-weight: 800;
+    letter-spacing: .08em;
+    text-transform: uppercase;
+    white-space: nowrap;
+  }
+  .bubble.right .plate { left: auto; right: 1.1rem; }
+
+  /* Reveal card: the verdict leads, the explanation follows, the glossary last. */
+  .reveal-head { display: flex; align-items: center; gap: .6rem; flex-wrap: wrap; margin-bottom: .35rem; }
+  .reveal-term { margin: 0; font-size: 1.35rem; line-height: 1.2; text-transform: uppercase; letter-spacing: .02em; }
+  .why { font-size: 1.05rem; line-height: 1.45; margin: .35rem 0; }
+  .aside { font-size: 1rem; line-height: 1.45; margin: .2rem 0; color: #5a4630; }
+  .aside.example { font-style: italic; }
+  .aside-tag {
+    display: inline-block;
+    margin-right: .35rem;
+    font-size: .7rem;
+    font-weight: 700;
+    font-style: normal;
+    letter-spacing: .08em;
+    text-transform: uppercase;
+    color: var(--brown);
+  }
+
+  /* Choice screens: stacked cards beside the character, instruction underneath. */
+  .choice-panel {
+    position: absolute;
+    left: 3.5%;
+    top: 13%;
+    width: 42%;
+    display: grid;
+    gap: .7rem;
+  }
+  .choice-cards { list-style: none; margin: 0; padding: 0; display: grid; gap: .7rem; }
+  .choice-cards .btn {
+    width: 100%;
+    padding: .85rem 1rem;
+    font-size: 1rem;
+    line-height: 1.2;
+    text-transform: uppercase;
+    letter-spacing: .03em;
+    text-align: center;
+    /* light cards with dark lettering, as in the storyboard */
+    background: #f2ecdd;
+    color: var(--ink);
+    border: 3px solid #1a1208;
+    border-radius: .9rem;
+    box-shadow: 0 .25rem 0 rgb(26 18 8 / .55);
+  }
+  .choice-cards .btn:hover { background: var(--brown); color: #fff6e6; filter: none; }
+  .choice-hint {
+    margin: 0;
+    justify-self: center;
+    padding: .35rem .7rem;
+    background: rgb(255 250 240 / .92);
+    border: 2px solid #1a1208;
+    border-radius: .6rem;
+    text-align: center;
+    font-size: .76rem;
+    font-weight: 800;
+    letter-spacing: .07em;
+    text-transform: uppercase;
+    color: #1a1208;
+  }
+
+  .art.clickable { cursor: pointer; }
+
+  /* The click-anywhere advance is the main control; the button stays for keyboards. */
+  .bubble .btn {
+    display: block;
+    margin-left: auto;
+    padding: .35rem 1rem;
+    font-size: .82rem;
+    letter-spacing: .06em;
+    opacity: .9;
+  }
+
+  .text { font-size: 1.25rem; margin: .35rem 0 .8rem; }
+  .meaning { font-style: italic; }
   .note {
     margin: 0 auto .8rem;
     max-width: 28rem;
@@ -430,10 +577,6 @@
   .status.good { border-color: #2f7d3a !important; color: #2f7d3a; }
   .item { margin: 0; display: grid; justify-items: center; gap: .15rem; font-weight: 600; }
   .item img { width: 4.5rem; height: auto; }
-  .choices { list-style: none; margin: 0; padding: 0; display: flex; flex-wrap: wrap; gap: .6rem; justify-content: center; }
-  .choice { text-transform: none; font-size: 1.1rem; border-radius: 1rem; }
-  .reveal h2 { font-size: 1.6rem; }
-
   .finale {
     margin-top: .75rem;
     padding: 1rem 1.4rem 1.2rem;
@@ -453,7 +596,14 @@
 
   /* Phones: the 16:9 artwork is too small to hold text, so the dialogue sits underneath it. */
   @media (max-width: 40rem) {
-    .dialogue { position: static; width: auto; transform: none !important; margin-top: .75rem; }
+    .bubble, .choice-panel {
+      position: static;
+      width: auto;
+      transform: none !important;
+      margin-top: .75rem;
+    }
+    .bubble::after { display: none; }
+    .plate { position: static; display: inline-block; margin-bottom: .4rem; }
     .prop-text { display: none; }
     .mobile-only { display: block; }
     .art-heading { font-size: 1.1rem; }

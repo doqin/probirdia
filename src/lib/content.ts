@@ -225,17 +225,29 @@ export function loadGame(slug: string, glossary: GlossaryEntry[], dir = contentD
       const label = localized(row, `choice_${c}_label`);
       const proverbText = row[`choice_${c}_proverb`]?.trim();
       const next = row[`choice_${c}_next`]?.trim();
+      const correctRaw = row[`choice_${c}_correct`]?.trim();
       if (!label && !proverbText && !next) continue;
       if (!next) { at(n, `choice ${c} has no "choice_${c}_next"`); continue; }
       if (!label && !proverbText) { at(n, `choice ${c} needs either a label or a proverb`); continue; }
       if (label && proverbText) { at(n, `choice ${c} has both a label and a proverb; use one`); continue; }
+      const correct = correctRaw ? /^(yes|true|1|x|y|right|correct)$/i.test(correctRaw) : undefined;
       if (proverbText) {
         const pslug = slugify(proverbText);
         if (!known.has(pslug)) at(n, `choice ${c}: proverb "${proverbText}" is not in glossary.csv`);
-        choices.push({ proverb: pslug, next });
+        choices.push({ proverb: pslug, next, correct, why: localized(row, `choice_${c}_why`) });
       } else {
-        choices.push({ label, next });
+        choices.push({ label, next, correct, why: localized(row, `choice_${c}_why`) });
       }
+    }
+
+    // A branch that teaches needs one right answer and a reason for every offer,
+    // or the reveal has nothing to tell the player.
+    if (choices.length >= 2 && choices.some((c) => c.correct !== undefined)) {
+      const right = choices.filter((c) => c.correct).length;
+      if (right !== 1) at(n, `scene "${id}": one choice must be the right one (choice_N_correct: yes), currently ${right}`);
+      choices.forEach((c, i) => {
+        if (!c.why) at(n, `scene "${id}" choice ${i + 1}: add "choice_${i + 1}_why" saying why it does or does not fit`);
+      });
     }
 
     const next = row.next?.trim() || undefined;
