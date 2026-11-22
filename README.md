@@ -57,29 +57,21 @@ site never depends on the database being reachable.
 - `src/components/Player.svelte`: the game UI; `ProverbTerm.svelte`: hover/tap popup
 - `src/i18n/ui.ts` and `LANGS` in `src/lib/types.ts`: language support (English now; add `vi` there and fill `_vi` columns)
 
-## Deploying to GitHub Pages
+## Deploying to Vercel
 
-The site is static. `.github/workflows/deploy.yml` builds and publishes it on every push to `main`.
+The site is static. Vercel builds it with `npm run build` (see `vercel.json`) on every push to `main`; other branches get preview URLs. The site is served from the domain root, so `BASE` and `SITE` stay unset.
 
-1. Push this project to a GitHub repo named `probirdia` (public, unless the account has a paid plan).
-2. In the repo: **Settings > Pages > Build and deployment > Source: GitHub Actions**.
-3. Push to `main`. The site appears at `https://<user>.github.io/probirdia/`.
+1. Import the repo at vercel.com (or run `vercel link`).
+2. In **Settings > Environment Variables**, set `PUBLIC_SUPABASE_URL` and `PUBLIC_SUPABASE_PUBLISHABLE_KEY` for Production and Preview. They are needed at build time and are safe in the browser.
+3. Add the deployed address to Supabase **Authentication > URL Configuration > Redirect URLs**: `https://<your-site>/editor/`.
 
-The workflow sets `SITE` and `BASE` itself (`BASE` is `/probirdia`, taken from the repo name; a repo called `<user>.github.io` gets `/`). `npm run build` checks the spreadsheets first, so a mistake fails the deploy and the live site stays as it was.
+`npm run build` checks the spreadsheets first, so a mistake fails the deploy and the live site stays as it was.
 
 Rules for code that links to anything:
 - Never write a bare `/games/...` link or image path in a component. Wrap it: `withBase('/games/')` from `src/lib/url.ts`. Files under `public/` (and paths in `src/presentation/*.json`) are written root-relative as usual; `withBase` adds the prefix when they are rendered.
 - Images imported from `src/assets` and `<Image>` already handle the base path.
 
-To test the sub-path build locally (PowerShell):
-
-```
-$env:SITE='https://user.github.io'; $env:BASE='/probirdia'; npm run build; npx astro preview
-```
-
-(In Git Bash on Windows, prefix with `MSYS_NO_PATHCONV=1`, or the shell rewrites `/probirdia` into a Windows path.)
-
-Moving to a custom domain later: add `public/CNAME` containing the domain, set `BASE` to `/` in the workflow, and set the domain in Settings > Pages.
+To test a sub-path build locally: `SITE=https://example.com BASE=/probirdia npm run build && npx astro preview`.
 
 ## Scene art (developer-owned)
 
