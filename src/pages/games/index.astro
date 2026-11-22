@@ -13,7 +13,7 @@ const games = loadAllGames();
   <h1 class="page-title">{t('nav.games')}</h1>
   <ul class="grid">
     {games.map((g) => <li><GameCard game={g} /></li>)}
-    {supabaseConfigured && <RemoteGames client:load />}
+    {supabaseConfigured && <RemoteGames client:load skip={games.map((g) => g.slug)} />}
     {!games.length && !supabaseConfigured && <li class="empty">No games are published yet.</li>}
   </ul>
 </Base>
