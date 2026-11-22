@@ -53,8 +53,11 @@ export interface Scene {
   /** Artwork for this screen (public URL). Turns into a stage when the game is loaded. */
   image?: string;
   imageAlt?: string;
-  /** Which segment of the lesson this screen belongs to. Missing means 'game'. */
-  phase?: 'preview' | 'game' | 'review';
+  /**
+   * Which screen this is. `title` opens the game, `divider` cuts a chapter,
+   * `preview`/`review` are the lesson's two other phases.
+   */
+  phase?: 'title' | 'divider' | 'preview' | 'game' | 'review';
   /** Review segment: why this proverb does or does not suit the scene. */
   explanation?: Localized;
   gives: string[];
@@ -84,6 +87,20 @@ export interface CharacterDef {
   image: string;
   /** Width as % of the stage. */
   width: number;
+  /**
+   * Visual-novel placement, as in the design deck: the image box's top-left corner as
+   * % of the stage. The image may run past the stage edges, which is what crops the
+   * character to the upper body. Without `top` the sprite stands on the stage's ground
+   * line instead (the older bottom-anchored placement).
+   */
+  left?: number;
+  top?: number;
+  /**
+   * Where the sprite's solid edge is, as % of the stage, within the dialogue box's height:
+   * its right edge for a left-hand character, its left edge for a right-hand one. The box
+   * starts its text beyond it so a sprite never covers the words. Measured from the image.
+   */
+  clear?: number;
   alt?: string;
 }
 export interface PropDef {

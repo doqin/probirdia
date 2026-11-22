@@ -265,8 +265,14 @@ export function loadGame(slug: string, glossary: GlossaryEntry[], dir = contentD
     }
 
     rowOf[id] = n;
+    const phase = row.phase?.trim();
+    const PHASES = ['title', 'divider', 'preview', 'game', 'review'];
+    if (phase && !PHASES.includes(phase)) {
+      at(n, `"phase" must be one of ${PHASES.join(', ')} (or empty for a story screen)`);
+    }
     scenes[id] = {
       id,
+      phase: (phase as Scene['phase']) || undefined,
       heading: localized(row, 'heading'),
       text,
       note: localized(row, 'note'),

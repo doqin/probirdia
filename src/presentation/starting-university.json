@@ -1,37 +1,43 @@
 {
   "stages": {
-    "ch1": {
+    "bedroom": {
       "background": "/games/starting-university/bg-bedroom.webp",
       "ground": 96,
       "dialogue": "bottom",
-      "alt": "Minh's bedroom: shelves, a window and a desk"
+      "alt": "Minh's bedroom: shelves, a window, a desk and a bed"
     },
-    "ch2": {
-      "background": "/games/starting-university/bg-laptop.webp",
+    "enroll": {
+      "background": "/games/starting-university/bg-enroll.webp",
       "ground": 96,
       "dialogue": "bottom",
-      "alt": "A laptop open on a map screen"
+      "alt": "A laptop open on the university enrollment login page"
     },
-    "ch3": {
+    "campus": {
       "background": "/games/starting-university/bg-campus.webp",
       "ground": 96,
       "dialogue": "bottom",
       "alt": "The Da Nang monument square"
     },
-    "ch4": {
-      "background": "/games/starting-university/bg-laptop.webp",
+    "gate": {
+      "background": "/games/starting-university/bg-gate.webp",
       "ground": 96,
       "dialogue": "bottom",
-      "alt": "A laptop open on a map screen"
+      "alt": "The gate of the University of Foreign Languages"
     },
-    "ch5": {
-      "background": "/games/starting-university/bg-desk.webp",
+    "listing": {
+      "background": "/games/starting-university/bg-listing.webp",
       "ground": 96,
       "dialogue": "bottom",
-      "alt": "A laptop showing the tuition portal"
+      "alt": "A laptop on a desk, showing a map of rooms to rent"
     },
-    "end": {
-      "background": "/games/starting-university/bg-desk.webp",
+    "room-search": {
+      "background": "/games/starting-university/bg-room-search.webp",
+      "ground": 96,
+      "dialogue": "bottom",
+      "alt": "A laptop showing a map of rooms to rent"
+    },
+    "tuition": {
+      "background": "/games/starting-university/bg-tuition.webp",
       "ground": 96,
       "dialogue": "bottom",
       "alt": "A laptop showing the tuition portal"
@@ -40,18 +46,43 @@
   "characters": {
     "minh": {
       "image": "/games/starting-university/minh.webp",
-      "width": 34,
-      "alt": "Minh"
+      "left": -13.7,
+      "top": 23.1,
+      "width": 62.4,
+      "alt": "Minh",
+      "clear": 29.2
     },
     "minh-happy": {
       "image": "/games/starting-university/minh-happy.webp",
-      "width": 34,
-      "alt": "Minh, pleased"
+      "left": -13.7,
+      "top": 23.1,
+      "width": 62.4,
+      "alt": "Minh, pleased",
+      "clear": 38.1
+    },
+    "minh-travel": {
+      "image": "/games/starting-university/minh-travel.webp",
+      "left": -6.5,
+      "top": 31.3,
+      "width": 43.7,
+      "alt": "Minh in his travel clothes, with a backpack",
+      "clear": 26.9
+    },
+    "minh-cheer": {
+      "image": "/games/starting-university/minh-cheer.webp",
+      "left": -8.3,
+      "top": 37.2,
+      "width": 45.0,
+      "alt": "Minh, cheering",
+      "clear": 29.1
     },
     "bird": {
       "image": "/games/starting-university/bird.webp",
-      "width": 30,
-      "alt": "Dr. Bird"
+      "left": 66.0,
+      "top": 50.7,
+      "width": 35.8,
+      "alt": "Dr. Bird",
+      "clear": 71.1
     }
   },
   "props": {},
@@ -59,19 +90,29 @@
   "scenes": [
     {
       "ids": [
-        "ch1a"
+        "start"
       ],
-      "stage": "ch1",
+      "stage": "bedroom",
       "characters": {
         "left": null,
-        "right": "bird"
+        "right": null
+      }
+    },
+    {
+      "ids": [
+        "ch1a"
+      ],
+      "stage": "bedroom",
+      "characters": {
+        "left": null,
+        "right": null
       }
     },
     {
       "ids": [
         "ch1b1"
       ],
-      "stage": "ch1",
+      "stage": "bedroom",
       "characters": {
         "left": "minh",
         "right": null
@@ -81,7 +122,7 @@
       "ids": [
         "ch1b2"
       ],
-      "stage": "ch1",
+      "stage": "bedroom",
       "characters": {
         "left": "minh",
         "right": null
@@ -91,7 +132,7 @@
       "ids": [
         "ch1b3"
       ],
-      "stage": "ch1",
+      "stage": "bedroom",
       "characters": {
         "left": "minh",
         "right": null
@@ -101,7 +142,7 @@
       "ids": [
         "ch1b4"
       ],
-      "stage": "ch1",
+      "stage": "bedroom",
       "characters": {
         "left": "minh",
         "right": null
@@ -111,7 +152,7 @@
       "ids": [
         "ch1b5"
       ],
-      "stage": "ch1",
+      "stage": "bedroom",
       "characters": {
         "left": "minh",
         "right": null
@@ -121,7 +162,7 @@
       "ids": [
         "ch1b6"
       ],
-      "stage": "ch1",
+      "stage": "bedroom",
       "characters": {
         "left": "minh",
         "right": null
@@ -131,7 +172,7 @@
       "ids": [
         "ch1choice"
       ],
-      "stage": "ch1",
+      "stage": "bedroom",
       "characters": {
         "left": null,
         "right": "bird"
@@ -141,7 +182,7 @@
       "ids": [
         "ch1w1"
       ],
-      "stage": "ch1",
+      "stage": "bedroom",
       "characters": {
         "left": null,
         "right": "bird"
@@ -151,7 +192,7 @@
       "ids": [
         "ch1w2"
       ],
-      "stage": "ch1",
+      "stage": "bedroom",
       "characters": {
         "left": "minh",
         "right": null
@@ -161,37 +202,37 @@
       "ids": [
         "ch1w3"
       ],
-      "stage": "ch1",
+      "stage": "bedroom",
       "characters": {
         "left": null,
-        "right": "bird"
+        "right": null
       }
     },
     {
       "ids": [
         "ch1w4"
       ],
-      "stage": "ch1",
+      "stage": "bedroom",
       "characters": {
         "left": null,
-        "right": "bird"
+        "right": null
       }
     },
     {
       "ids": [
         "ch1w5"
       ],
-      "stage": "ch1",
+      "stage": "bedroom",
       "characters": {
         "left": null,
-        "right": "bird"
+        "right": null
       }
     },
     {
       "ids": [
         "ch1r1"
       ],
-      "stage": "ch1",
+      "stage": "bedroom",
       "characters": {
         "left": null,
         "right": "bird"
@@ -201,7 +242,7 @@
       "ids": [
         "ch1r2"
       ],
-      "stage": "ch1",
+      "stage": "bedroom",
       "characters": {
         "left": "minh",
         "right": null
@@ -211,27 +252,27 @@
       "ids": [
         "ch1r3"
       ],
-      "stage": "ch1",
+      "stage": "bedroom",
       "characters": {
         "left": null,
-        "right": "bird"
+        "right": null
       }
     },
     {
       "ids": [
         "ch1r4"
       ],
-      "stage": "ch1",
+      "stage": "bedroom",
       "characters": {
         "left": null,
-        "right": "bird"
+        "right": null
       }
     },
     {
       "ids": [
         "ch1r5"
       ],
-      "stage": "ch1",
+      "stage": "bedroom",
       "characters": {
         "left": "minh-happy",
         "right": null
@@ -239,19 +280,29 @@
     },
     {
       "ids": [
-        "ch2a"
+        "ch2"
       ],
-      "stage": "ch2",
+      "stage": "enroll",
       "characters": {
         "left": null,
-        "right": "bird"
+        "right": null
+      }
+    },
+    {
+      "ids": [
+        "ch2a"
+      ],
+      "stage": "bedroom",
+      "characters": {
+        "left": null,
+        "right": null
       }
     },
     {
       "ids": [
         "ch2b1"
       ],
-      "stage": "ch2",
+      "stage": "enroll",
       "characters": {
         "left": "minh",
         "right": null
@@ -261,7 +312,7 @@
       "ids": [
         "ch2b2"
       ],
-      "stage": "ch2",
+      "stage": "enroll",
       "characters": {
         "left": "minh",
         "right": null
@@ -271,7 +322,7 @@
       "ids": [
         "ch2b3"
       ],
-      "stage": "ch2",
+      "stage": "enroll",
       "characters": {
         "left": "minh",
         "right": null
@@ -281,7 +332,7 @@
       "ids": [
         "ch2choice"
       ],
-      "stage": "ch2",
+      "stage": "enroll",
       "characters": {
         "left": null,
         "right": "bird"
@@ -291,7 +342,7 @@
       "ids": [
         "ch2w1"
       ],
-      "stage": "ch2",
+      "stage": "enroll",
       "characters": {
         "left": null,
         "right": "bird"
@@ -301,7 +352,7 @@
       "ids": [
         "ch2w2"
       ],
-      "stage": "ch2",
+      "stage": "enroll",
       "characters": {
         "left": "minh",
         "right": null
@@ -311,37 +362,37 @@
       "ids": [
         "ch2w3"
       ],
-      "stage": "ch2",
+      "stage": "enroll",
       "characters": {
         "left": null,
-        "right": "bird"
+        "right": null
       }
     },
     {
       "ids": [
         "ch2w4"
       ],
-      "stage": "ch2",
+      "stage": "enroll",
       "characters": {
         "left": null,
-        "right": "bird"
+        "right": null
       }
     },
     {
       "ids": [
         "ch2w5"
       ],
-      "stage": "ch2",
+      "stage": "enroll",
       "characters": {
         "left": null,
-        "right": "bird"
+        "right": null
       }
     },
     {
       "ids": [
         "ch2r1"
       ],
-      "stage": "ch2",
+      "stage": "enroll",
       "characters": {
         "left": null,
         "right": "bird"
@@ -351,7 +402,7 @@
       "ids": [
         "ch2r2"
       ],
-      "stage": "ch2",
+      "stage": "enroll",
       "characters": {
         "left": "minh",
         "right": null
@@ -361,27 +412,27 @@
       "ids": [
         "ch2r3"
       ],
-      "stage": "ch2",
+      "stage": "enroll",
       "characters": {
         "left": null,
-        "right": "bird"
+        "right": null
       }
     },
     {
       "ids": [
         "ch2r4"
       ],
-      "stage": "ch2",
+      "stage": "enroll",
       "characters": {
         "left": null,
-        "right": "bird"
+        "right": null
       }
     },
     {
       "ids": [
         "ch2r5"
       ],
-      "stage": "ch2",
+      "stage": "enroll",
       "characters": {
         "left": "minh-happy",
         "right": null
@@ -389,21 +440,31 @@
     },
     {
       "ids": [
-        "ch3a"
+        "ch3"
       ],
-      "stage": "ch3",
+      "stage": "campus",
       "characters": {
         "left": null,
-        "right": "bird"
+        "right": null
+      }
+    },
+    {
+      "ids": [
+        "ch3a"
+      ],
+      "stage": "campus",
+      "characters": {
+        "left": null,
+        "right": null
       }
     },
     {
       "ids": [
         "ch3b1"
       ],
-      "stage": "ch3",
+      "stage": "campus",
       "characters": {
-        "left": "minh",
+        "left": "minh-travel",
         "right": null
       }
     },
@@ -411,9 +472,9 @@
       "ids": [
         "ch3b2"
       ],
-      "stage": "ch3",
+      "stage": "campus",
       "characters": {
-        "left": "minh",
+        "left": "minh-travel",
         "right": null
       }
     },
@@ -421,9 +482,9 @@
       "ids": [
         "ch3b3"
       ],
-      "stage": "ch3",
+      "stage": "campus",
       "characters": {
-        "left": "minh",
+        "left": "minh-travel",
         "right": null
       }
     },
@@ -431,7 +492,7 @@
       "ids": [
         "ch3choice"
       ],
-      "stage": "ch3",
+      "stage": "campus",
       "characters": {
         "left": null,
         "right": "bird"
@@ -441,7 +502,7 @@
       "ids": [
         "ch3w1"
       ],
-      "stage": "ch3",
+      "stage": "campus",
       "characters": {
         "left": null,
         "right": "bird"
@@ -451,9 +512,9 @@
       "ids": [
         "ch3w2"
       ],
-      "stage": "ch3",
+      "stage": "campus",
       "characters": {
-        "left": "minh",
+        "left": "minh-travel",
         "right": null
       }
     },
@@ -461,37 +522,37 @@
       "ids": [
         "ch3w3"
       ],
-      "stage": "ch3",
+      "stage": "campus",
       "characters": {
         "left": null,
-        "right": "bird"
+        "right": null
       }
     },
     {
       "ids": [
         "ch3w4"
       ],
-      "stage": "ch3",
+      "stage": "campus",
       "characters": {
         "left": null,
-        "right": "bird"
+        "right": null
       }
     },
     {
       "ids": [
         "ch3w5"
       ],
-      "stage": "ch3",
+      "stage": "campus",
       "characters": {
         "left": null,
-        "right": "bird"
+        "right": null
       }
     },
     {
       "ids": [
         "ch3r1"
       ],
-      "stage": "ch3",
+      "stage": "campus",
       "characters": {
         "left": null,
         "right": "bird"
@@ -501,9 +562,9 @@
       "ids": [
         "ch3r2"
       ],
-      "stage": "ch3",
+      "stage": "campus",
       "characters": {
-        "left": "minh",
+        "left": "minh-travel",
         "right": null
       }
     },
@@ -511,9 +572,9 @@
       "ids": [
         "ch3r3"
       ],
-      "stage": "ch3",
+      "stage": "campus",
       "characters": {
-        "left": "minh-happy",
+        "left": "minh-travel",
         "right": null
       }
     },
@@ -521,19 +582,29 @@
       "ids": [
         "ch3r4"
       ],
-      "stage": "ch3",
+      "stage": "campus",
       "characters": {
         "left": null,
-        "right": "bird"
+        "right": null
       }
     },
     {
       "ids": [
         "ch3r5"
       ],
-      "stage": "ch3",
+      "stage": "gate",
       "characters": {
-        "left": "minh-happy",
+        "left": "minh-travel",
+        "right": null
+      }
+    },
+    {
+      "ids": [
+        "ch4"
+      ],
+      "stage": "room-search",
+      "characters": {
+        "left": null,
         "right": null
       }
     },
@@ -541,19 +612,19 @@
       "ids": [
         "ch4a"
       ],
-      "stage": "ch4",
+      "stage": "listing",
       "characters": {
         "left": null,
-        "right": "bird"
+        "right": null
       }
     },
     {
       "ids": [
         "ch4b1"
       ],
-      "stage": "ch4",
+      "stage": "room-search",
       "characters": {
-        "left": "minh",
+        "left": "minh-cheer",
         "right": null
       }
     },
@@ -561,9 +632,9 @@
       "ids": [
         "ch4b2"
       ],
-      "stage": "ch4",
+      "stage": "room-search",
       "characters": {
-        "left": "minh",
+        "left": "minh-cheer",
         "right": null
       }
     },
@@ -571,9 +642,9 @@
       "ids": [
         "ch4b3"
       ],
-      "stage": "ch4",
+      "stage": "room-search",
       "characters": {
-        "left": "minh",
+        "left": "minh-cheer",
         "right": null
       }
     },
@@ -581,9 +652,9 @@
       "ids": [
         "ch4b4"
       ],
-      "stage": "ch4",
+      "stage": "room-search",
       "characters": {
-        "left": "minh",
+        "left": "minh-cheer",
         "right": null
       }
     },
@@ -591,9 +662,9 @@
       "ids": [
         "ch4b5"
       ],
-      "stage": "ch4",
+      "stage": "room-search",
       "characters": {
-        "left": "minh",
+        "left": "minh-cheer",
         "right": null
       }
     },
@@ -601,9 +672,9 @@
       "ids": [
         "ch4b6"
       ],
-      "stage": "ch4",
+      "stage": "room-search",
       "characters": {
-        "left": "minh",
+        "left": "minh-cheer",
         "right": null
       }
     },
@@ -611,7 +682,7 @@
       "ids": [
         "ch4choice"
       ],
-      "stage": "ch4",
+      "stage": "room-search",
       "characters": {
         "left": null,
         "right": "bird"
@@ -621,7 +692,7 @@
       "ids": [
         "ch4w1"
       ],
-      "stage": "ch4",
+      "stage": "room-search",
       "characters": {
         "left": null,
         "right": "bird"
@@ -631,9 +702,9 @@
       "ids": [
         "ch4w2"
       ],
-      "stage": "ch4",
+      "stage": "room-search",
       "characters": {
-        "left": "minh",
+        "left": "minh-cheer",
         "right": null
       }
     },
@@ -641,37 +712,37 @@
       "ids": [
         "ch4w3"
       ],
-      "stage": "ch4",
+      "stage": "room-search",
       "characters": {
         "left": null,
-        "right": "bird"
+        "right": null
       }
     },
     {
       "ids": [
         "ch4w4"
       ],
-      "stage": "ch4",
+      "stage": "room-search",
       "characters": {
         "left": null,
-        "right": "bird"
+        "right": null
       }
     },
     {
       "ids": [
         "ch4w5"
       ],
-      "stage": "ch4",
+      "stage": "room-search",
       "characters": {
         "left": null,
-        "right": "bird"
+        "right": null
       }
     },
     {
       "ids": [
         "ch4r1"
       ],
-      "stage": "ch4",
+      "stage": "room-search",
       "characters": {
         "left": null,
         "right": "bird"
@@ -681,9 +752,9 @@
       "ids": [
         "ch4r2"
       ],
-      "stage": "ch4",
+      "stage": "room-search",
       "characters": {
-        "left": "minh",
+        "left": "minh-cheer",
         "right": null
       }
     },
@@ -691,29 +762,39 @@
       "ids": [
         "ch4r3"
       ],
-      "stage": "ch4",
+      "stage": "room-search",
       "characters": {
         "left": null,
-        "right": "bird"
+        "right": null
       }
     },
     {
       "ids": [
         "ch4r4"
       ],
-      "stage": "ch4",
+      "stage": "room-search",
       "characters": {
         "left": null,
-        "right": "bird"
+        "right": null
       }
     },
     {
       "ids": [
         "ch4r5"
       ],
-      "stage": "ch4",
+      "stage": "room-search",
       "characters": {
-        "left": "minh-happy",
+        "left": "minh-cheer",
+        "right": null
+      }
+    },
+    {
+      "ids": [
+        "ch5"
+      ],
+      "stage": "tuition",
+      "characters": {
+        "left": null,
         "right": null
       }
     },
@@ -721,17 +802,17 @@
       "ids": [
         "ch5a"
       ],
-      "stage": "ch5",
+      "stage": "tuition",
       "characters": {
         "left": null,
-        "right": "bird"
+        "right": null
       }
     },
     {
       "ids": [
         "ch5b1"
       ],
-      "stage": "ch5",
+      "stage": "tuition",
       "characters": {
         "left": "minh",
         "right": null
@@ -741,7 +822,7 @@
       "ids": [
         "ch5b2"
       ],
-      "stage": "ch5",
+      "stage": "tuition",
       "characters": {
         "left": "minh",
         "right": null
@@ -751,7 +832,7 @@
       "ids": [
         "ch5b3"
       ],
-      "stage": "ch5",
+      "stage": "tuition",
       "characters": {
         "left": "minh",
         "right": null
@@ -761,7 +842,7 @@
       "ids": [
         "ch5b4"
       ],
-      "stage": "ch5",
+      "stage": "tuition",
       "characters": {
         "left": "minh",
         "right": null
@@ -771,7 +852,7 @@
       "ids": [
         "ch5b5"
       ],
-      "stage": "ch5",
+      "stage": "tuition",
       "characters": {
         "left": "minh",
         "right": null
@@ -781,7 +862,7 @@
       "ids": [
         "ch5choice"
       ],
-      "stage": "ch5",
+      "stage": "tuition",
       "characters": {
         "left": null,
         "right": "bird"
@@ -791,7 +872,7 @@
       "ids": [
         "ch5w1"
       ],
-      "stage": "ch5",
+      "stage": "tuition",
       "characters": {
         "left": null,
         "right": "bird"
@@ -801,7 +882,7 @@
       "ids": [
         "ch5w2"
       ],
-      "stage": "ch5",
+      "stage": "tuition",
       "characters": {
         "left": "minh",
         "right": null
@@ -811,27 +892,27 @@
       "ids": [
         "ch5w3"
       ],
-      "stage": "ch5",
+      "stage": "tuition",
       "characters": {
         "left": null,
-        "right": "bird"
+        "right": null
       }
     },
     {
       "ids": [
         "ch5w4"
       ],
-      "stage": "ch5",
+      "stage": "tuition",
       "characters": {
         "left": null,
-        "right": "bird"
+        "right": null
       }
     },
     {
       "ids": [
         "ch5w5"
       ],
-      "stage": "ch5",
+      "stage": "tuition",
       "characters": {
         "left": "minh",
         "right": null
@@ -841,17 +922,17 @@
       "ids": [
         "ch5w6"
       ],
-      "stage": "ch5",
+      "stage": "tuition",
       "characters": {
         "left": null,
-        "right": "bird"
+        "right": null
       }
     },
     {
       "ids": [
         "ch5r1"
       ],
-      "stage": "ch5",
+      "stage": "tuition",
       "characters": {
         "left": null,
         "right": "bird"
@@ -861,7 +942,7 @@
       "ids": [
         "ch5r2"
       ],
-      "stage": "ch5",
+      "stage": "tuition",
       "characters": {
         "left": "minh",
         "right": null
@@ -871,27 +952,27 @@
       "ids": [
         "ch5r3"
       ],
-      "stage": "ch5",
+      "stage": "tuition",
       "characters": {
         "left": null,
-        "right": "bird"
+        "right": null
       }
     },
     {
       "ids": [
         "ch5r4"
       ],
-      "stage": "ch5",
+      "stage": "tuition",
       "characters": {
         "left": null,
-        "right": "bird"
+        "right": null
       }
     },
     {
       "ids": [
         "ch5r5"
       ],
-      "stage": "ch5",
+      "stage": "tuition",
       "characters": {
         "left": "minh-happy",
         "right": null
@@ -899,10 +980,19 @@
     },
     {
       "ids": [
-        "end_win",
+        "end_win"
+      ],
+      "stage": "tuition",
+      "characters": {
+        "left": "minh",
+        "right": null
+      }
+    },
+    {
+      "ids": [
         "end_loss"
       ],
-      "stage": "end",
+      "stage": "tuition",
       "characters": {
         "left": "minh",
         "right": null

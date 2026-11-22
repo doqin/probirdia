@@ -11,7 +11,6 @@ const glossary = glossaryMap(loadGlossary());
 const words = loadWords();
 ---
 
-<Base title={game.title.en}>
-  <h1 class="page-title">{game.title.en}</h1>
+<Base title={game.title.en} bare>
   <Player client:load game={game} glossary={glossary} words={words} lang="en" />
 </Base>

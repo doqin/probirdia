@@ -2,6 +2,7 @@
   import type { ProverbRow, SceneRow } from '../lib/remote';
   import { uploadArt } from '../lib/remote';
   import { slugify } from '../lib/slug';
+  import type { SceneLook } from '../lib/look';
   import { untrack } from 'svelte';
 
   let {
@@ -9,6 +10,9 @@
     scenes,
     proverbs,
     chapters = [],
+    stages = [],
+    characters = [],
+    look = { stage: '', left: null, right: null },
     gameSlug = 'game',
     saving = false,
     onSave,
@@ -18,9 +22,12 @@
     scenes: SceneRow[];
     proverbs: ProverbRow[];
     chapters?: string[];
+    stages?: string[];
+    characters?: string[];
+    look?: SceneLook;
     gameSlug?: string;
     saving?: boolean;
-    onSave: (scene: SceneRow) => void | Promise<void>;
+    onSave: (scene: SceneRow, look: SceneLook) => void | Promise<void>;
     onDelete: (scene: SceneRow) => void | Promise<void>;
   } = $props();
 
@@ -28,8 +35,12 @@
   // `scene` arrives as a Svelte $state proxy, which structuredClone refuses to
   // clone, so take a plain snapshot first.
   let draft = $state<SceneRow>(untrack(() => $state.snapshot(scene)));
+  let draftLook = $state<SceneLook>(untrack(() => ({ ...look })));
   $effect(() => {
     draft = $state.snapshot(scene);
+  });
+  $effect(() => {
+    draftLook = { ...look };
   });
 
   let uploading = $state(false);
@@ -75,7 +86,7 @@
   };
 </script>
 
-<form class="scene" onsubmit={(e) => { e.preventDefault(); onSave(draft); }}>
+<form class="scene" onsubmit={(e) => { e.preventDefault(); onSave(draft, draftLook); }}>
   <div class="row">
     <label class="wide">
       <span>Name of this screen</span>
@@ -86,10 +97,12 @@
       <small>Other screens point to this name. Short and lowercase: <code>intro1</code>, <code>scam</code>.</small>
     </label>
     <label>
-      <span>Part of the lesson</span>
+      <span>Kind of screen</span>
       <select bind:value={draft.phase}>
+        <option value="game">Story (the game)</option>
+        <option value="title">Title — the opening card with PLAY</option>
+        <option value="divider">Chapter divider</option>
         <option value="preview">Preview (learn the proverbs)</option>
-        <option value="game">Game (the story)</option>
         <option value="review">Review (fill in the blanks)</option>
       </select>
     </label>
@@ -135,6 +148,40 @@
       <input bind:value={draft.note_simple} />
     </label>
   </div>
+
+  <fieldset class="art">
+    <legend>Stage</legend>
+    <div class="row">
+      <label>
+        <span>Artwork behind this screen</span>
+        <select bind:value={draftLook.stage}>
+          <option value="">(the game's default)</option>
+          {#each stages as key (key)}
+            <option value={key}>{key}</option>
+          {/each}
+        </select>
+      </label>
+      <label>
+        <span>On the left</span>
+        <select bind:value={draftLook.left}>
+          <option value={null}>(nobody)</option>
+          {#each characters as key (key)}
+            <option value={key}>{key}</option>
+          {/each}
+        </select>
+      </label>
+      <label>
+        <span>On the right</span>
+        <select bind:value={draftLook.right}>
+          <option value={null}>(nobody)</option>
+          {#each characters as key (key)}
+            <option value={key}>{key}</option>
+          {/each}
+        </select>
+      </label>
+    </div>
+    <small>Stages and characters are listed in the Look tab.</small>
+  </fieldset>
 
   <fieldset class="art">
     <legend>Picture for this screen</legend>

@@ -72,7 +72,6 @@
   {#if isDraft}
     <p class="status draft">Draft preview — players cannot see this game until you publish it.</p>
   {/if}
-  <h1 class="page-title">{game.title.en}</h1>
   {#key game.slug}
     <Player {game} {glossary} {words} lang="en" />
   {/key}
@@ -80,6 +79,23 @@
 
 <style>
   .status { max-width: 34rem; margin: 2rem auto; text-align: center; }
-  .error { color: var(--danger); font-weight: 600; }
-  .draft { margin-bottom: .5rem; padding: .5rem .8rem; border-radius: .5rem; background: #ffe08a; color: var(--ink); font-weight: 600; }
+  .error { color: var(--bad); font-weight: 600; }
+  .draft {
+    position: fixed;
+    z-index: 60;
+    top: .5rem;
+    left: 50%;
+    transform: translateX(-50%);
+    margin: 0;
+    padding: .3rem .9rem;
+    border: var(--pixel) solid var(--outline);
+    border-radius: 999px;
+    background: var(--cyan);
+    color: var(--ink);
+    font-family: var(--display);
+    font-size: .85rem;
+    font-weight: 600;
+    letter-spacing: var(--label-track);
+    text-transform: uppercase;
+  }
 </style>

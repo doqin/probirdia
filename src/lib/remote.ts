@@ -34,7 +34,7 @@ export interface SceneRow {
   id: string;
   game_id: string;
   key: string;
-  phase: 'preview' | 'game' | 'review';
+  phase: 'title' | 'divider' | 'preview' | 'game' | 'review';
   position: number;
   chapter: string | null;
   chapter_vi: string | null;
@@ -401,6 +401,11 @@ export async function saveWhyItFits(
     .update(why)
     .eq('game_id', gameId)
     .eq('proverb_id', proverbId);
+  if (error) throw error;
+}
+
+export async function savePresentation(id: string, presentation: Presentation): Promise<void> {
+  const { error } = await client().from('game').update({ presentation }).eq('id', id);
   if (error) throw error;
 }
 

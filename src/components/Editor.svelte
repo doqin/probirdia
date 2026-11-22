@@ -3,7 +3,10 @@
   import type { Session } from '@supabase/supabase-js';
   import SceneEditor from './SceneEditor.svelte';
   import ProverbPanel from './ProverbPanel.svelte';
+  import DesignPanel from './DesignPanel.svelte';
   import { supabase, supabaseConfigured } from '../lib/supabase';
+  import type { Presentation } from '../lib/types';
+  import { sceneLook, withSceneLook } from '../lib/look';
   import {
     amAnEditor,
     attachProverb,
@@ -13,6 +16,7 @@
     fetchEditorData,
     fetchEditorGames,
     saveProverb,
+    savePresentation,
     saveScene,
     saveWhyItFits,
     setGameStatus,
@@ -40,7 +44,7 @@
 
   let games = $state<GameRow[]>([]);
   let data = $state<EditorData | null>(null);
-  let tab = $state<'story' | 'proverbs' | 'settings' | 'check'>('story');
+  let tab = $state<'story' | 'design' | 'proverbs' | 'settings' | 'check'>('story');
   let sceneId = $state<string | null>(null);
   let notice = $state('');
   let search = $state('');
@@ -74,6 +78,11 @@
   ]);
 
   const visibleScenes = $derived(filterScenes(ordered, search));
+
+  /** The game's stage and character vocabulary, for the per-screen pickers. */
+  const stageKeys = $derived(Object.keys(data?.game.presentation?.stages ?? {}));
+  const characterKeys = $derived(Object.keys(data?.game.presentation?.characters ?? {}));
+  const currentLook = $derived(sceneLook(data?.game.presentation ?? null, scene?.key ?? ''));
 
   /** The scene list, grouped by chapter, in playing order. */
   const groups = $derived(groupByChapter(visibleScenes));
@@ -133,9 +142,13 @@
     }
   }
 
-  async function saveSceneRow(row: SceneRow) {
+  async function saveSceneRow(row: SceneRow, look?: { stage: string; left: string | null; right: string | null }) {
     await guard(async () => {
       await saveScene(row);
+      if (look && data) {
+        const presentation: Presentation = data.game.presentation ?? { stages: {}, characters: {}, props: {}, items: {}, scenes: [] };
+        await savePresentation(data.game.id, withSceneLook(presentation, row.key, look));
+      }
       await refresh();
       say('Screen saved.');
     });
@@ -442,6 +455,7 @@
         {:else}
           <nav class="tabs">
             <button class:on={tab === 'story'} onclick={() => (tab = 'story')}>Story ({counts.game})</button>
+            <button class:on={tab === 'design'} onclick={() => (tab = 'design')}>Look</button>
             <button class:on={tab === 'proverbs'} onclick={() => (tab = 'proverbs')}>Proverbs ({data.used.length})</button>
             <button class:on={tab === 'settings'} onclick={() => (tab = 'settings')}>Settings</button>
             <button class:on={tab === 'check'} onclick={() => (tab = 'check')}>
@@ -513,6 +527,9 @@
                     scenes={data.scenes}
                     proverbs={data.proverbs}
                     chapters={chapters}
+                    stages={stageKeys}
+                    characters={characterKeys}
+                    look={currentLook}
                     gameSlug={data.game.slug}
                     saving={busy}
                     onSave={saveSceneRow}
@@ -523,6 +540,19 @@
                 {/if}
               </div>
             </div>
+          {:else if tab === 'design'}
+            <DesignPanel
+              presentation={data.game.presentation}
+              gameSlug={data.game.slug}
+              saving={busy}
+              onSave={async (next) => {
+                await guard(async () => {
+                  await savePresentation(data!.game.id, next);
+                  await refresh();
+                  say('Design saved.');
+                });
+              }}
+            />
           {:else if tab === 'proverbs'}
             <ProverbPanel
               proverbs={data.proverbs}
