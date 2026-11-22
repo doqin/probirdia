@@ -3,3 +3,6 @@ dist/
 .astro/
 .env
 .claude/
+
+.vercel
+.env*
