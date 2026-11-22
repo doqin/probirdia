@@ -72,6 +72,11 @@ const links = [
     margin: 0 auto;
     padding: .75rem 1rem;
   }
+  /* On a phone the bar wraps to two rows and would cover the banner's ribbon: sit above the hero instead. */
+  @media (max-width: 40rem) {
+    header.overlay { margin-bottom: 0; }
+    header::before { background: var(--cream); mask-image: none; -webkit-mask-image: none; inset: 0; }
+  }
   .brand { display: inline-flex; align-items: center; gap: .6rem; font-size: 1.6rem; font-weight: 700; text-decoration: none; letter-spacing: .02em; }
   .brand img { border-radius: 50%; }
   nav { display: flex; gap: 1.5rem; font-size: 1.3rem; font-weight: 600; }

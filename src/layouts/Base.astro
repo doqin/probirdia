@@ -4,6 +4,10 @@ import Header from '../components/Header.astro';
 import Footer from '../components/Footer.astro';
 import { getImage } from 'astro:assets';
 import { ClientRouter } from 'astro:transitions';
+import display400 from '@fontsource/pixelify-sans/files/pixelify-sans-latin-400-normal.woff2?url';
+import display600 from '@fontsource/pixelify-sans/files/pixelify-sans-latin-600-normal.woff2?url';
+import display700 from '@fontsource/pixelify-sans/files/pixelify-sans-latin-700-normal.woff2?url';
+import reading400 from '@fontsource/vt323/files/vt323-latin-400-normal.woff2?url';
 import font400 from '@fontsource/zilla-slab/files/zilla-slab-latin-400-normal.woff2?url';
 import font600 from '@fontsource/zilla-slab/files/zilla-slab-latin-600-normal.woff2?url';
 import font700 from '@fontsource/zilla-slab/files/zilla-slab-latin-700-normal.woff2?url';
@@ -12,8 +16,13 @@ import logo from '../assets/brand/logo.webp';
 interface Props {
   title?: string;
   description?: string;
+  /**
+   * A game screen owns the whole viewport: no header, no footer, no page column.
+   * The player draws its own HUD inside the artwork.
+   */
+  bare?: boolean;
 }
-const { title, description = 'Learn English proverbs by playing choose-your-own-adventure games.' } = Astro.props;
+const { title, description = 'Learn English proverbs by playing choose-your-own-adventure games.', bare = false } = Astro.props;
 const favicon = await getImage({ src: logo, width: 64, height: 64, format: 'png' });
 const fullTitle = title ? `${title} | Probirdia` : 'Probirdia';
 ---
@@ -25,14 +34,14 @@ const fullTitle = title ? `${title} | Probirdia` : 'Probirdia';
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <meta name="description" content={description} />
     <link rel="icon" type="image/png" href={favicon.src} />
-    {[font400, font600, font700].map((href) => <link rel="preload" as="font" type="font/woff2" href={href} crossorigin />)}
+    {(bare ? [display400, display600, display700, reading400] : [font400, font600, font700]).map((href) => <link rel="preload" as="font" type="font/woff2" href={href} crossorigin />)}
     <ClientRouter />
     <title>{fullTitle}</title>
   </head>
-  <body>
-    <Header overlay={Astro.slots.has('hero')} />
+  <body class:list={[{ bare }]}>
+    {!bare && <Header overlay={Astro.slots.has('hero')} />}
     <slot name="hero" />
-    <main><slot /></main>
-    <Footer />
+    <main class:list={[{ bare }]}><slot /></main>
+    {!bare && <Footer />}
   </body>
 </html>

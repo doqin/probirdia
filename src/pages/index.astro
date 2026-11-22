@@ -31,27 +31,45 @@ const tiles = [
 
   <p class="tagline">{t('tagline')}</p>
 
-  <h2 class="welcome">Welcome</h2>
+  <h2 class="band">Welcome</h2>
   <ul class="tiles">
     {tiles.map((tile) => (
       <li>
         <a href={tile.href} aria-label={tile.label}>
-          <Image src={tile.image} widths={[240, 360, 540]} sizes="(max-width: 40rem) 45vw, 17rem" alt="" />
+          <Image src={tile.image} widths={[240, 360, 540]} sizes="(max-width: 40rem) 45vw, 17rem" alt="" loading="eager" />
           <span>{tile.blurb}</span>
         </a>
       </li>
     ))}
   </ul>
+
+  <h2 class="band feedback">Questions and feedback</h2>
+  <p class="feedback-copy">Tell your teacher what worked in class and what didn't.</p>
 </Base>
 
 <style>
   .hero { max-height: 28rem; overflow: hidden; background: #eadcb8; }
-  .hero img { display: block; width: 100%; height: auto; min-height: 12rem; max-height: 28rem; object-fit: cover; object-position: 28% 50%; }
-  .tagline { text-align: right; font-weight: 600; margin: 1.5rem 0 1rem; }
-  .welcome { text-align: center; text-transform: uppercase; font-size: 1.6rem; background: var(--parchment); padding: .3rem 1rem; margin: 1.5rem 0; }
+  .hero img { display: block; width: 100%; height: auto; max-height: 28rem; object-fit: cover; object-position: 28% 50%; }
+  /* On a phone the whole banner shows, ribbon and all, as on the Canva phone page. */
+  @media (min-width: 40.01rem) { .hero img { min-height: 12rem; } }
+  .tagline { text-align: right; font-weight: 600; margin: 1.5rem 0 .5rem; }
+
+  /* Full-bleed tan bands: the page column stays narrow, the band runs edge to edge. */
+  .band {
+    margin: 2rem 0;
+    padding: .3rem 1rem;
+    text-align: center;
+    font-size: clamp(1.5rem, 4vw, 1.9rem);
+    font-weight: 700;
+    background: var(--tan);
+    box-shadow: 0 0 0 100vmax var(--tan);
+    clip-path: inset(0 -100vmax);
+  }
   .tiles { list-style: none; padding: 0; margin: 0 auto; display: grid; gap: 1.5rem 1.2rem; grid-template-columns: repeat(2, minmax(0, 1fr)); max-width: 34rem; }
-  .tiles a { display: block; text-decoration: none; text-align: center; font-size: .95rem; }
+  .tiles a { display: block; text-decoration: none; text-align: center; font-size: .95rem; line-height: 1.3; }
   .tiles img { display: block; width: 100%; height: auto; aspect-ratio: 1; object-fit: cover; border-radius: var(--radius); transition: transform .15s ease, box-shadow .15s ease; }
   .tiles a:hover img, .tiles a:focus-visible img { transform: translateY(-3px); box-shadow: 0 .6rem 1.2rem rgb(0 0 0 / .2); }
   .tiles span { display: block; margin-top: .4rem; }
+  .feedback { margin-top: 3rem; }
+  .feedback-copy { max-width: 34rem; margin: 0 auto; text-align: center; font-size: .95rem; line-height: 1.3; }
 </style>

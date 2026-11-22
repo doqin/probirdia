@@ -1,19 +1,51 @@
 ---
+import banner from '../assets/brand/banner.webp';
+import { t } from '../i18n/ui';
+import { withBase } from '../lib/url';
+
+const links = [
+  { href: withBase('/'), label: t('nav.home') },
+  { href: withBase('/about/'), label: t('nav.about') },
+  { href: withBase('/games/'), label: t('nav.games') },
+  { href: withBase('/glossary/'), label: t('nav.glossary') },
+];
 ---
 
-<footer>
-  <strong>PROBIRDIA</strong>
-  <span>Learning proverbs through narrative-driven games</span>
+<!-- The scrapbook strip from the Canva home page: the hero's collage under a cream wash, brand left. -->
+<footer style={`--scrap: url("${banner.src}")`}>
+  <div class="inner">
+    <div class="brand">
+      <strong>PROBIRDIA</strong>
+      <span>{t('tagline')}</span>
+    </div>
+    <nav aria-label="Footer">
+      {links.map((l) => <a href={l.href}>{l.label}</a>)}
+    </nav>
+  </div>
 </footer>
 
 <style>
   footer {
+    margin-top: 2rem;
+    background:
+      linear-gradient(rgb(255 246 230 / .7), rgb(255 246 230 / .7)),
+      var(--scrap) center bottom / cover no-repeat;
+    color: var(--umber);
+  }
+  .inner {
     display: flex;
     flex-wrap: wrap;
-    gap: .5rem 1.5rem;
-    justify-content: center;
-    padding: 1.5rem 1rem;
-    background: var(--brown);
-    color: #fff6e6;
+    align-items: flex-end;
+    justify-content: space-between;
+    gap: 1rem 2rem;
+    max-width: var(--page);
+    margin: 0 auto;
+    padding: 1.5rem 1rem 1.75rem;
   }
+  .brand { display: grid; gap: .15rem; }
+  .brand strong { font-size: clamp(1.8rem, 5vw, 2.6rem); line-height: 1; color: var(--brown); letter-spacing: .02em; }
+  .brand span { font-weight: 600; }
+  nav { display: flex; flex-wrap: wrap; gap: .25rem 1.5rem; font-weight: 700; }
+  nav a { text-decoration: none; padding: .3rem 0; }
+  nav a:hover { text-decoration: underline; text-underline-offset: .2em; }
 </style>

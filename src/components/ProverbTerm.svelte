@@ -57,7 +57,7 @@
   {#if open}
     <span class="pop" role="tooltip" {id} bind:this={pop} style:--shift="{shift}px">
       <span class="card">
-        <strong>{entry.proverb}</strong>
+        <strong>{entry.term}</strong>
         <span class="meaning">{pick(entry.meaning, lang)}</span>
         {#if entry.example}<em class="example">{pick(entry.example, lang)}</em>{/if}
         <a href={`/glossary/#${entry.slug}`} target="_blank" rel="noopener">{t('see_glossary', lang)}</a>

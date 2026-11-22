@@ -1,13 +1,26 @@
 @import '@fontsource/zilla-slab/400.css';
 @import '@fontsource/zilla-slab/600.css';
 @import '@fontsource/zilla-slab/700.css';
+@import '@fontsource/pixelify-sans/400.css';
+@import '@fontsource/pixelify-sans/600.css';
+@import '@fontsource/pixelify-sans/700.css';
+@import '@fontsource/vt323/400.css';
 
+/*
+ * Two worlds, one stylesheet.
+ *  - The SITE (home, about, games, glossary, editor) is the cream-and-brown scrapbook storybook
+ *    from the Canva home design: Zilla Slab, saddle-brown actions, tan bands.
+ *  - The GAME (/play, `body.bare`) is the pixel-art stage from the Canva game deck: its tokens,
+ *    type and buttons are scoped under `body.bare` below, so neither world leaks into the other.
+ */
 :root {
   --cream: #ffe6c2;
   --parchment: #c5bbab;
+  --tan: #cab394;           /* the full-width bands ("Welcome", "Questions and feedback") */
   --pill: #a6a6a6;
   --pill-light: #b8bfc4;
   --brown: #7a5538;
+  --umber: #5a4630;
   --ink: #1a1208;
   --sky-top: #c3e8ff;
   --sky-bottom: #effcff;
@@ -27,7 +40,7 @@ body {
   min-height: 100vh;
   display: flex;
   flex-direction: column;
-  background: var(--cream);
+  background: #fff;           /* the Canva home page body is white; cream is the header wash and panels */
   color: var(--ink);
   font-family: 'Zilla Slab', Rockwell, Georgia, serif;
   font-size: 1.15rem;
@@ -87,3 +100,82 @@ h1 { font-size: clamp(1.8rem, 4vw, 2.6rem); text-transform: uppercase; text-alig
 /* Page transitions swap instantly; a cross-fade of two differently-sized pages looks like a flash. */
 ::view-transition-old(root),
 ::view-transition-new(root) { animation: none; mix-blend-mode: normal; }
+
+/* ------------------------------------------------------------------------------------------
+ * THE GAME WORLD (body.bare): the Canva game deck's pixel stage.
+ * ------------------------------------------------------------------------------------------ */
+body.bare {
+  /* surfaces */
+  --wall: #d7d6fb;
+  --wall-deep: #c8c6f2;
+  --paper: #ffffff;
+  --paper-dim: #f3f3fd;
+  --bubble: rgb(255 255 255 / 0.94);
+  /* colour */
+  --ink: #1b1a26;
+  --outline: #3b3953;
+  --teal: #96c9ce;
+  --teal-deep: #7bbcc2;
+  --cyan: #42d6ff;
+  --sky: #c6f4ff;
+  --good: #2f7d3a;
+  --bad: #a33b2a;
+  --cream: #fff6e0;           /* the one warm surface: story notes */
+  /* shape */
+  --radius-sm: 0.9rem;
+  --pixel: 3px;
+  /* type */
+  --display: 'Pixelify Sans', 'Zilla Slab', system-ui, sans-serif;
+  --body: 'VT323', 'Zilla Slab', ui-monospace, monospace;
+  --label-track: 0.06em;
+  /* depth: hard, unblurred offsets */
+  --lift-1: 0 0.2rem 0 rgb(59 57 83 / 0.55);
+  --lift-2: 0 0.3rem 0 rgb(59 57 83 / 0.55);
+  --lift-3: 0 0.45rem 0 rgb(59 57 83 / 0.45);
+
+  background: var(--wall-deep);
+  font-family: var(--body);
+  font-size: 1.35rem;
+  line-height: 1.35;
+}
+/* The stage owns the viewport: no page chrome around it. */
+main.bare { max-width: none; padding: 0; }
+.bare h1, .bare h2, .bare h3 { font-family: var(--display); letter-spacing: 0.02em; }
+.bare .pill {
+  border: var(--pixel) solid var(--outline);
+  font-family: var(--display);
+  font-weight: 600;
+  letter-spacing: var(--label-track);
+  background: var(--paper);
+}
+.bare .pill.play { background: var(--cyan); }
+
+/* The deck's controls: a pixel capsule with a hard offset and an indigo outline. */
+.bare .btn {
+  font-family: var(--display);
+  font-weight: 600;
+  font-size: 1.05rem;
+  letter-spacing: var(--label-track);
+  border: var(--pixel) solid var(--outline);
+  padding: .35em 1.3em;
+  background: var(--teal);
+  color: var(--ink);
+  box-shadow: var(--lift-1);
+  transition: transform .08s steps(2, end), box-shadow .08s steps(2, end);
+}
+.bare .btn:hover { background: var(--teal-deep); filter: none; }
+.bare .btn:active { transform: translateY(2px); }
+.bare .btn.secondary { background: var(--paper); color: var(--ink); }
+.bare .btn.secondary:hover { background: var(--paper-dim); }
+.bare :focus-visible { outline: var(--pixel) solid var(--cyan); outline-offset: 3px; }
+
+/* Motion is a hint, not the message: keep the state change, drop the travel. */
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: .01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: .01ms !important;
+    scroll-behavior: auto !important;
+  }
+  .bare .btn:active { transform: none; }
+}

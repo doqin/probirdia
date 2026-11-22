@@ -1,7 +1,9 @@
 ---
 import Base from '../../layouts/Base.astro';
 import GameCard from '../../components/GameCard.astro';
+import RemoteGames from '../../components/RemoteGames.svelte';
 import { loadAllGames } from '../../lib/content';
+import { supabaseConfigured } from '../../lib/supabase';
 import { t } from '../../i18n/ui';
 
 const games = loadAllGames();
@@ -11,9 +13,12 @@ const games = loadAllGames();
   <h1 class="page-title">{t('nav.games')}</h1>
   <ul class="grid">
     {games.map((g) => <li><GameCard game={g} /></li>)}
+    {supabaseConfigured && <RemoteGames client:load />}
+    {!games.length && !supabaseConfigured && <li class="empty">No games are published yet.</li>}
   </ul>
 </Base>
 
 <style>
   .grid { list-style: none; margin: 1.5rem auto 0; padding: 0; display: grid; gap: 1.5rem; grid-template-columns: repeat(auto-fill, minmax(15rem, 1fr)); max-width: 56rem; }
+  .empty { opacity: .75; }
 </style>
