@@ -4,6 +4,9 @@
   import type { Game } from '../lib/types';
   import { withBase } from '../lib/url';
 
+  /** Slugs of the spreadsheet games already on the page, so a game that exists in both places shows once. */
+  let { skip = [] }: { skip?: string[] } = $props();
+
   /** Games published from the content studio. Rendered after the spreadsheet games. */
   let games = $state<Game[]>([]);
   let failed = $state(false);
@@ -11,7 +14,7 @@
 
   onMount(async () => {
     try {
-      games = await fetchPublishedGames();
+      games = (await fetchPublishedGames()).filter((game) => !skip.includes(game.slug));
     } catch {
       failed = true;
     } finally {
@@ -35,7 +38,7 @@
   {/each}
 {:else if failed}
   <li class="notice">Could not load the online games right now.</li>
-{:else if loaded}
+{:else if loaded && !skip.length}
   <li class="notice">No games are published yet.</li>
 {/if}
 
