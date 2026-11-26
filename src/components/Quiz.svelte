@@ -120,7 +120,7 @@
                 <path fill="#c9b9a0" d="M6 13h4v1H6z" />
               </svg>
             </button>
-            {#if openHint === e.slug}<span class="tip" role="tooltip">{hint}</span>{/if}
+            {#if openHint === e.slug}<span class="tip" class:down={i < 2} role="tooltip">{hint}</span>{/if}
           </div>
         {/if}
         {#if checked}<span class="mark" aria-label={ok ? t('correct', lang) : t('incorrect', lang)}>{ok ? '✓' : '✗'}</span>{/if}
@@ -270,6 +270,7 @@
     border: .3cqw solid var(--ink);
     border-radius: 1.6cqw;
   }
+  .tip.down { bottom: auto; top: calc(100% - .4cqw); }
   .mark { position: absolute; right: 1.2cqw; top: 50%; transform: translateY(-50%); font-size: 2.6cqw; font-weight: 700; }
   .ok .mark { color: var(--good); }
   .bad .mark { color: var(--bad); }
@@ -312,7 +313,7 @@
     .fix { font-size: .95rem; }
     .hint { justify-content: flex-start; }
     .bulb { width: 2.2rem; height: 2.2rem; }
-    .tip { position: static; margin: 0; font-size: 1rem; border-width: 2px; border-radius: .8rem; }
+    .tip, .tip.down { position: static; margin: 0; font-size: 1rem; border-width: 2px; border-radius: .8rem; }
     .mark { position: static; transform: none; font-size: 1.4rem; justify-self: end; }
     .foot { padding-top: 1rem; }
     .btn.go { min-width: 0; width: 100%; font-size: 1.05rem; }
