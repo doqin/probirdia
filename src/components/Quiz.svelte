@@ -23,6 +23,26 @@
   let answers = $state<Record<string, string>>({});
   let openHint = $state<string | null>(null);
   let openRow = $state<string | null>(null);
+  /** Which way the open list goes and how tall it may be, measured against the scrolling rows area. */
+  let listUp = $state(false);
+  let listMax = $state<number | undefined>(undefined);
+
+  function toggleRow(ev: MouseEvent, slug: string) {
+    if (openRow === slug) return (openRow = null);
+    const btn = ev.currentTarget as HTMLElement;
+    const area = btn.closest('.rows')?.getBoundingClientRect();
+    const b = btn.getBoundingClientRect();
+    if (area && window.matchMedia('(min-width: 40.01rem)').matches) {
+      const below = area.bottom - b.bottom - 8;
+      const above = b.top - area.top - 8;
+      listUp = above > below;
+      listMax = Math.max(120, Math.floor(listUp ? above : below));
+    } else {
+      listUp = false;
+      listMax = undefined;
+    }
+    openRow = slug;
+  }
 
   const rows = $derived(pages[page] ?? []);
   const last = $derived(page >= pages.length - 1);
@@ -66,13 +86,13 @@
               aria-expanded={openRow === e.slug}
               aria-label={`${t('choose_definition', lang)}: ${e.term}`}
               disabled={checked}
-              onclick={() => (openRow = openRow === e.slug ? null : e.slug)}
+              onclick={(ev) => toggleRow(ev, e.slug)}
             >
               <span>{answers[e.slug] ? pick(entries.find((x) => x.slug === answers[e.slug])!.meaning, lang) : t('choose_definition', lang)}</span>
               <span class="caret" aria-hidden="true">▼</span>
             </button>
             {#if openRow === e.slug}
-              <ul class="options" class:up={i >= 2} role="listbox">
+              <ul class="options" class:up={listUp} style:max-height={listMax ? `${listMax}px` : undefined} role="listbox">
                 {#each options as o (o.slug)}
                   <li role="option" aria-selected={answers[e.slug] === o.slug}>
                     <button type="button" onclick={() => { answers[e.slug] = o.slug; openRow = null; }}>{pick(o.meaning, lang)}</button>
@@ -222,6 +242,7 @@
     border: .35cqw solid #aaa;
     border-radius: 1.6cqw;
     box-shadow: 0 .5cqw 0 rgb(59 57 83 / .35);
+    overflow-y: auto;
   }
   .options.up { top: auto; bottom: calc(100% + .4cqw); }
   .options button {
