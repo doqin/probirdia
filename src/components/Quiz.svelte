@@ -147,7 +147,7 @@
     z-index: 6;
     inset: 5% 5.5% 5% 5.5%;
     display: grid;
-    grid-template-rows: auto auto 1fr auto;
+    grid-template-rows: auto auto minmax(0, 1fr) auto;
     padding: 1.6cqw 3cqw 1.4cqw;
     background: #fff;
     border: .55cqw solid #d6ccb5;
@@ -160,15 +160,15 @@
   }
   h2 { margin: 0; text-align: center; font-size: 3.4cqw; letter-spacing: .03em; }
   .count { margin: 0 0 .6cqw; text-align: center; font-size: 1.4cqw; opacity: .6; }
-  .rows { list-style: none; margin: 0; padding: 0; display: grid; align-content: space-evenly; gap: .6cqw; }
+  /* long definitions scroll inside the panel; the button below never leaves it */
+  .rows { list-style: none; margin: 0; padding: 0 .4cqw 0 0; display: grid; grid-auto-rows: max-content; align-content: space-evenly; gap: .6cqw; min-height: 0; overflow-y: auto; overscroll-behavior: contain; scrollbar-width: thin; }
   .row {
     position: relative;
     display: grid;
     grid-template-columns: 1fr 1.25fr;
     align-items: center;
     gap: 2cqw;
-    min-height: 0;
-    padding: .5cqw 1cqw;
+    padding: .5cqw 4.6cqw .5cqw 1cqw;
     border-radius: 1.4cqw;
   }
   .row.review { grid-template-columns: 1fr auto; }
@@ -270,7 +270,7 @@
     border: .3cqw solid var(--ink);
     border-radius: 1.6cqw;
   }
-  .mark { position: absolute; right: -2cqw; top: 50%; transform: translateY(-50%); font-size: 2.6cqw; font-weight: 700; }
+  .mark { position: absolute; right: 1.2cqw; top: 50%; transform: translateY(-50%); font-size: 2.6cqw; font-weight: 700; }
   .ok .mark { color: var(--good); }
   .bad .mark { color: var(--bad); }
   .foot { display: flex; justify-content: flex-end; align-items: center; gap: 2cqw; padding-top: .8cqw; }
@@ -301,7 +301,7 @@
     }
     h2 { font-size: 1.6rem; }
     .count { font-size: .85rem; }
-    .rows { gap: .6rem; }
+    .rows { gap: .6rem; overflow: visible; padding: 0; }
     .row { grid-template-columns: 1fr; gap: .4rem; padding: .6rem .5rem; }
     .term strong, .sentence { font-size: 1.1rem; }
     .pick { font-size: 1rem; padding: .5rem 1rem; border-width: 2px; border-radius: 1.2rem; }
