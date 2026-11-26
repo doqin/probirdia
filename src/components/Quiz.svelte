@@ -22,6 +22,7 @@
   /** preview: chosen definition slug per proverb; review: typed word per proverb. */
   let answers = $state<Record<string, string>>({});
   let openHint = $state<string | null>(null);
+  let openRow = $state<string | null>(null);
 
   const rows = $derived(pages[page] ?? []);
   const last = $derived(page >= pages.length - 1);
@@ -37,8 +38,11 @@
     page += 1;
     checked = false;
     openHint = null;
+    openRow = null;
   }
 </script>
+
+<svelte:window onkeydown={(ev) => { if (ev.key === 'Escape') openRow = null; }} />
 
 <section class="quiz" aria-labelledby="quiz-title">
   <h2 id="quiz-title">{heading}</h2>
@@ -54,14 +58,28 @@
             <strong>{e.term}</strong>
           </div>
           <div class="answer">
-            <select
+            <button
+              type="button"
+              class="pick"
+              class:empty={!answers[e.slug]}
+              aria-haspopup="listbox"
+              aria-expanded={openRow === e.slug}
               aria-label={`${t('choose_definition', lang)}: ${e.term}`}
-              bind:value={answers[e.slug]}
               disabled={checked}
+              onclick={() => (openRow = openRow === e.slug ? null : e.slug)}
             >
-              <option value="">{t('choose_definition', lang)}</option>
-              {#each options as o (o.slug)}<option value={o.slug}>{pick(o.meaning, lang)}</option>{/each}
-            </select>
+              <span>{answers[e.slug] ? pick(entries.find((x) => x.slug === answers[e.slug])!.meaning, lang) : t('choose_definition', lang)}</span>
+              <span class="caret" aria-hidden="true">▼</span>
+            </button>
+            {#if openRow === e.slug}
+              <ul class="options" class:up={i >= 2} role="listbox">
+                {#each options as o (o.slug)}
+                  <li role="option" aria-selected={answers[e.slug] === o.slug}>
+                    <button type="button" onclick={() => { answers[e.slug] = o.slug; openRow = null; }}>{pick(o.meaning, lang)}</button>
+                  </li>
+                {/each}
+              </ul>
+            {/if}
             {#if bad}<p class="fix">{pick(e.meaning, lang)}</p>{/if}
           </div>
         {:else}
@@ -161,7 +179,7 @@
   .sentence { display: flex; gap: .6em; font-size: 2.1cqw; }
   .num { flex: none; }
 
-  select, .gap {
+  .gap {
     font-family: var(--display);
     font-weight: 600;
     color: var(--ink);
@@ -169,13 +187,60 @@
     border: .35cqw solid #aaa;
     border-radius: 999px;
   }
-  select {
+  .answer { position: relative; }
+  .pick {
     width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1cqw;
     padding: .7cqw 1.6cqw;
+    font-family: var(--display);
+    font-weight: 600;
     font-size: 1.7cqw;
-    text-overflow: ellipsis;
+    line-height: 1.15;
+    text-align: left;
+    color: var(--ink);
+    background: #fff3cd;
+    border: .35cqw solid #aaa;
+    border-radius: 999px;
     cursor: pointer;
   }
+  .pick.empty { text-align: center; justify-content: space-between; }
+  .pick:disabled { opacity: 1; cursor: default; }
+  .caret { flex: none; font-size: 1.3cqw; }
+  .options {
+    position: absolute;
+    z-index: 10;
+    left: 0;
+    right: 0;
+    top: calc(100% + .4cqw);
+    margin: 0;
+    padding: .4cqw;
+    list-style: none;
+    background: #fff;
+    border: .35cqw solid #aaa;
+    border-radius: 1.6cqw;
+    box-shadow: 0 .5cqw 0 rgb(59 57 83 / .35);
+  }
+  .options.up { top: auto; bottom: calc(100% + .4cqw); }
+  .options button {
+    width: 100%;
+    padding: .8cqw 1.2cqw;
+    font-family: var(--display);
+    font-weight: 600;
+    font-size: 1.6cqw;
+    line-height: 1.2;
+    text-align: left;
+    white-space: normal;
+    color: var(--ink);
+    background: none;
+    border: 0;
+    border-radius: 1cqw;
+    cursor: pointer;
+  }
+  .options button:hover, .options button:focus-visible { background: #fff3cd; }
+  .options [aria-selected='true'] button { background: #e6f5e8; }
   .gap {
     padding: .1em .5em;
     margin: 0 .15em;
@@ -184,7 +249,7 @@
     border-radius: .6em;
     min-width: 4ch;
   }
-  select:disabled, .gap:disabled { opacity: 1; }
+    .gap:disabled { opacity: 1; }
   .fix { margin: .3cqw 0 0; font-size: 1.7cqw; font-weight: 700; color: var(--good); }
   .hint { position: relative; display: flex; align-items: center; justify-content: flex-end; gap: 1cqw; }
   .bulb { width: 4cqw; height: 4cqw; min-width: 2rem; min-height: 2rem; padding: 0; border: 0; background: none; cursor: help; }
@@ -239,7 +304,10 @@
     .rows { gap: .6rem; }
     .row { grid-template-columns: 1fr; gap: .4rem; padding: .6rem .5rem; }
     .term strong, .sentence { font-size: 1.1rem; }
-    select { font-size: 1rem; padding: .5rem 1rem; border-width: 2px; }
+    .pick { font-size: 1rem; padding: .5rem 1rem; border-width: 2px; border-radius: 1.2rem; }
+    .caret { font-size: .8rem; }
+    .options { position: static; margin-top: .4rem; border-width: 2px; border-radius: 1rem; padding: .25rem; }
+    .options button { font-size: 1rem; padding: .6rem .8rem; }
     .gap { border-width: 2px; }
     .fix { font-size: .95rem; }
     .hint { justify-content: flex-start; }
