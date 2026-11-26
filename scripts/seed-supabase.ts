@@ -136,6 +136,9 @@ async function main() {
       example: entry.example?.en ?? null,
       example_vi: entry.example?.vi ?? null,
       forms: entry.forms ?? [],
+      blank: entry.blank ?? null,
+      hint: entry.hint?.en ?? null,
+      hint_vi: entry.hint?.vi ?? null,
     };
     const { data, error } = await db.from('proverb').upsert(row, { onConflict: 'kind,term' }).select('id').single();
     if (error) throw new Error(`${entry.term}: ${error.message}`);

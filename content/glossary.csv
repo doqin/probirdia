@@ -1,23 +1,23 @@
-proverb,meaning,meaning_vi,example,example_vi
-A little knowledge is a dangerous thing,A small amount of knowledge can mislead people into thinking they are more expert than they really are.,,"He read one article about first aid and tried to treat a broken arm himself. A little knowledge is a dangerous thing.",
-He who hesitates is lost,Indecision or delay in critical moments can lead to missed opportunities or failure.,,"She thought about the job offer for so long that someone else took it. He who hesitates is lost.",
-Make hay while the sun shines,Take advantage of an opportunity while you still can.,,"The shop is having a sale this weekend only, so make hay while the sun shines!",
-Good things come to those who wait,Patience is often rewarded.,,"I waited a year for the new game to come out, and it was worth it. Good things come to those who wait.",
-A stitch in time saves nine,Fixing a small problem early prevents it from becoming a much bigger one.,,"Repair the leak now. A stitch in time saves nine.",
-Actions speak louder than words,What people do is a better sign of their intentions than what they say.,,"He promised to help, but never showed up. Actions speak louder than words.",
-Better late than never,It is better to do something late than not to do it at all.,,"I finally finished my homework at midnight, but better late than never.",
-Don't count your chickens before they hatch,Do not rely on something good happening until it has actually happened.,,"You haven't got the job yet, so don't count your chickens before they hatch.",
-Look before you leap,Check that something is not going to cause problems or have a bad result before you do it.,,"Before you sign the contract, read it carefully. Look before you leap.",
-Virtue is its own reward,"Doing what is morally right is rewarding in itself, even if you receive no external reward or recognition.",,He returned the lost wallet and asked for nothing. Virtue is its own reward.,
-Many hands make light work,A task is soon accomplished if several people help.,,"The whole class helped clean the room, and it took ten minutes. Many hands make light work.",
-Practise makes perfect,Repeated effort and consistent practice lead to improvement and eventual mastery.,,She played the song every day until she got it right. Practise makes perfect.,
-Fortune favors the bold,People who take bold risks are more likely to succeed than those who hold back.,,She spoke to the director about her idea and got the job. Fortune favors the bold.,
-Better safe than sorry,It's wiser to be cautious and careful than to be hasty or rash and so do something you may later regret.,,"Take an umbrella, just in case. Better safe than sorry.",
-Time will tell,The outcome will only become clear as time passes.,Thời gian sẽ trả lời,We don't know if the plan worked yet. Time will tell.,
-The squeaky wheel gets the grease,The person who speaks up about a problem is the one who gets help.,Ai kêu thì được dầu,She kept asking the office until they fixed it — the squeaky wheel gets the grease.,
-Accidents will happen,"Mistakes and accidents cannot be avoided, so be ready for them.",Chuyện bất trắc vẫn xảy ra,"I dropped a glass, but accidents will happen.",
-A wise man takes advice,Sensible people ask for advice and follow it.,Người khôn ngoan biết nghe lời khuyên,"He asked his teacher before choosing, because a wise man takes advice.",
-Paddle your own canoe,Depend on yourself instead of waiting for other people.,Tự thân vận động,Nobody will write this essay for you — paddle your own canoe.,
-All that glitters is not gold,Something that looks attractive may not be valuable or honest.,Không phải thứ gì lấp lánh cũng là vàng,"The job looked perfect online, but all that glitters is not gold.",
-A bird in the hand is worth two in the bush,What you already have is worth more than what you might get.,Một con chim trong tay quý hơn hai con trên cành,Take the offer you already have — a bird in the hand is worth two in the bush.,
-"When one door closes, another opens",Losing one opportunity makes room for a new one.,Cánh cửa này khép lại thì cánh cửa khác mở ra,"She missed the deadline, but when one door closes, another opens.",
+proverb,meaning,meaning_vi,example,example_vi,blank,hint
+A little knowledge is a dangerous thing,A small amount of knowledge can mislead people into thinking they are more expert than they really are.,,He read one article about first aid and tried to treat a broken arm himself. A little knowledge is a dangerous thing.,,,
+He who hesitates is lost,Indecision or delay in critical moments can lead to missed opportunities or failure.,,She thought about the job offer for so long that someone else took it. He who hesitates is lost.,,,
+Make hay while the sun shines,Take advantage of an opportunity while you still can.,,"The shop is having a sale this weekend only, so make hay while the sun shines!",,,
+Good things come to those who wait,Patience is often rewarded.,,"I waited a year for the new game to come out, and it was worth it. Good things come to those who wait.",,,
+A stitch in time saves nine,Fixing a small problem early prevents it from becoming a much bigger one.,,Repair the leak now. A stitch in time saves nine.,,,
+Actions speak louder than words,What people do is a better sign of their intentions than what they say.,,"He promised to help, but never showed up. Actions speak louder than words.",,,
+Better late than never,It is better to do something late than not to do it at all.,,"I finally finished my homework at midnight, but better late than never.",,,
+Don't count your chickens before they hatch,Do not rely on something good happening until it has actually happened.,,"You haven't got the job yet, so don't count your chickens before they hatch.",,,
+Look before you leap,Check that something is not going to cause problems or have a bad result before you do it.,,"Before you sign the contract, read it carefully. Look before you leap.",,leap,A big jump
+Virtue is its own reward,"Doing what is morally right is rewarding in itself, even if you receive no external reward or recognition.",,He returned the lost wallet and asked for nothing. Virtue is its own reward.,,,
+Many hands make light work,A task is soon accomplished if several people help.,,"The whole class helped clean the room, and it took ten minutes. Many hands make light work.",,,
+Practise makes perfect,Repeated effort and consistent practice lead to improvement and eventual mastery.,,She played the song every day until she got it right. Practise makes perfect.,,,
+Fortune favors the bold,People who take bold risks are more likely to succeed than those who hold back.,,She spoke to the director about her idea and got the job. Fortune favors the bold.,,,
+Better safe than sorry,It's wiser to be cautious and careful than to be hasty or rash and so do something you may later regret.,,"Take an umbrella, just in case. Better safe than sorry.",,safe,Not in danger
+Time will tell,The outcome will only become clear as time passes.,Thời gian sẽ trả lời,We don't know if the plan worked yet. Time will tell.,,tell,What a storyteller does
+The squeaky wheel gets the grease,The person who speaks up about a problem is the one who gets help.,Ai kêu thì được dầu,She kept asking the office until they fixed it — the squeaky wheel gets the grease.,,squeaky,The noise a rusty hinge makes
+Accidents will happen,"Mistakes and accidents cannot be avoided, so be ready for them.",Chuyện bất trắc vẫn xảy ra,"I dropped a glass, but accidents will happen.",,Accidents,Unplanned mishaps nobody wants
+A wise man takes advice,Sensible people ask for advice and follow it.,Người khôn ngoan biết nghe lời khuyên,"He asked his teacher before choosing, because a wise man takes advice.",,wise,Smart and sensible
+Paddle your own canoe,Depend on yourself instead of waiting for other people.,Tự thân vận động,Nobody will write this essay for you — paddle your own canoe.,,canoe,"A small, light boat moved with a paddle"
+All that glitters is not gold,Something that looks attractive may not be valuable or honest.,Không phải thứ gì lấp lánh cũng là vàng,"The job looked perfect online, but all that glitters is not gold.",,glitters,Shines and sparkles
+A bird in the hand is worth two in the bush,What you already have is worth more than what you might get.,Một con chim trong tay quý hơn hai con trên cành,Take the offer you already have — a bird in the hand is worth two in the bush.,,bird,It has feathers and can fly
+"When one door closes, another opens",Losing one opportunity makes room for a new one.,Cánh cửa này khép lại thì cánh cửa khác mở ra,"She missed the deadline, but when one door closes, another opens.",,door,You walk through it to enter a room

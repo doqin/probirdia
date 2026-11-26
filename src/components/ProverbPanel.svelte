@@ -88,6 +88,25 @@
           </label>
         </div>
 
+        <div class="fields">
+          <label>
+            <span>Word to blank out (review)</span>
+            <input
+              value={p?.blank ?? ''}
+              placeholder="defaults to the longest word"
+              onchange={(e) => onUpdate(slot.proverb_id, { blank: e.currentTarget.value.trim() || null })}
+            />
+          </label>
+          <label>
+            <span>Hint for that word (review)</span>
+            <input
+              value={p?.hint ?? ''}
+              placeholder="e.g. A small, light boat"
+              onchange={(e) => onUpdate(slot.proverb_id, { hint: e.currentTarget.value.trim() || null })}
+            />
+          </label>
+        </div>
+
         {#if p && !p.meaning_vi}
           <p class="warn">No Vietnamese meaning yet — the recap table needs one.</p>
         {/if}

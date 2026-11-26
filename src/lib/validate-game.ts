@@ -93,8 +93,13 @@ export function validateGame(game: Game, knownProverbs: Set<string>): string[] {
       }
     }
     for (const id of ids) {
-      if (!reached.has(id)) problems.push(`Screen "${id}" can never be reached from the first screen.`);
+      // the game-over screen is entered by the engine, never linked to
+      if (!reached.has(id) && scenes[id].phase !== 'gameover') problems.push(`Screen "${id}" can never be reached from the first screen.`);
     }
+  }
+
+  if (Object.values(scenes).filter((s) => s.phase === 'gameover').length > 1) {
+    problems.push('Only one screen can be the game-over screen.');
   }
 
   return problems;

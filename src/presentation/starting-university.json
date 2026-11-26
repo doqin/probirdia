@@ -41,6 +41,12 @@
       "ground": 96,
       "dialogue": "bottom",
       "alt": "A laptop showing the tuition portal"
+    },
+    "gave-up": {
+      "background": "/games/starting-university/bg-gave-up.webp",
+      "ground": 96,
+      "dialogue": "bottom",
+      "alt": "Minh sitting alone in the dark, arms around his knees"
     }
   },
   "characters": {
@@ -997,6 +1003,17 @@
         "left": "minh",
         "right": null
       }
+    },
+    {
+      "ids": [
+        "gave_up"
+      ],
+      "stage": "gave-up",
+      "characters": {
+        "left": null,
+        "right": null
+      }
     }
-  ]
+  ],
+  "heart": "/games/starting-university/icon-heart.webp"
 }

@@ -20,6 +20,10 @@ export interface ProverbRow {
   example: string | null;
   example_vi: string | null;
   forms: string[];
+  /** Review segment: the word to type back, and a nudge toward it. Optional; defaults are derived. */
+  blank?: string | null;
+  hint?: string | null;
+  hint_vi?: string | null;
 }
 
 export interface StoredChoice {
@@ -34,7 +38,7 @@ export interface SceneRow {
   id: string;
   game_id: string;
   key: string;
-  phase: 'title' | 'divider' | 'preview' | 'game' | 'review';
+  phase: 'title' | 'divider' | 'preview' | 'game' | 'review' | 'gameover';
   position: number;
   chapter: string | null;
   chapter_vi: string | null;
@@ -206,6 +210,8 @@ export function toGlossaryEntry(row: ProverbRow): GlossaryEntry {
     letter: slug[0]?.toUpperCase() ?? '#',
     meaning: required(row.meaning, row.meaning_vi),
     example: localized(row.example, row.example_vi),
+    blank: row.blank?.trim() || undefined,
+    hint: localized(row.hint ?? null, row.hint_vi ?? null),
   };
 }
 

@@ -73,6 +73,8 @@ export function loadGlossary(dir = contentDir()): GlossaryEntry[] {
       letter: slug[0]?.toUpperCase() ?? '#',
       meaning,
       example: localized(row, 'example'),
+      blank: row.blank?.trim() || undefined,
+      hint: localized(row, 'hint'),
     });
   });
 
@@ -266,7 +268,7 @@ export function loadGame(slug: string, glossary: GlossaryEntry[], dir = contentD
 
     rowOf[id] = n;
     const phase = row.phase?.trim();
-    const PHASES = ['title', 'divider', 'preview', 'game', 'review'];
+    const PHASES = ['title', 'divider', 'preview', 'game', 'review', 'gameover'];
     if (phase && !PHASES.includes(phase)) {
       at(n, `"phase" must be one of ${PHASES.join(', ')} (or empty for a story screen)`);
     }
@@ -334,7 +336,8 @@ export function loadGame(slug: string, glossary: GlossaryEntry[], dir = contentD
       }
     }
     for (const id of Object.keys(scenes)) {
-      if (!reached.has(id)) at(rowOf[id], `scene "${id}" can never be reached from the first scene`);
+      // the game-over screen is entered by the engine, never linked to
+      if (!reached.has(id) && scenes[id].phase !== 'gameover') at(rowOf[id], `scene "${id}" can never be reached from the first scene`);
     }
   }
 
