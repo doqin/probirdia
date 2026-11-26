@@ -20,6 +20,10 @@ export interface GlossaryEntry {
   letter: string;
   meaning: Localized;
   example?: Localized;
+  /** Review segment: the word of the proverb the learner types back. Defaults to its longest word. */
+  blank?: string;
+  /** Review segment: a nudge toward the blank word. Defaults to its first letter and length. */
+  hint?: Localized;
 }
 
 export interface Choice {
@@ -55,9 +59,10 @@ export interface Scene {
   imageAlt?: string;
   /**
    * Which screen this is. `title` opens the game, `divider` cuts a chapter,
-   * `preview`/`review` are the lesson's two other phases.
+   * `preview`/`review` are the lesson's two other phases. `gameover` is the screen shown when
+   * the player runs out of confidence hearts; it is never linked to, so it is exempt from reachability.
    */
-  phase?: 'title' | 'divider' | 'preview' | 'game' | 'review';
+  phase?: 'title' | 'divider' | 'preview' | 'game' | 'review' | 'gameover';
   /** Review segment: why this proverb does or does not suit the scene. */
   explanation?: Localized;
   gives: string[];
@@ -147,6 +152,8 @@ export interface Presentation {
   music?: Record<string, { file: string; loop?: boolean }>;
   /** Short sound played when a proverb is revealed (a key of `music`). */
   proverbSting?: string;
+  /** Image for one confidence heart (a path under /public). Without it the player draws a small pixel heart. */
+  heart?: string;
   scenes: SceneRule[];
 }
 

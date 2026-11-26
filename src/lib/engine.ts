@@ -31,7 +31,20 @@ export interface PlayState {
   picks: Pick[];
   /** Set after picking a proverb choice: the proverb card shown before moving on. */
   reveal: Reveal | null;
+  /** Confidence hearts left. Absent in saves that predate lives; those count as full. */
+  lives?: number;
+  /** True once the hearts ran out: the game-over screen shows until the player starts over. */
+  lost?: boolean;
+  /** The proverb-preview list was shown (and passed) for this run. */
+  previewed?: boolean;
+  /** A lesson segment drawn instead of the story: the quiz before it, or the review after it. */
+  segment?: 'preview' | 'review';
 }
+
+/** Two wrong proverbs and Minh gives up. */
+export const MAX_LIVES = 2;
+
+export const livesOf = (state: PlayState) => Math.max(0, state.lives ?? MAX_LIVES);
 
 const union = (a: string[], b: string[]) => [...new Set([...a, ...b])];
 
@@ -72,7 +85,11 @@ function enter(state: PlayState, game: Game, id: string, hops = 0): PlayState {
 }
 
 export function startState(game: Game): PlayState {
-  return enter({ sceneId: game.start, items: [], status: [], chosen: [], picks: [], reveal: null }, game, game.start);
+  return enter(
+    { sceneId: game.start, items: [], status: [], chosen: [], picks: [], reveal: null, lives: MAX_LIVES },
+    game,
+    game.start,
+  );
 }
 
 /** The proverb that fits this branch, if the scene says which one it is. */
@@ -92,6 +109,7 @@ export function choose(state: PlayState, game: Game, index: number): PlayState {
       chosen: [...state.chosen, choice.proverb],
       picks: [...(state.picks ?? []), { slug: choice.proverb, correct, intended }],
       reveal: { proverb: choice.proverb, next: choice.next, correct, why: choice.why, intended },
+      lives: correct ? livesOf(state) : livesOf(state) - 1,
     };
   }
   return enter(state, game, choice.next);
@@ -113,15 +131,39 @@ export function recapOf(state: PlayState): { well: string[]; revisit: Pick[] } {
 
 /** Moves on from a plain scene or from a proverb reveal. */
 export function advance(state: PlayState, game: Game): PlayState {
-  if (state.reveal) return enter(state, game, state.reveal.next);
+  if (state.reveal) {
+    // the last heart went on this pick: the story stops here
+    if (!state.reveal.correct && livesOf(state) <= 0) return giveUp(state, game);
+    return enter(state, game, state.reveal.next);
+  }
   const next = currentScene(game, state).next;
   return next ? enter(state, game, next) : state;
 }
 
+/** Out of hearts: moves to the game's game-over screen, if it has one, and ends the run. */
+function giveUp(state: PlayState, game: Game): PlayState {
+  const over = Object.values(game.scenes).find((s) => s.phase === 'gameover');
+  return { ...state, reveal: null, lost: true, sceneId: over?.id ?? state.sceneId };
+}
+
 export function isEnd(game: Game, state: PlayState): boolean {
   const scene = currentScene(game, state);
-  return !state.reveal && !scene.next && scene.choices.length === 0;
+  return !state.reveal && (!!state.lost || (!scene.next && scene.choices.length === 0));
 }
+
+/** The title card's PLAY: a game that teaches proverbs opens with the preview quiz first. */
+export function begin(state: PlayState, game: Game, taught: number): PlayState {
+  if (taught > 0 && !state.previewed) return { ...state, segment: 'preview' };
+  return advance(state, game);
+}
+
+/** Leaves the preview quiz and starts the story. */
+export function finishPreview(state: PlayState, game: Game): PlayState {
+  return advance({ ...state, segment: undefined, previewed: true }, game);
+}
+
+export const openReview = (state: PlayState): PlayState => ({ ...state, segment: 'review' });
+export const closeReview = (state: PlayState): PlayState => ({ ...state, segment: undefined });
 
 /** Saved games can go stale when a teacher edits the sheet; discard them if they no longer fit. */
 export function isValidState(game: Game, value: unknown): value is PlayState {
@@ -136,6 +178,8 @@ export function isValidState(game: Game, value: unknown): value is PlayState {
     Array.isArray(s.chosen) &&
     // saves written before the reveal learned about verdicts have no picks yet
     (s.picks === undefined || Array.isArray(s.picks)) &&
+    (s.lives == null || typeof s.lives === 'number') &&
+    (s.segment == null || s.segment === 'preview' || s.segment === 'review') &&
     (s.reveal === null || (typeof s.reveal === 'object' && s.reveal.next in game.scenes))
   );
 }

@@ -1,12 +1,18 @@
 <script lang="ts">
   import { onDestroy, onMount, setContext, untrack } from 'svelte';
   import { pick, type Game, type GlossaryEntry, type Lang } from '../lib/types';
-  import { advance, choose, currentScene, isEnd, isValidState, recapOf, startState, type PlayState } from '../lib/engine';
+  import {
+    MAX_LIVES, advance, begin, choose, closeReview, currentScene, finishPreview, isEnd, isValidState,
+    livesOf, openReview, recapOf, startState, type PlayState,
+  } from '../lib/engine';
+  import { taughtProverbs } from '../lib/review';
+  import { typewriter } from '../lib/typewriter';
   import { SLOT_X, resolveScene } from '../lib/presentation';
   import { t } from '../i18n/ui';
   import { withBase } from '../lib/url';
   import { buildMatcher } from '../lib/words';
   import RichText from './RichText.svelte';
+  import Quiz from './Quiz.svelte';
 
 
   let {
@@ -44,6 +50,21 @@
       .map((p) => ({ picked: glossary[p.slug], intended: p.intended ? glossary[p.intended] : undefined }))
       .filter((p) => p.picked),
   );
+  /** The proverbs this story teaches: the preview quiz before it and the review after it use them. */
+  const taught = $derived(taughtProverbs(game, glossary));
+  const lives = $derived(livesOf(play));
+  const lost = $derived(!!play.lost);
+  // typewriter: while a line is being printed, Continue first shows the rest of it
+  let typing = $state(false);
+  let finishTyping: (() => void) | null = null;
+  const onTyping = (now: boolean, finish: () => void) => {
+    typing = now;
+    finishTyping = now ? finish : null;
+  };
+  const next = () => {
+    if (typing) finishTyping?.();
+    else play = advance(play, game);
+  };
   const hasGains = $derived(scene.gives.length > 0 || scene.status.length > 0);
   /** A choice screen is drawn as cards beside the character, not as dialogue. */
   const isChoice = $derived(!revealed && !ended && scene.choices.length > 0);
@@ -247,6 +268,21 @@
       <div class="hud-left">
         <a class="chip-btn" href={withBase('/')} aria-label={t('nav.home', lang)}>← {t('nav.home', lang)}</a>
         {#if !isTitle}<span class="hud-tag">{pick(game.title, lang)}</span>{/if}
+        {#if !isTitle && !play.segment}
+          <span class="hearts" role="img" aria-label={`${t('lives', lang)}: ${Math.min(lives, MAX_LIVES)} / ${MAX_LIVES}`}>
+            {#each Array.from({ length: MAX_LIVES }) as _, i}
+              {#if game.presentation?.heart}
+                <img class="heart" class:lost={i >= lives} src={withBase(game.presentation.heart)} alt="" />
+              {:else}
+              <svg class="heart" class:lost={i >= lives} viewBox="0 0 9 8" shape-rendering="crispEdges" aria-hidden="true">
+                <path fill="#3b3953" d="M1 0h2v1h1v1h1V1h1V0h2v1h1v3H8v1H7v1H6v1H5v1H4V7H3V6H2V5H1V4H0V1h1z" />
+                <path class="fill" d="M1 1h2v1h1v1H3V2H2v1H1zM5 2h1V1h2v3H7v1H6v1H5V5h1V4H5z" />
+                <path class="fill" d="M1 1h2v2H1zM2 3h5v1H2zM3 4h3v1H3zM4 5h1v1H4zM6 1h2v2H6z" />
+              </svg>
+              {/if}
+            {/each}
+          </span>
+        {/if}
       </div>
       <div class="hud-actions">
         {#if musicDefs}
@@ -260,13 +296,20 @@
       </div>
     </div>
 
-    {#if isTitle}
+    {#if play.segment}
+      <Quiz
+        mode={play.segment}
+        entries={taught}
+        {lang}
+        onDone={() => (play = play.segment === 'preview' ? finishPreview(play, game) : closeReview(play))}
+      />
+    {:else if isTitle}
       <!-- The deck's opening: a white card on the room, ending in PLAY. -->
       <div class="title-card">
         {#if scene.heading}<p class="kicker">{pick(scene.heading, lang)}</p>{/if}
         <h1 class="title-name">{pick(game.title, lang)}</h1>
         {#if scene.text.en}<p class="title-sub">{pick(scene.text, lang)}</p>{/if}
-        <button class="btn play" onclick={() => (play = advance(play, game))}>{t('play', lang)}</button>
+        <button class="btn play" onclick={() => (play = begin(play, game, taught.length))}>{t('play', lang)}</button>
       </div>
     {:else if isDivider}
       <div class="divider-card">
@@ -278,15 +321,23 @@
       <ul class="choice-cards">
         {#each scene.choices as c, i}
           <li>
-            <button class="btn choice" onclick={() => (play = choose(play, game, i))}>
+            <button
+              class="btn choice"
+              aria-describedby={c.proverb ? `def-${i}` : undefined}
+              onclick={() => (play = choose(play, game, i))}
+            >
               {c.proverb ? glossary[c.proverb].term : pick(c.label, lang)}
             </button>
+            {#if c.proverb && glossary[c.proverb]}
+              <!-- hovering (or tabbing to) a proverb shows what it means, as the PM asked -->
+              <span class="def" role="tooltip" id={`def-${i}`}>{pick(glossary[c.proverb].meaning, lang)}</span>
+            {/if}
           </li>
         {/each}
       </ul>
       <div class="bubble {speakerSide} ask" style:--inset={inset !== undefined ? `${inset}cqw` : undefined}>
         {#if scene.heading}<span class="plate">{pick(scene.heading, lang)}</span>{/if}
-        <p class="text">{pick(scene.text, lang) || t('what_advice', lang)}</p>
+        {#key scene.id}<p class="text" use:typewriter={{ onTyping }}>{pick(scene.text, lang) || t('what_advice', lang)}</p>{/key}
       </div>
     {:else if !ended}
       <div class="bubble {speakerSide}" class:revealed={!!revealed} style:--inset={inset !== undefined ? `${inset}cqw` : undefined}>
@@ -337,7 +388,9 @@
             </blockquote>
           {/if}
 
-          <p class="text"><RichText text={pick(scene.text, lang)} {glossary} {lang} /></p>
+          {#key scene.id}
+            <p class="text" use:typewriter={{ onTyping }}><RichText text={pick(scene.text, lang)} {glossary} {lang} /></p>
+          {/key}
 
           {#if hasGains}
             <div class="gains">
@@ -354,35 +407,49 @@
           {/if}
 
           {#if !ended}
-            <button class="btn" onclick={() => (play = advance(play, game))}>{t('continue', lang)}</button>
+            <button class="btn" onclick={next}>{t('continue', lang)}</button>
           {/if}
         {/if}
       </div>
     {/if}
 
-    {#if ended && !revealed}
-      <section class="finale">
+    {#if ended && !revealed && !play.segment}
+      {#if lost}
+        <h2 class="gave-up">{pick(scene.heading, lang) || t('the_end', lang)}</h2>
+      {/if}
+      <section class="finale" class:over={lost}>
         <h2 class="the-end">{t('the_end', lang)}</h2>
         {#if scene.text.en}<p class="epilogue"><RichText text={pick(scene.text, lang)} {glossary} {lang} /></p>{/if}
-        {#if well.length}
-          <h3>{t('recap_well', lang)}</h3>
-          <ul class="recap">
-            {#each well as e}<li><strong>{e.term}</strong>: {pick(e.meaning, lang)}</li>{/each}
-          </ul>
+        {#if well.length || lost}
+          <h3>{lost ? t('proverb_you_used_well', lang) : t('recap_well', lang)}</h3>
+          {#if well.length}
+            <ul class="recap">
+              {#each well as e}<li><strong>{e.term}</strong>: {pick(e.meaning, lang)}</li>{/each}
+            </ul>
+          {:else}
+            <p class="none">{t('nothing_yet', lang)}</p>
+          {/if}
         {/if}
-        {#if revisit.length}
-          <h3>{t('recap_revisit', lang)}</h3>
-          <ul class="recap revisit">
-            {#each revisit as m}
-              <li>
-                <strong>{m.picked.term}</strong>
-                {#if m.intended} — {t('called_for', lang).toLowerCase()} <em>{m.intended.term}</em>{/if}
-              </li>
-            {/each}
-          </ul>
+        {#if revisit.length || lost}
+          <h3>{lost ? t('proverbs_you_got_wrong', lang) : t('recap_revisit', lang)}</h3>
+          {#if revisit.length}
+            <ul class="recap revisit">
+              {#each revisit as m}
+                <li>
+                  <strong>{m.picked.term}</strong>
+                  {#if m.intended} — {t('called_for', lang).toLowerCase()} <em>{m.intended.term}</em>{/if}
+                </li>
+              {/each}
+            </ul>
+          {:else}
+            <p class="none">{t('nothing_yet', lang)}</p>
+          {/if}
         {/if}
         <div class="finale-actions">
-          <button class="btn play" onclick={restart}>{t('restart', lang)}</button>
+          <button class="btn play" onclick={restart}>{lost ? t('try_again', lang) : t('restart', lang)}</button>
+          {#if taught.length}
+            <button class="btn secondary" onclick={() => (play = openReview(play))}>{t('review_proverbs', lang)}</button>
+          {/if}
           <a class="btn secondary" href={withBase('/')}>{t('nav.home', lang)}</a>
         </div>
       </section>
@@ -625,6 +692,38 @@
     box-shadow: var(--lift-2);
   }
   .choice-cards .btn:hover { background: var(--cyan); }
+  .choice-cards li { position: relative; }
+  /* the proverb's meaning, in the deck's speech-bubble style, beside the card */
+  .def {
+    position: absolute;
+    z-index: 8;
+    left: calc(100% + 1cqw);
+    top: 50%;
+    width: 28cqw;
+    padding: .9cqw 1.4cqw;
+    transform: translateY(-50%);
+    font-size: 1.6cqw;
+    line-height: 1.2;
+    color: var(--ink);
+    background: #fff;
+    border: .3cqw solid var(--ink);
+    border-radius: 1.4cqw;
+    box-shadow: var(--lift-1);
+    opacity: 0;
+    visibility: hidden;
+    pointer-events: none;
+    transition: opacity .12s steps(3, end);
+  }
+  .choice-cards li:hover .def, .choice-cards li:focus-within .def { opacity: 1; visibility: visible; }
+  /* touch-only devices have no hover, and a tap picks the answer, so the bubble stays off there */
+  @media (any-hover: none) { .def { display: none; } }
+
+  /* confidence hearts */
+  .hearts { display: inline-flex; align-items: center; gap: .35rem; padding: .2em .6em; background: rgb(255 255 255 / .88); border: 2px solid var(--outline); border-radius: 999px; box-shadow: var(--lift-1); }
+  .heart { width: max(2cqw, 1.1rem); height: auto; display: block; }
+  .heart .fill { fill: #ee3b4a; }
+  .heart.lost .fill { fill: #d9d7e8; }
+  img.heart.lost { filter: grayscale(1) brightness(1.4) opacity(.55); }
 
   /* ---- opening card and chapter dividers ---- */
   .title-card, .divider-card {
@@ -776,12 +875,28 @@
   }
   .the-end { margin: 0 0 .15em; font-size: 2.2em; text-transform: uppercase; text-align: center; }
   .epilogue { margin: 0 0 .5em; text-align: center; font-size: 1.12em; }
+  /* game over: the deck's dark room with the heading on the left and a frosted panel on the right */
+  .gave-up {
+    position: absolute;
+    z-index: 4;
+    left: 5%;
+    top: 33%;
+    margin: 0;
+    max-width: 36%;
+    font-size: 4cqw;
+    line-height: 1.1;
+    color: #fff;
+    text-shadow: 0 .3cqw 0 rgb(0 0 0 / .45);
+  }
+  .finale.over { left: 49%; right: 3%; background: rgb(255 255 255 / .9); }
+  .none { margin: 0 0 .5em; opacity: .65; }
   .finale h3 { font-size: 1.1em; margin: .5em 0 .15em; text-transform: uppercase; }
   .recap { text-align: left; padding-left: 1.2em; margin: 0 0 .5em; }
   .recap li { margin-bottom: .15em; }
   .finale .btn.play { font-size: 1.05em; background: var(--cyan); }
   .finale .btn.secondary { font-size: 1.05em; }
-  .finale-actions { display: flex; justify-content: center; gap: .8em; margin-top: .4em; }
+  .finale .btn { white-space: nowrap; }
+  .finale-actions { display: flex; flex-wrap: wrap; justify-content: center; gap: .8em; margin-top: .4em; }
 
   .bag {
     position: absolute;
@@ -849,6 +964,10 @@
     .divider-card h2 { font-size: 1.5rem; }
     .divider-card p { font-size: .95rem; }
     .the-end { font-size: 1.8rem; }
+    .gave-up { position: static; max-width: none; margin: .75rem; font-size: 1.8rem; }
+    .finale.over { left: auto; right: auto; }
+    .def { display: none; }
+    .heart { width: 1.1rem; }
     .prop-text { display: none; }
     .mobile-only { display: block; }
     .art-heading { font-size: 1.1rem; }

@@ -5,7 +5,7 @@ import path from 'node:path';
 import { ContentError, loadGame, loadGlossary, loadWords } from '../src/lib/content';
 import { resolveScene } from '../src/lib/presentation';
 import { parseMarkup } from '../src/lib/markup';
-import { advance, choose, isEnd, isValidState, recapOf, startState } from '../src/lib/engine';
+import { advance, choose, isEnd, isValidState, recapOf, startState, type PlayState } from '../src/lib/engine';
 import { evaluate, parseCondition } from '../src/lib/condition';
 
 const glossary = loadGlossary();
@@ -167,7 +167,8 @@ describe('engine: playthroughs of Slay the Demon King', () => {
   };
   /** Plays to the end, answering each proverb question with the named proverb. */
   const run = (...picks: (keyof typeof ADV)[]) => {
-    let s = startState(demo);
+    // these runs are about items and status, so they start with hearts to spare
+    let s: PlayState = { ...startState(demo), lives: 99 };
     const queue = [...picks];
     for (let guard = 0; guard < 300 && !isEnd(demo, s); guard++) {
       const choices = demo.scenes[s.sceneId].choices;

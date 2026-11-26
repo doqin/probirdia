@@ -104,6 +104,7 @@
         <option value="divider">Chapter divider</option>
         <option value="preview">Preview (learn the proverbs)</option>
         <option value="review">Review (fill in the blanks)</option>
+        <option value="gameover">Game over — shown when the hearts run out</option>
       </select>
     </label>
     <label>
