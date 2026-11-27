@@ -1,6 +1,6 @@
 <script lang="ts">
   import { onDestroy, onMount, setContext, untrack } from 'svelte';
-  import { pick, type Game, type GlossaryEntry, type Lang } from '../lib/types';
+  import { pick, type SfxName, type Game, type GlossaryEntry, type Lang } from '../lib/types';
   import {
     MAX_LIVES, advance, begin, choose, closeReview, currentScene, finishPreview, isEnd, isValidState,
     livesOf, openReview, recapOf, startState, type PlayState,
@@ -59,6 +59,7 @@
   let finishTyping: (() => void) | null = null;
   const onTyping = (now: boolean, finish: () => void) => {
     typing = now;
+    typingSound(now);
     finishTyping = now ? finish : null;
   };
   const next = () => {
@@ -190,6 +191,40 @@
     el.play().catch(() => {});
   });
 
+  /** A short effect for the choice cards; plays over the music, and stays silent when muted or before the first click. */
+  const playSfx = (name: SfxName) => {
+    const key = game.presentation?.sfx?.[name];
+    const def = key ? musicDefs?.[key] : undefined;
+    if (!started || muted || !def) return;
+    const el = new Audio(withBase(def.file));
+    el.volume = name === 'hover' ? 0.35 : 0.7;
+    el.play().catch(() => {});
+  };
+
+  // typing: one clip plays while a line is being printed and stops the moment it is done
+  let typingEl: HTMLAudioElement | null = null;
+  const typingSound = (on: boolean) => {
+    if (!on) {
+      typingEl?.pause();
+      typingEl = null;
+      return;
+    }
+    const key = game.presentation?.sfx?.typing;
+    const def = key ? musicDefs?.[key] : undefined;
+    if (!started || muted || !def || typingEl) return;
+    typingEl = new Audio(withBase(def.file));
+    typingEl.loop = true;
+    typingEl.volume = 0.5;
+    typingEl.play().catch(() => {});
+  };
+
+  let lastVerdict: object | null = null;
+  $effect(() => {
+    const verdict = play.reveal ?? null;
+    if (verdict && verdict !== lastVerdict) playSfx(verdict.correct ? 'correct' : 'wrong');
+    lastVerdict = verdict;
+  });
+
   $effect(() => {
     const proverb = play.reveal?.proverb ?? null;
     const sting = game.presentation?.proverbSting;
@@ -206,6 +241,7 @@
   });
 
   onDestroy(() => {
+    typingSound(false);
     clearInterval(fade);
     stopTrack();
   });
@@ -213,7 +249,14 @@
 
 <svelte:window onpointerdown={() => (started = true)} />
 
-<section class="scene" aria-live="polite" class:intro={isTitle || isDivider}>
+<section
+  class="scene"
+  aria-live="polite"
+  class:intro={isTitle || isDivider}
+  style:--s-heading={view.size.heading}
+  style:--s-text={view.size.text}
+  style:--s-note={view.size.note}
+>
   <div class="frame">
     <div
       class="art"
@@ -324,7 +367,12 @@
             <button
               class="btn choice"
               aria-describedby={c.proverb ? `def-${i}` : undefined}
-              onclick={() => (play = choose(play, game, i))}
+              onpointerenter={() => playSfx('hover')}
+              onfocus={() => playSfx('hover')}
+              onclick={() => {
+                playSfx('select');
+                play = choose(play, game, i);
+              }}
             >
               {c.proverb ? glossary[c.proverb].term : pick(c.label, lang)}
             </button>
@@ -352,18 +400,18 @@
           </div>
 
           {#if play.reveal?.why}
-            <p class="why"><RichText text={pick(play.reveal.why, lang)} {glossary} {lang} /></p>
+            <p class="why" class:vi={lang === 'vi'}><RichText text={pick(play.reveal.why, lang)} {glossary} {lang} /></p>
           {/if}
           {#if play.reveal?.intended && glossary[play.reveal.intended]}
             <p class="why"><strong>{t('called_for', lang)}:</strong> {glossary[play.reveal.intended].term}</p>
           {/if}
 
-          <p class="text meaning">{pick(revealed.meaning, lang)}</p>
+          <p class="text meaning" class:vi={lang === 'vi'}>{pick(revealed.meaning, lang)}</p>
           {#if lang === 'en' && revealed.meaning.vi}
-            <p class="aside"><span class="aside-tag">VI</span> {revealed.meaning.vi}</p>
+            <p class="aside vi"><span class="aside-tag">VI</span> {revealed.meaning.vi}</p>
           {/if}
           {#if revealed.example}
-            <p class="aside example"><span class="aside-tag">{t('example', lang)}</span> {pick(revealed.example, lang)}</p>
+            <p class="aside example vi"><span class="aside-tag">{t('example', lang)}</span> {pick(revealed.example, lang)}</p>
           {/if}
 
           <button class="btn" onclick={() => (play = advance(play, game))}>{t('continue', lang)}</button>
@@ -514,7 +562,7 @@
     place-items: center;
     text-align: center;
     font-weight: 400;
-    font-size: 1.7cqw;
+    font-size: calc(1.7cqw * var(--s-note, 1));
     line-height: 1.2;
     white-space: pre-line;
     color: var(--ink);
@@ -526,7 +574,7 @@
     top: 45%;
     margin: 0;
     font-family: var(--display);
-    font-size: 3.4cqw;
+    font-size: calc(3.4cqw * var(--s-heading, 1));
     letter-spacing: .04em;
     text-transform: uppercase;
     color: var(--cyan);
@@ -604,14 +652,14 @@
     border: 2px solid rgb(255 255 255 / .95);
     border-radius: 1.6cqw;
     box-shadow: var(--lift-2);
-    font-size: 2.6cqw;
+    font-size: calc(2.6cqw * var(--s-text, 1));
     line-height: 1.15;
     overflow: visible;
   }
   /* The name tag overhangs the box, so it only clips when the content truly exceeds 86%. */
   .bubble:not(.revealed) { overflow: visible; }
   /* A verdict carries term, why, meaning, translation and example: smaller type, wider use of the box. */
-  .bubble.revealed { font-size: 1.95cqw; bottom: 6%; padding-top: 1.6cqw; padding-bottom: 1.6cqw; overflow: auto; }
+  .bubble.revealed { font-size: calc(1.95cqw * var(--s-text, 1)); bottom: 6%; padding-top: 1.6cqw; padding-bottom: 1.6cqw; overflow: auto; }
   .bubble.revealed .reveal-term { font-size: 1.35em; }
   .bubble.revealed .btn { margin-top: .5em; }
   .bubble.center { left: 12%; right: 12%; }
@@ -627,7 +675,7 @@
     padding: .25cqw 1.4cqw;
     text-align: center;
     font-family: var(--display);
-    font-size: 2.25cqw;
+    font-size: calc(2.25cqw * var(--s-heading, 1));
     font-weight: 600;
     line-height: 1.2;
     letter-spacing: var(--label-track);
@@ -653,6 +701,9 @@
   .why { font-size: 1em; line-height: 1.25; margin: .3em 0; }
   .aside { font-size: .92em; line-height: 1.25; margin: .2em 0; opacity: .85; }
   .aside.example { font-style: italic; }
+  /* Vietnamese translation and explanation read in blue, apart from the English. */
+  .vi { color: var(--vi-blue); opacity: 1; }
+  .vi .aside-tag { color: inherit; }
   .aside-tag {
     display: inline-block;
     margin-right: .35em;
@@ -742,7 +793,7 @@
   .title-card .kicker {
     margin: 0 0 .4em;
     font-family: var(--display);
-    font-size: 1.5cqw;
+    font-size: calc(1.5cqw * var(--s-heading, 1));
     font-weight: 600;
     letter-spacing: .1em;
     text-transform: uppercase;
@@ -751,12 +802,12 @@
   .title-name {
     margin: 0 0 .4em;
     font-family: var(--display);
-    font-size: 4.2cqw;
+    font-size: calc(4.2cqw * var(--s-heading, 1));
     line-height: 1.05;
     text-transform: uppercase;
     letter-spacing: .01em;
   }
-  .title-sub { margin: 0 0 1.3em; font-size: 1.5cqw; line-height: 1.25; }
+  .title-sub { margin: 0 0 1.3em; font-size: calc(2.4cqw * var(--s-text, 1)); line-height: 1.25; }
   .title-card .btn.play, .divider-card .btn.play {
     font-size: 1.5cqw;
     padding: .4em 2.4em;
@@ -766,11 +817,11 @@
   .divider-card h2 {
     margin: 0 0 .3em;
     font-family: var(--display);
-    font-size: 2.6cqw;
+    font-size: calc(2.6cqw * var(--s-heading, 1));
     text-transform: uppercase;
     letter-spacing: .02em;
   }
-  .divider-card p { margin: 0 0 1.2em; font-size: 1.4cqw; }
+  .divider-card p { margin: 0 0 1.2em; font-size: calc(1.4cqw * var(--s-text, 1)); }
   .divider-card .btn.play { font-size: 1.2cqw; }
 
   /* ---- ink: body copy in the bubble ---- */
@@ -792,6 +843,7 @@
     border: 2px solid var(--outline);
     border-radius: .5em;
     font-style: italic;
+    font-size: calc(1em * var(--s-note, 1));
     white-space: pre-line;
   }
   .simple-capable { position: relative; }
@@ -938,14 +990,14 @@
       width: auto;
       max-height: none;
       margin: .75rem;
-      font-size: 1.15rem;
+      font-size: calc(1.15rem * var(--s-text, 1));
     }
     /* cqw has no container on a phone, so the stage paddings are reset in rem */
     .bubble, .bubble.right, .bubble.revealed, .bubble.ask {
       min-height: 0;
       padding: 1rem;
       border-radius: .8rem;
-      font-size: 1.15rem;
+      font-size: calc(1.15rem * var(--s-text, 1));
       overflow: visible;
     }
     .plate, .bubble.right .plate {
@@ -954,15 +1006,15 @@
       min-width: 0;
       margin: 0 0 .5rem;
       padding: .1rem .8rem;
-      font-size: .85rem;
+      font-size: calc(.85rem * var(--s-heading, 1));
     }
     .choice-cards .btn { min-height: 3rem; font-size: 1.05rem; padding: .5rem 1rem; border-radius: 1rem; }
-    .title-card .kicker { font-size: .85rem; }
-    .title-name { font-size: 2rem; }
-    .title-sub { font-size: .95rem; }
+    .title-card .kicker { font-size: calc(.85rem * var(--s-heading, 1)); }
+    .title-name { font-size: calc(2rem * var(--s-heading, 1)); }
+    .title-sub { font-size: calc(1.2rem * var(--s-text, 1)); }
     .title-card .btn.play, .divider-card .btn.play { font-size: 1rem; }
-    .divider-card h2 { font-size: 1.5rem; }
-    .divider-card p { font-size: .95rem; }
+    .divider-card h2 { font-size: calc(1.5rem * var(--s-heading, 1)); }
+    .divider-card p { font-size: calc(.95rem * var(--s-text, 1)); }
     .the-end { font-size: 1.8rem; }
     .gave-up { position: static; max-width: none; margin: .75rem; font-size: 1.8rem; }
     .finale.over { left: auto; right: auto; }
@@ -970,7 +1022,7 @@
     .heart { width: 1.1rem; }
     .prop-text { display: none; }
     .mobile-only { display: block; }
-    .art-heading { font-size: 1.1rem; }
+    .art-heading { font-size: calc(1.1rem * var(--s-heading, 1)); }
     .bag { position: static; margin: .5rem .75rem 1rem; font-size: .9rem; max-width: none; }
   }
 </style>

@@ -18,7 +18,7 @@ const links = [
 
 <header class:list={['site', { overlay }]}>
   <div class="inner">
-    <a class="brand" href={withBase('/')}><Image src={logo} width={44} height={44} alt="" loading="eager" /><span>PROBIRDIA</span></a>
+    <a class="brand" href={withBase('/')}><Image src={logo} width={64} height={64} alt="" loading="eager" class="logo" /><span>PROBIRDIA</span></a>
     <nav aria-label="Main">
       {links.map((l) => <a href={l.href} aria-current={l.active ? 'page' : undefined}>{l.label}</a>)}
     </nav>

@@ -17,28 +17,28 @@ colors:
   bad: "#a33b2a"
 typography:
   display:
-    fontFamily: "Pixelify Sans, Zilla Slab, system-ui, sans-serif"
+    fontFamily: "Partita 1990, Zilla Slab, system-ui, sans-serif"
     fontSize: "clamp(1.8rem, 4vw, 2.6rem)"
     fontWeight: 700
     lineHeight: 1.05
     letterSpacing: "0.01em"
   headline:
-    fontFamily: "Pixelify Sans, Zilla Slab, system-ui, sans-serif"
+    fontFamily: "Partita 1990, Zilla Slab, system-ui, sans-serif"
     fontSize: "2rem"
     fontWeight: 700
     lineHeight: 1.1
   title:
-    fontFamily: "Pixelify Sans, Zilla Slab, system-ui, sans-serif"
+    fontFamily: "Partita 1990, Zilla Slab, system-ui, sans-serif"
     fontSize: "1.6rem"
     fontWeight: 700
     lineHeight: 1.1
   body:
-    fontFamily: "VT323, Zilla Slab, ui-monospace, monospace"
+    fontFamily: "Partita 1990, Zilla Slab, system-ui, sans-serif"
     fontSize: "1.35rem"
     fontWeight: 400
     lineHeight: 1.3
   label:
-    fontFamily: "Pixelify Sans, Zilla Slab, system-ui, sans-serif"
+    fontFamily: "Partita 1990, Zilla Slab, system-ui, sans-serif"
     fontSize: "0.8rem"
     fontWeight: 600
     letterSpacing: "0.06em"
@@ -109,7 +109,7 @@ supplies all the scenery; no gradient or illustration is invented in CSS.
 **Key Characteristics:**
 - Full-bleed 16:9 stage; the artwork owns the viewport, the interface floats on it.
 - Hard pixel outlines plus a zero-blur offset shadow: object, not glass.
-- Pixel type — Pixelify Sans for display and labels, VT323 for prose.
+- Type — Partita 1990 (retro display face, covers Vietnamese) for everything in the game.
 - Teal capsules mean "press me"; cyan means "go".
 - Lavender wall, white paper, indigo ink — a four-colour system.
 
@@ -149,23 +149,21 @@ indigo outline. Nothing is translucent except the HUD chips and the bubble, whic
 
 ## Typography
 
-**Display Font:** Pixelify Sans (fallback Zilla Slab, system-ui)
-**Body Font:** VT323 (fallback Zilla Slab, ui-monospace)
+**Display Font:** Partita 1990 (fallback Zilla Slab, system-ui)
+**Body Font:** Partita 1990 (fallback Zilla Slab, system-ui)
 
-**Character:** Two pixel faces with different jobs. Pixelify Sans carries names, labels,
-headings and buttons — it is geometric and wide, so it stays legible at 0.8rem in all caps.
-VT323 carries everything read as a sentence; its narrow monospace grid keeps long story text
-and glossary meanings comfortable and gives the system its arcade voice. Both are pixel
-faces, so the pairing reads as one machine, not two brands.
+**Character:** One face for the whole game: Partita 1990, a 1990s arcade-poster display type with full
+Vietnamese coverage. It carries names, labels, headings, buttons and story text alike; sizes and
+letter-spacing, not a second family, separate the roles.
 
 ### Hierarchy
-- **Display** (Pixelify 700, `clamp(1.8rem, 4vw, 2.6rem)`, uppercase, centred): page titles —
+- **Display** (Partita 700, `clamp(1.8rem, 4vw, 2.6rem)`, uppercase, centred): page titles —
   Games, Glossary, About — and the title card's name.
-- **Headline** (Pixelify 700, 2rem, uppercase): chapter divider plates and section starts.
-- **Title** (Pixelify 700, 1.6rem, uppercase): the brand in the header, panel headings.
-- **Body** (VT323 400, 1.35rem, 1.3): story text, meanings, examples, editor fields. Runs to
+- **Headline** (Partita 700, 2rem, uppercase): chapter divider plates and section starts.
+- **Title** (Partita 700, 1.6rem, uppercase): the brand in the header, panel headings.
+- **Body** (Partita 400, 1.35rem, 1.3): story text, meanings, examples, editor fields. Runs to
   ~70ch in `main`; in the stage it is sized in `cqw` so it scales with the frame.
-- **Label** (Pixelify 600, 0.8rem, 0.06em tracking, uppercase): name plates, chips, buttons,
+- **Label** (Partita 600, 0.8rem, 0.06em tracking, uppercase): name plates, chips, buttons,
   the choice hint, the HUD.
 
 ### Named Rules
@@ -173,7 +171,7 @@ faces, so the pairing reads as one machine, not two brands.
 prose stays sentence case. A sentence in caps is always a mistake, and a button in lower
 case is too.
 
-**The Two-Face Rule.** Pixelify Sans is for display and labels only; VT323 is for prose only.
+**The Two-Face Rule.** Partita 1990 is for display and labels only; VT323 is for prose only.
 No third face, no serif revival, no geometric sans.
 
 ## Layout
@@ -236,7 +234,7 @@ pill riding its top edge, overlapping the border.
 ## Components
 
 ### Buttons
-- **Shape:** full capsule, `3px` indigo outline, uppercase Pixelify 600 label at inherited
+- **Shape:** full capsule, `3px` indigo outline, uppercase Partita 600 label at inherited
   size (`0.45em 1.4em` padding), Lift 2 shadow.
 - **Primary:** Action Teal fill, ink text. Used for Continue, choices, Check answers.
 - **Play:** Signal Cyan fill — title card and chapter plate only. One per screen.
@@ -278,7 +276,7 @@ pill riding its top edge, overlapping the border.
   editor tabs invert to ink fill with white text.
 
 ### Navigation
-- **Style:** sticky header on the lavender wall; brand at 1.6rem Pixelify 700 with a
+- **Style:** sticky header on the lavender wall; brand at 1.6rem Partita 700 with a
   50%-radius logo, nav links at 1.15rem/600 in a `1.5rem` gap.
 - **States:** the current page is underlined (not bolder, not coloured); hover is the default
   ink with no underline until focus.
@@ -313,7 +311,7 @@ keyboard and screen readers.
   shadow from the Lift scale.
 - **Do** keep the page on Room Lavender and let story objects use Panel White so they read as
   panels laid on the picture.
-- **Do** set every interface label in uppercase Pixelify 600 with ~0.06em tracking, and every
+- **Do** set every interface label in uppercase Partita 600 with ~0.06em tracking, and every
   sentence in VT323 sentence case.
 - **Do** use full capsules (`999px`) for controls and soft rectangles for panels.
 - **Do** reserve Signal Cyan for one action per screen and Action Teal for the rest.

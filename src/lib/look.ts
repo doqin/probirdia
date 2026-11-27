@@ -1,4 +1,4 @@
-import type { DialoguePosition, Presentation, Slot } from './types';
+import type { DialoguePosition, Presentation, Slot, TextKind } from './types';
 
 /**
  * What one screen looks like, in the shape the editor edits and the player
@@ -8,6 +8,10 @@ export interface SceneLook {
   stage: string;
   left: string | null;
   right: string | null;
+  /** Background music key (a key of the game's `music`), or '' for none. */
+  music: string;
+  /** Text size in percent of the default, per kind of text; absent = default. */
+  size: Partial<Record<TextKind, number>>;
 }
 
 export const emptyPresentation = (): Presentation => ({
@@ -26,14 +30,18 @@ const blank = (p: Presentation | null | undefined): Presentation => ({
   props: { ...(p?.props ?? {}) },
   items: { ...(p?.items ?? {}) },
   scenes: [...(p?.scenes ?? [])],
+  ...(p?.music ? { music: { ...p.music } } : {}),
+  ...(p?.sfx ? { sfx: { ...p.sfx } } : {}),
 });
 
 /** Every rule that names this screen, later rules winning. */
 export function sceneLook(presentation: Presentation | null | undefined, key: string): SceneLook {
-  const out: SceneLook = { stage: '', left: null, right: null };
+  const out: SceneLook = { stage: '', left: null, right: null, music: '', size: {} };
   for (const rule of presentation?.scenes ?? []) {
     if (rule.ids !== '*' && !rule.ids.includes(key)) continue;
     if (rule.stage) out.stage = rule.stage;
+    if (rule.music !== undefined) out.music = rule.music;
+    if (rule.size) out.size = { ...out.size, ...rule.size };
     const slots = rule.characters ?? {};
     if (slots.left !== undefined) out.left = slots.left;
     if (slots.right !== undefined) out.right = slots.right;
@@ -49,11 +57,16 @@ export function withSceneLook(
   look: SceneLook,
 ): Presentation {
   const next = blank(presentation);
+  // Keep what this screen's own rule says besides the look (dialogue position, props, ...).
+  const own = next.scenes.find((rule) => rule.ids !== '*' && rule.ids.length === 1 && rule.ids[0] === key);
   next.scenes = next.scenes.filter((rule) => rule.ids === '*' || !rule.ids.includes(key) || rule.ids.length > 1);
   next.scenes.push({
+    ...own,
     ids: [key],
-    ...(look.stage ? { stage: look.stage } : {}),
+    stage: look.stage || undefined,
     characters: { left: look.left, right: look.right },
+    music: look.music || undefined,
+    size: Object.fromEntries(Object.entries(look.size ?? {}).filter(([, v]) => v && v !== 100)) as SceneLook['size'],
   });
   return next;
 }
@@ -135,4 +148,14 @@ export function keyFrom(label: string, taken: string[], fallback = 'stage'): str
   let n = 2;
   while (taken.includes(`${base}-${n}`)) n++;
   return `${base}-${n}`;
+}
+/** Drops a music track and everything that pointed at it. */
+export function withoutMusic(presentation: Presentation | null | undefined, key: string): Presentation {
+  const next = blank(presentation);
+  const { [key]: _gone, ...rest } = next.music ?? {};
+  next.music = rest;
+  next.scenes = next.scenes.map((rule) => (rule.music === key ? { ...rule, music: undefined } : rule));
+  if (next.proverbSting === key) next.proverbSting = undefined;
+  if (next.sfx) next.sfx = Object.fromEntries(Object.entries(next.sfx).filter(([, v]) => v !== key));
+  return next;
 }

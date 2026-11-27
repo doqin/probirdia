@@ -1,10 +1,22 @@
 @import '@fontsource/zilla-slab/400.css';
 @import '@fontsource/zilla-slab/600.css';
 @import '@fontsource/zilla-slab/700.css';
-@import '@fontsource/pixelify-sans/400.css';
-@import '@fontsource/pixelify-sans/600.css';
-@import '@fontsource/pixelify-sans/700.css';
-@import '@fontsource/vt323/400.css';
+
+/* The game's face: Partita 1990 (it covers Vietnamese). One weight, so bold is left to the font itself. */
+@font-face {
+  font-family: 'Partita 1990';
+  src: url('../assets/fonts/Partita1990-Regular.otf') format('opentype');
+  font-weight: 100 900;
+  font-style: normal;
+  font-display: swap;
+}
+@font-face {
+  font-family: 'Partita 1990';
+  src: url('../assets/fonts/Partita1990-Italic.otf') format('opentype');
+  font-weight: 100 900;
+  font-style: italic;
+  font-display: swap;
+}
 
 /*
  * Two worlds, one stylesheet.
@@ -120,13 +132,14 @@ body.bare {
   --sky: #c6f4ff;
   --good: #2f7d3a;
   --bad: #a33b2a;
+  --vi-blue: #1f4fd8;         /* Vietnamese translation and explanation in the game */
   --cream: #fff6e0;           /* the one warm surface: story notes */
   /* shape */
   --radius-sm: 0.9rem;
   --pixel: 3px;
   /* type */
-  --display: 'Pixelify Sans', 'Zilla Slab', system-ui, sans-serif;
-  --body: 'VT323', 'Zilla Slab', ui-monospace, monospace;
+  --display: 'Partita 1990', 'Zilla Slab', system-ui, sans-serif;
+  --body: 'Partita 1990', 'Zilla Slab', system-ui, sans-serif;
   --label-track: 0.06em;
   /* depth: hard, unblurred offsets */
   --lift-1: 0 0.2rem 0 rgb(59 57 83 / 0.55);

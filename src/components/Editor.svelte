@@ -6,7 +6,7 @@
   import DesignPanel from './DesignPanel.svelte';
   import { supabase, supabaseConfigured } from '../lib/supabase';
   import type { Presentation } from '../lib/types';
-  import { sceneLook, withSceneLook } from '../lib/look';
+  import { sceneLook, withSceneLook, type SceneLook } from '../lib/look';
   import {
     amAnEditor,
     attachProverb,
@@ -82,6 +82,7 @@
   /** The game's stage and character vocabulary, for the per-screen pickers. */
   const stageKeys = $derived(Object.keys(data?.game.presentation?.stages ?? {}));
   const characterKeys = $derived(Object.keys(data?.game.presentation?.characters ?? {}));
+  const musicKeys = $derived(Object.keys(data?.game.presentation?.music ?? {}));
   const currentLook = $derived(sceneLook(data?.game.presentation ?? null, scene?.key ?? ''));
 
   /** The scene list, grouped by chapter, in playing order. */
@@ -142,7 +143,7 @@
     }
   }
 
-  async function saveSceneRow(row: SceneRow, look?: { stage: string; left: string | null; right: string | null }) {
+  async function saveSceneRow(row: SceneRow, look?: SceneLook) {
     await guard(async () => {
       await saveScene(row);
       if (look && data) {
@@ -529,6 +530,7 @@
                     chapters={chapters}
                     stages={stageKeys}
                     characters={characterKeys}
+                    musics={musicKeys}
                     look={currentLook}
                     gameSlug={data.game.slug}
                     saving={busy}

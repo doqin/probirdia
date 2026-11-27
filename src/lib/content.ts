@@ -1,7 +1,7 @@
 import { readFileSync, readdirSync, existsSync } from 'node:fs';
 import path from 'node:path';
 import { parse } from 'csv-parse/sync';
-import { LANGS, type Choice, type Game, type GlossaryEntry, type Localized, type Route, type Scene } from './types';
+import { LANGS, SFX_NAMES, TEXT_KINDS, type SfxName, type TextKind, type Choice, type Game, type GlossaryEntry, type Localized, type Route, type Scene } from './types';
 import { namesIn, parseCondition } from './condition';
 import { parseMarkup } from './markup';
 import { slugify } from './slug';
@@ -144,6 +144,7 @@ function loadPresentation(slug: string, scenes: Record<string, Scene>, opts: Pre
     items: raw.items ?? {},
     music: raw.music,
     proverbSting: raw.proverbSting,
+    sfx: raw.sfx,
     scenes: raw.scenes ?? [],
   };
 
@@ -164,6 +165,10 @@ function loadPresentation(slug: string, scenes: Record<string, Scene>, opts: Pre
     else if (m.file.startsWith('/') && !existsSync(path.join(publicDir, m.file))) bad(`music "${id}": file "${m.file}" is not in public/`);
   }
   if (p.proverbSting && !(p.proverbSting in (p.music ?? {}))) bad(`proverbSting: unknown music "${p.proverbSting}"`);
+  for (const [name, key] of Object.entries(p.sfx ?? {})) {
+    if (!SFX_NAMES.includes(name as SfxName)) bad(`sfx: unknown sound \"${name}\" (use ${SFX_NAMES.join(', ')})`);
+    else if (key && !(key in (p.music ?? {}))) bad(`sfx "${name}": unknown music "${key}"`);
+  }
 
   p.scenes.forEach((rule, i) => {
     const r = `scenes[${i}]`;
@@ -177,6 +182,10 @@ function loadPresentation(slug: string, scenes: Record<string, Scene>, opts: Pre
       if (id && !(id in p.characters)) bad(`${r}: unknown character "${id}"`);
     }
     for (const id of rule.props ?? []) if (!(id in p.props)) bad(`${r}: unknown prop "${id}"`);
+    for (const [kind, pct] of Object.entries(rule.size ?? {})) {
+      if (!TEXT_KINDS.includes(kind as TextKind)) bad(`${r}: unknown text size "${kind}" (use ${TEXT_KINDS.join(', ')})`);
+      else if (!(Number(pct) > 0)) bad(`${r}: size "${kind}" must be a percentage above 0`);
+    }
     if (rule.music && !(rule.music in (p.music ?? {}))) bad(`${r}: unknown music "${rule.music}"`);
     if (rule.noteOn && !(rule.noteOn in p.props)) bad(`${r}: unknown prop "${rule.noteOn}" in noteOn`);
   });
