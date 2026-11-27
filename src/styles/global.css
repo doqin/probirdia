@@ -116,7 +116,8 @@ h1 { font-size: clamp(1.8rem, 4vw, 2.6rem); text-transform: uppercase; text-alig
 /* ------------------------------------------------------------------------------------------
  * THE GAME WORLD (body.bare): the Canva game deck's pixel stage.
  * ------------------------------------------------------------------------------------------ */
-body.bare {
+/* `.game-world` carries the same look into the editor's stage preview. */
+body.bare, .game-world {
   /* surfaces */
   --wall: #d7d6fb;
   --wall-deep: #c8c6f2;
@@ -153,6 +154,7 @@ body.bare {
 }
 /* The stage owns the viewport: no page chrome around it. */
 main.bare { max-width: none; padding: 0; }
+main.wide { max-width: none; padding: .6rem 1rem 1rem; }
 .bare h1, .bare h2, .bare h3 { font-family: var(--display); letter-spacing: 0.02em; }
 .bare .pill {
   border: var(--pixel) solid var(--outline);

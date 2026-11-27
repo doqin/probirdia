@@ -19,6 +19,7 @@
     saving = false,
     onSave,
     onDelete,
+    onDraft,
   }: {
     scene: SceneRow;
     scenes: SceneRow[];
@@ -32,6 +33,8 @@
     saving?: boolean;
     onSave: (scene: SceneRow, look: SceneLook) => void | Promise<void>;
     onDelete: (scene: SceneRow) => void | Promise<void>;
+    /** Called with the screen as it is being edited, so the stage preview can follow along. */
+    onDraft?: (row: SceneRow, look: SceneLook) => void;
   } = $props();
 
   // Edit a copy, so a half-finished change never leaks into the list.
@@ -44,6 +47,10 @@
   });
   $effect(() => {
     draftLook = { ...look };
+  });
+
+  $effect(() => {
+    onDraft?.($state.snapshot(draft), $state.snapshot(draftLook));
   });
 
   let uploading = $state(false);
@@ -96,6 +103,8 @@
 </script>
 
 <form class="scene" onsubmit={(e) => { e.preventDefault(); onSave(draft, draftLook); }}>
+  <details class="sect" open>
+  <summary>Screen</summary>
   <div class="row">
     <label class="wide">
       <span>Name of this screen</span>
@@ -127,6 +136,10 @@
     </label>
   </div>
 
+  </details>
+
+  <details class="sect" open>
+  <summary>Dialogue</summary>
   <label>
     <span>Text the player reads</span>
     <textarea bind:value={draft.text} rows="3"></textarea>
@@ -159,8 +172,10 @@
     </label>
   </div>
 
-  <fieldset class="art">
-    <legend>Stage</legend>
+  </details>
+
+  <details class="sect" open>
+    <summary>Stage and sound</summary>
     <div class="row">
       <label>
         <span>Artwork behind this screen</span>
@@ -202,10 +217,10 @@
       </label>
     </div>
     <small>Stages, characters and music tracks are listed in the Look tab. The same track keeps playing across screens.</small>
-  </fieldset>
+  </details>
 
-  <fieldset class="art">
-    <legend>Text size on this screen</legend>
+  <details class="sect">
+    <summary>Text size</summary>
     <div class="row">
       {#each SIZES as [kind, label] (kind)}
         <label>
@@ -229,10 +244,10 @@
       {/each}
     </div>
     <small>Leave a box empty to keep the default size.</small>
-  </fieldset>
+  </details>
 
-  <fieldset class="art">
-    <legend>Picture for this screen</legend>
+  <details class="sect">
+    <summary>Picture</summary>
     <div class="art-row">
       {#if draft.image}
         <img class="thumb" src={draft.image} alt={draft.image_alt ?? ''} />
@@ -257,8 +272,10 @@
       </div>
     </div>
     <small>Uploaded pictures go to the public <code>art</code> bucket. Without one, the screen uses the game's default landscape.</small>
-  </fieldset>
+  </details>
 
+  <details class="sect" open>
+  <summary>Flow</summary>
   <div class="row">
     <label>
       <span>Continue to</span>
@@ -275,8 +292,8 @@
     </label>
   </div>
 
-  <fieldset class="choices">
-    <legend>Choices</legend>
+  <div class="choices">
+    <h4>Choices</h4>
     {#if draft.choices.length === 0}
       <p class="hint">No choices: this is a story screen, the player just reads it.</p>
     {/if}
@@ -313,7 +330,8 @@
     {#if draft.choices.length < 4}
       <button type="button" class="btn secondary small" onclick={addChoice}>Add a choice</button>
     {/if}
-  </fieldset>
+  </div>
+  </details>
 
   <div class="actions">
     <button class="btn" type="submit" disabled={saving}>{saving ? 'Saving…' : 'Save screen'}</button>
@@ -337,8 +355,12 @@
   code { background: rgba(0,0,0,.08); padding: 0 .2rem; border-radius: .2rem; }
   .with-button { display: flex; gap: .4rem; align-items: center; }
   .with-button input { flex: 1; }
-  .choices, .art { border: 2px dashed var(--brown); border-radius: .75rem; padding: .75rem; display: grid; gap: .6rem; }
-  legend { font-weight: 700; padding: 0 .4rem; }
+  .sect { border: 2px solid rgba(0,0,0,.14); border-radius: .7rem; background: rgba(255,255,255,.4); padding: 0 .75rem; display: grid; gap: .7rem; }
+  .sect[open] { padding-bottom: .75rem; }
+  summary { cursor: pointer; font-weight: 700; font-size: .8rem; text-transform: uppercase; letter-spacing: .05em; padding: .55rem .75rem; margin: 0 -.75rem; user-select: none; }
+  .sect[open] > summary { border-bottom: 2px solid rgba(0,0,0,.1); }
+  .choices { display: grid; gap: .6rem; }
+  h4 { margin: 0; font-size: .8rem; text-transform: uppercase; letter-spacing: .05em; }
   .choice { display: flex; flex-wrap: wrap; align-items: end; gap: .6rem; padding-bottom: .6rem; border-bottom: 1px solid rgba(0,0,0,.12); }
   .choice .wide { flex: 1 1 14rem; }
   .correct { flex-direction: row; align-items: center; gap: .35rem; font-weight: 600; }
@@ -348,6 +370,6 @@
   .thumb { width: 9rem; height: 5.1rem; object-fit: cover; border-radius: .4rem; border: 2px solid rgba(0,0,0,.15); background: var(--parchment); }
   .thumb.empty { display: grid; place-items: center; font-size: .75rem; opacity: .6; }
   .upload input { border: none; background: none; padding: 0; }
-  .actions { display: flex; gap: .6rem; align-items: center; flex-wrap: wrap; }
+  .actions { display: flex; gap: .6rem; align-items: center; flex-wrap: wrap; position: sticky; bottom: 0; padding: .6rem 0; background: var(--paper, #fff6e0); border-top: 2px solid rgba(0,0,0,.12); z-index: 2; }
   .small { font-size: .85rem; padding: .35rem .7rem; }
 </style>

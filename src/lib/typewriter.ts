@@ -11,6 +11,8 @@ export interface TypeOptions {
   onTyping?: (typing: boolean, finish: () => void) => void;
   /** Milliseconds per character; long lines are sped up so no line takes longer than ~3 seconds. */
   speed?: number;
+  /** Show the whole line at once (the editor's preview has nothing to wait for). */
+  instant?: boolean;
 }
 
 const MAX_MS = 3000;
@@ -49,7 +51,7 @@ export function typewriter(node: HTMLElement, options: TypeOptions = {}) {
   const found: Text[] = [];
   while (walker.nextNode()) found.push(walker.currentNode as Text);
 
-  if (reduced || !found.length) {
+  if (reduced || options.instant || !found.length) {
     options.onTyping?.(false, finish);
     return { destroy: finish };
   }

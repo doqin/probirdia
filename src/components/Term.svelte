@@ -16,6 +16,8 @@
   let pinned = $state(false);
   let shift = $state(0);
   let flip = $state(false);
+  /** Height the popup may use when neither side of the word has room for all of it. */
+  let room = $state<number | undefined>(undefined);
   const open = $derived(hovered || pinned);
   const anchor = $derived(withBase(`/glossary/#${entry.kind === 'word' ? 'word-' : ''}${entry.slug}`));
 
@@ -55,8 +57,12 @@
     const w = wrap.getBoundingClientRect();
     const below = box.bottom - w.bottom;
     const above = w.top - box.top;
-    const needed = pop.offsetHeight + margin;
+    // measure the card's full height, so a squeezed popup does not shrink its own estimate
+    const full = (pop.querySelector('.card')?.scrollHeight ?? pop.offsetHeight) + 8;
+    const needed = full + margin;
     flip = below < needed && above > below;
+    const available = (flip ? above : below) - margin;
+    room = needed > (flip ? above : below) ? Math.max(available - 8, 96) : undefined;
   });
 
   function close() {
@@ -90,7 +96,7 @@
   >{display}</button>
 
   {#if open}
-    <span class="pop" class:up={flip} role="tooltip" {id} bind:this={pop} style:--shift="{shift}px">
+    <span class="pop" class:up={flip} role="tooltip" {id} bind:this={pop} style:--shift="{shift}px" style:--room={room !== undefined ? `${room}px` : undefined}>
       <span class="card">
         <strong>{entry.term}</strong>
         <span class="meaning">{pick(entry.meaning, lang)}</span>
@@ -137,6 +143,8 @@
   }
   .pop.up { top: auto; bottom: 100%; padding-top: 0; padding-bottom: .4rem; }
   .card {
+    max-height: var(--room, none);
+    overflow-y: auto;
     display: block;
     padding: .8rem 1rem;
     border-radius: .8rem;

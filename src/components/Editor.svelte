@@ -5,8 +5,9 @@
   import ProverbPanel from './ProverbPanel.svelte';
   import DesignPanel from './DesignPanel.svelte';
   import WordsPanel from './WordsPanel.svelte';
+  import ScenePreview from './ScenePreview.svelte';
   import { supabase, supabaseConfigured } from '../lib/supabase';
-  import type { Presentation } from '../lib/types';
+  import type { Lang, Presentation } from '../lib/types';
   import { sceneLook, withSceneLook, type SceneLook } from '../lib/look';
   import {
     amAnEditor,
@@ -53,6 +54,9 @@
   let words = $state<ProverbRow[]>([]);
   let tab = $state<'story' | 'design' | 'proverbs' | 'settings' | 'check'>('story');
   let sceneId = $state<string | null>(null);
+  /** The selected screen as it is being edited (unsaved); the stage preview draws from it. */
+  let liveDraft = $state<{ row: SceneRow; look: SceneLook } | null>(null);
+  let previewLang = $state<Lang>('en');
   let notice = $state('');
   let search = $state('');
   let bulkText = $state('');
@@ -95,6 +99,48 @@
   /** The scene list, grouped by chapter, in playing order. */
   const groups = $derived(groupByChapter(visibleScenes));
 
+  const go = (next: typeof tab) => {
+    view = 'game';
+    tab = next;
+  };
+
+  const liveRow = $derived(liveDraft && liveDraft.row.id === scene?.id ? liveDraft.row : null);
+  const dirty = $derived(
+    !!liveDraft &&
+      liveDraft.row.id === scene?.id &&
+      (JSON.stringify(liveDraft.row) !== JSON.stringify($state.snapshot(scene)) ||
+        JSON.stringify(liveDraft.look) !== JSON.stringify(currentLook)),
+  );
+
+  const hasStep = (direction: -1 | 1) => {
+    const index = ordered.findIndex((s) => s.id === scene?.id);
+    return index >= 0 && !!ordered[index + direction];
+  };
+  const step = (direction: -1 | 1) => {
+    const index = ordered.findIndex((s) => s.id === scene?.id);
+    const target = ordered[index + direction];
+    if (target) sceneId = target.id;
+  };
+
+  /** Where this screen sends the player, for the shortcuts under the stage. */
+  const leadsTo = $derived.by(() => {
+    const row = liveRow ?? scene;
+    if (!row || !data) return [];
+    const byKey = new Map(data.scenes.map((s) => [s.key, s]));
+    const out: { key: string; label: string; row?: SceneRow }[] = [];
+    const add = (key: string | null | undefined, label: string) => {
+      const k = key?.trim();
+      if (k && !out.some((o) => o.key === k && o.label === label)) out.push({ key: k, label, row: byKey.get(k) });
+    };
+    add(row.next_key, '');
+    for (const c of row.choices ?? []) {
+      const proverb = c.proverb_id ? data.proverbs.find((p) => p.id === c.proverb_id)?.term : '';
+      add(c.next_key, (c.label || proverb || '').slice(0, 24));
+    }
+    for (const r of row.routes ?? []) add(r.next, r.if ? `if ${r.if}`.slice(0, 24) : 'otherwise');
+    return out;
+  });
+
   const nextPosition = () => (ordered.length ? Math.max(...ordered.map((s) => s.position)) + 1 : 0);
 
   const uniqueKey = (base: string) => {
@@ -121,6 +167,7 @@
     busy = true;
     try {
       data = await fetchEditorData(id);
+      liveDraft = null;
       sceneId = data.scenes[0]?.id ?? null;
       tab = 'story';
       view = 'game';
@@ -415,21 +462,55 @@
       <button class="btn secondary" onclick={() => signOut()}>Sign out</button>
     </div>
   {:else}
-    <header class="topbar">
-      <div>
-        <h1 class="page-title">Content studio</h1>
+    <header class="bar">
+      <div class="brand">
+        <h1>Content studio</h1>
         <p class="who">{session.user.email} · <button class="link" onclick={() => signOut()}>sign out</button></p>
       </div>
+
+      <div class="game-pick">
+        <label>
+          <span class="sr">Game</span>
+          <select value={data?.game.id ?? ''} onchange={(e) => e.currentTarget.value && openGame(e.currentTarget.value)}>
+            {#if !data}<option value="">Pick a game…</option>{/if}
+            {#each games as row (row.id)}
+              <option value={row.id}>{row.title || row.slug} ({row.status === 'published' ? 'live' : 'draft'})</option>
+            {/each}
+          </select>
+        </label>
+        <details class="new-game">
+          <summary class="btn secondary small">+ New game</summary>
+          <div class="new-game-form">
+            <input bind:value={newTitle} placeholder="New game title" />
+            <input bind:value={newSlug} placeholder="web-address (lowercase-dashes)" />
+            <button class="btn small" onclick={makeGame} disabled={!newTitle.trim() || !newSlug.trim()}>Create</button>
+          </div>
+        </details>
+      </div>
+
+      <nav class="modes" aria-label="Editor sections">
+        {#if data}
+          <button class:on={view === 'game' && tab === 'story'} onclick={() => go('story')}>Screens <small>{counts.game}</small></button>
+          <button class:on={view === 'game' && tab === 'design'} onclick={() => go('design')}>Look</button>
+          <button class:on={view === 'game' && tab === 'proverbs'} onclick={() => go('proverbs')}>Proverbs <small>{data.used.length}</small></button>
+          <button class:on={view === 'game' && tab === 'settings'} onclick={() => go('settings')}>Settings</button>
+          <button class:on={view === 'game' && tab === 'check'} onclick={() => go('check')}>
+            Check {problems.length ? `(${problems.length})` : '✓'}
+          </button>
+        {/if}
+        <button class="shared" class:on={view === 'words'} onclick={() => (view = 'words')}>Hard words <small>{words.length}</small></button>
+      </nav>
+
       <div class="top-actions">
         {#if data}
           <span class="badge" class:live={data.game.status === 'published'}>
             {data.game.status === 'published' ? 'Live' : 'Draft'}
           </span>
-          <a class="btn secondary small" href={`./play/?g=${data.game.slug}&draft=1`} target="_blank" rel="noreferrer">Preview draft</a>
+          <a class="btn secondary small" href={`./play/?g=${data.game.slug}&draft=1`} target="_blank" rel="noreferrer">Play draft</a>
           {#if data.game.status === 'published'}
             <a class="btn secondary small" href={`./play/?g=${data.game.slug}`} target="_blank" rel="noreferrer">Play</a>
           {/if}
-          <button class="btn" onclick={publish} disabled={busy}>
+          <button class="btn small" onclick={publish} disabled={busy}>
             {data.game.status === 'published' ? 'Unpublish' : 'Publish'}
           </button>
         {/if}
@@ -439,313 +520,351 @@
     {#if notice}<p class="notice">{notice}</p>{/if}
     {#if error}<p class="error">{error}</p>{/if}
 
-    <div class="layout">
-      <aside>
-        <h2>Games</h2>
-        <ul class="games">
-          {#each games as row (row.id)}
-            <li>
-              <button class="game" class:active={row.id === data?.game.id} onclick={() => openGame(row.id)}>
-                {row.title || row.slug}
-                <small>{row.status === 'published' ? 'live' : 'draft'}</small>
-              </button>
-            </li>
-          {/each}
-        </ul>
-        <h2>Shared</h2>
-        <button class="game" class:active={view === 'words'} onclick={() => (view = 'words')}>
-          Hard words
-          <small>{words.length}</small>
-        </button>
-        <div class="new-game">
-          <input bind:value={newTitle} placeholder="New game title" />
-          <input bind:value={newSlug} placeholder="web-address (lowercase-dashes)" />
-          <button class="btn small" onclick={makeGame} disabled={!newTitle.trim() || !newSlug.trim()}>Create</button>
-        </div>
-      </aside>
-
+    {#if view === 'words'}
       <div class="pane">
-        {#if view === 'words'}
-          <WordsPanel
-            {words}
-            {busy}
-            onCreate={async (v) => {
-              await guard(async () => {
-                await saveProverb({
-                  kind: 'word',
-                  term: v.term,
-                  meaning: v.meaning,
-                  meaning_vi: v.meaning_vi || null,
-                  example: v.example || null,
-                  forms: v.forms,
-                });
-                words = await fetchWordList();
-                say('Word added.');
+        <WordsPanel
+          {words}
+          {busy}
+          onCreate={async (v) => {
+            await guard(async () => {
+              await saveProverb({
+                kind: 'word',
+                term: v.term,
+                meaning: v.meaning,
+                meaning_vi: v.meaning_vi || null,
+                example: v.example || null,
+                forms: v.forms,
               });
-            }}
-            onUpdate={async (id, patch) => {
+              words = await fetchWordList();
+              say('Word added.');
+            });
+          }}
+          onUpdate={async (id, patch) => {
+            await guard(async () => {
+              await saveProverb({ id, ...patch });
+              words = await fetchWordList();
+              say('Word saved.');
+            });
+          }}
+          onDelete={async (w) => {
+            await guard(async () => {
+              await deleteWord(w.id);
+              words = await fetchWordList();
+              say('Word deleted.');
+            });
+          }}
+        />
+      </div>
+    {:else if !data}
+      <div class="pane"><p>Pick a game, or create one.</p></div>
+    {:else if tab === 'story'}
+      <div class="workbench">
+        <aside class="outline" aria-label="Screens">
+          <input class="find" bind:value={search} placeholder={`Find a screen (${ordered.length})`} />
+          <div class="outline-list">
+            {#each groups as group (group.chapter)}
+              <h3>
+                <span>{group.chapter} · {group.scenes.length}</span>
+                <button class="link" onclick={() => addScene(group.chapter === NO_CHAPTER ? '' : group.chapter)}>+ screen</button>
+              </h3>
+              <ol>
+                {#each group.scenes as row (row.id)}
+                  <li class:chosen={row.id === scene?.id}>
+                    <button class="scene-link" class:active={row.id === scene?.id} onclick={() => (sceneId = row.id)}>
+                      <span class="key">{row.key}</span>
+                      <span class="preview">{row.text || row.heading || '(empty)'}</span>
+                      {#if row.phase !== 'game'}<span class="tag">{row.phase}</span>{/if}
+                    </button>
+                    <span class="row-actions">
+                      <button class="icon" title="Move up" onclick={() => moveScene(row, -1)}>↑</button>
+                      <button class="icon" title="Move down" onclick={() => moveScene(row, 1)}>↓</button>
+                      <button class="icon" title="Duplicate this screen" onclick={() => duplicateScene(row)}>⧉</button>
+                    </span>
+                  </li>
+                {/each}
+              </ol>
+            {/each}
+            {#if !visibleScenes.length}
+              <p class="hint">No screens match “{search}”.</p>
+            {/if}
+          </div>
+          <button class="btn secondary small" onclick={() => addScene()}>Add a screen</button>
+
+          <details class="bulk">
+            <summary>Paste a script</summary>
+            <p class="hint">One screen per line. Write <code>Minh: …</code> to set who is speaking. The screens are chained with Continue buttons.</p>
+            <textarea bind:value={bulkText} rows="6" placeholder="Minh: I applied to UFLS weeks ago…&#10;Minh: All my friends have received theirs…&#10;Minh: What do I do, Prof. Bird?"></textarea>
+            <div class="bulk-row">
+              <label>
+                <span>Chapter</span>
+                <input bind:value={bulkChapter} placeholder="Finding the Campus" />
+              </label>
+              <label>
+                <span>Part</span>
+                <select bind:value={bulkPhase}>
+                  <option value="preview">Preview</option>
+                  <option value="game">Game</option>
+                  <option value="review">Review</option>
+                </select>
+              </label>
+            </div>
+            <button class="btn small" onclick={bulkAdd} disabled={!bulkText.trim() || busy}>
+              Add {bulkText.split('\n').filter((line) => line.trim()).length} screens
+            </button>
+          </details>
+        </aside>
+
+        <section class="canvas" aria-label="Preview of the selected screen">
+          {#if scene}
+            <div class="canvas-bar">
+              <button class="icon" title="Previous screen" onclick={() => step(-1)} disabled={!hasStep(-1)}>‹</button>
+              <div class="where">
+                <strong>{liveRow?.key ?? scene.key}</strong>
+                <span>{liveRow?.chapter || NO_CHAPTER} · screen {ordered.findIndex((s) => s.id === scene.id) + 1} of {ordered.length}</span>
+              </div>
+              <button class="icon" title="Next screen" onclick={() => step(1)} disabled={!hasStep(1)}>›</button>
+              <span class="spacer"></span>
+              <div class="seg" role="group" aria-label="Preview language">
+                <button class:on={previewLang === 'en'} onclick={() => (previewLang = 'en')}>EN</button>
+                <button class:on={previewLang === 'vi'} onclick={() => (previewLang = 'vi')}>VI</button>
+              </div>
+            </div>
+            <div class="stage game-world bare">
+              <ScenePreview {data} sceneId={scene.id} draft={liveDraft} {words} lang={previewLang} />
+            </div>
+            <p class="canvas-note">
+              Live preview — it follows what you type. Hover a highlighted word or proverb to check its popup.
+              {#if dirty}<strong class="unsaved">Unsaved changes</strong>{/if}
+            </p>
+            {#if leadsTo.length}
+              <div class="leads">
+                <span>Leads to</span>
+                {#each leadsTo as target (target.key)}
+                  <button class="chip" class:missing={!target.row} onclick={() => target.row && (sceneId = target.row.id)} title={target.row ? 'Go to this screen' : 'No screen has this name'}>
+                    {target.label ? `${target.label} → ` : ''}{target.key}
+                  </button>
+                {/each}
+              </div>
+            {:else}
+              <div class="leads"><span>Ending — the story stops here and shows the recap.</span></div>
+            {/if}
+          {:else}
+            <p class="hint">No screens yet. Add the first one.</p>
+          {/if}
+        </section>
+
+        <aside class="inspector" aria-label="Screen settings">
+          {#if scene}
+            <SceneEditor
+              scene={scene}
+              scenes={data.scenes}
+              proverbs={data.proverbs}
+              chapters={chapters}
+              stages={stageKeys}
+              characters={characterKeys}
+              musics={musicKeys}
+              look={currentLook}
+              gameSlug={data.game.slug}
+              saving={busy}
+              onSave={saveSceneRow}
+              onDelete={removeSceneRow}
+              onDraft={(row, look) => (liveDraft = { row, look })}
+            />
+          {/if}
+        </aside>
+      </div>
+    {:else}
+      <div class="pane">
+        {#if tab === 'design'}
+          <DesignPanel
+            presentation={data.game.presentation}
+            gameSlug={data.game.slug}
+            saving={busy}
+            onSave={async (next) => {
               await guard(async () => {
-                await saveProverb({ id, ...patch });
-                words = await fetchWordList();
-                say('Word saved.');
-              });
-            }}
-            onDelete={async (w) => {
-              await guard(async () => {
-                await deleteWord(w.id);
-                words = await fetchWordList();
-                say('Word deleted.');
+                await savePresentation(data!.game.id, next);
+                await refresh();
+                say('Design saved.');
               });
             }}
           />
-        {:else if !data}
-          <p>Pick a game, or create one.</p>
-        {:else}
-          <nav class="tabs">
-            <button class:on={tab === 'story'} onclick={() => (tab = 'story')}>Story ({counts.game})</button>
-            <button class:on={tab === 'design'} onclick={() => (tab = 'design')}>Look</button>
-            <button class:on={tab === 'proverbs'} onclick={() => (tab = 'proverbs')}>Proverbs ({data.used.length})</button>
-            <button class:on={tab === 'settings'} onclick={() => (tab = 'settings')}>Settings</button>
-            <button class:on={tab === 'check'} onclick={() => (tab = 'check')}>
-              Check {problems.length ? `(${problems.length})` : '✓'}
-            </button>
-          </nav>
-
-          {#if tab === 'story'}
-            <div class="story">
-              <div class="scenes">
-                <input class="find" bind:value={search} placeholder={`Find a screen (${ordered.length})`} />
-                {#each groups as group (group.chapter)}
-                  <h3>
-                    <span>{group.chapter} · {group.scenes.length}</span>
-                    <button class="link" onclick={() => addScene(group.chapter === NO_CHAPTER ? '' : group.chapter)}>
-                      + screen
-                    </button>
-                  </h3>
-                  <ol>
-                    {#each group.scenes as row (row.id)}
-                      <li class:chosen={row.id === scene?.id}>
-                        <button class="scene-link" class:active={row.id === scene?.id} onclick={() => (sceneId = row.id)}>
-                          <span class="key">{row.key}</span>
-                          <span class="preview">{row.text || row.heading || '(empty)'}</span>
-                          {#if row.phase !== 'game'}<span class="tag">{row.phase}</span>{/if}
-                          {#if row.image}<span class="tag art">art</span>{/if}
-                        </button>
-                        <span class="row-actions">
-                          <button class="icon" title="Move up" onclick={() => moveScene(row, -1)}>↑</button>
-                          <button class="icon" title="Move down" onclick={() => moveScene(row, 1)}>↓</button>
-                          <button class="icon" title="Duplicate this screen" onclick={() => duplicateScene(row)}>⧉</button>
-                        </span>
-                      </li>
-                    {/each}
-                  </ol>
+        {:else if tab === 'proverbs'}
+          <ProverbPanel
+            proverbs={data.proverbs}
+            used={data.used}
+            onAttach={async (proverbId) => {
+              await guard(async () => {
+                await attachProverb(data!.game.id, proverbId, data!.used.length);
+                await refresh();
+              });
+            }}
+            onDetach={async (proverbId) => {
+              await guard(async () => {
+                await detachProverb(data!.game.id, proverbId);
+                await refresh();
+              });
+            }}
+            onUpdate={async (proverbId, patch) => {
+              await guard(async () => {
+                await saveProverb({ id: proverbId, ...patch });
+                await refresh();
+                say('Proverb saved.');
+              });
+            }}
+            onSaveWhy={async (proverbId, why) => {
+              await guard(async () => {
+                await saveWhyItFits(data!.game.id, proverbId, why);
+                await refresh();
+                say('Explanation saved.');
+              });
+            }}
+            onCreate={async (values) => {
+              await guard(async () => {
+                const created = await saveProverb({ ...values, kind: 'proverb', forms: [] });
+                await attachProverb(data!.game.id, created.id, data!.used.length);
+                await refresh();
+                say('Proverb created and added.');
+              });
+            }}
+          />
+        {:else if tab === 'settings'}
+          <form
+            class="settings"
+            onsubmit={(e) => {
+              e.preventDefault();
+              const form = new FormData(e.currentTarget as HTMLFormElement);
+              guard(async () => {
+                await updateGame(data!.game.id, {
+                  title: String(form.get('title') ?? ''),
+                  title_vi: String(form.get('title_vi') ?? '') || null,
+                  summary: String(form.get('summary') ?? ''),
+                  description: String(form.get('description') ?? ''),
+                  thumbnail: String(form.get('thumbnail') ?? '') || null,
+                  start_key: String(form.get('start_key') ?? '') || null,
+                });
+                await refresh();
+                say('Settings saved.');
+              });
+            }}
+          >
+            <label><span>Title</span><input name="title" value={data.game.title} required /></label>
+            <label><span>Title (Vietnamese)</span><input name="title_vi" value={data.game.title_vi ?? ''} /></label>
+            <label><span>One-line summary</span><input name="summary" value={data.game.summary} /></label>
+            <label><span>Description</span><textarea name="description" rows="3">{data.game.description}</textarea></label>
+            <label><span>Thumbnail address</span><input name="thumbnail" value={data.game.thumbnail ?? ''} placeholder="/games/my-game/thumbnail.webp" /></label>
+            <label>
+              <span>First screen</span>
+              <select name="start_key">
+                <option value="">(the top of the list)</option>
+                {#each data.scenes as s (s.id)}
+                  <option value={s.key} selected={s.key === data.game.start_key}>{s.key}</option>
                 {/each}
-                {#if !visibleScenes.length}
-                  <p class="hint">No screens match “{search}”.</p>
-                {/if}
-                <button class="btn secondary small" onclick={() => addScene()}>Add a screen</button>
-
-                <details class="bulk">
-                  <summary>Paste a script</summary>
-                  <p class="hint">One screen per line. Write <code>Minh: …</code> to set who is speaking. The screens are chained with Continue buttons.</p>
-                  <textarea bind:value={bulkText} rows="6" placeholder="Minh: I applied to UFLS weeks ago…&#10;Minh: All my friends have received theirs…&#10;Minh: What do I do, Prof. Bird?"></textarea>
-                  <div class="bulk-row">
-                    <label>
-                      <span>Chapter</span>
-                      <input bind:value={bulkChapter} placeholder="Finding the Campus" />
-                    </label>
-                    <label>
-                      <span>Part</span>
-                      <select bind:value={bulkPhase}>
-                        <option value="preview">Preview</option>
-                        <option value="game">Game</option>
-                        <option value="review">Review</option>
-                      </select>
-                    </label>
-                  </div>
-                  <button class="btn small" onclick={bulkAdd} disabled={!bulkText.trim() || busy}>
-                    Add {bulkText.split('\n').filter((line) => line.trim()).length} screens
-                  </button>
-                </details>
-              </div>
-              <div class="scene-form">
-                {#if scene}
-                  <SceneEditor
-                    scene={scene}
-                    scenes={data.scenes}
-                    proverbs={data.proverbs}
-                    chapters={chapters}
-                    stages={stageKeys}
-                    characters={characterKeys}
-                    musics={musicKeys}
-                    look={currentLook}
-                    gameSlug={data.game.slug}
-                    saving={busy}
-                    onSave={saveSceneRow}
-                    onDelete={removeSceneRow}
-                  />
-                {:else}
-                  <p>No screens yet. Add the first one.</p>
-                {/if}
-              </div>
-            </div>
-          {:else if tab === 'design'}
-            <DesignPanel
-              presentation={data.game.presentation}
-              gameSlug={data.game.slug}
-              saving={busy}
-              onSave={async (next) => {
-                await guard(async () => {
-                  await savePresentation(data!.game.id, next);
-                  await refresh();
-                  say('Design saved.');
-                });
-              }}
-            />
-          {:else if tab === 'proverbs'}
-            <ProverbPanel
-              proverbs={data.proverbs}
-              used={data.used}
-              onAttach={async (proverbId) => {
-                await guard(async () => {
-                  await attachProverb(data!.game.id, proverbId, data!.used.length);
-                  await refresh();
-                });
-              }}
-              onDetach={async (proverbId) => {
-                await guard(async () => {
-                  await detachProverb(data!.game.id, proverbId);
-                  await refresh();
-                });
-              }}
-              onUpdate={async (proverbId, patch) => {
-                await guard(async () => {
-                  await saveProverb({ id: proverbId, ...patch });
-                  await refresh();
-                  say('Proverb saved.');
-                });
-              }}
-              onSaveWhy={async (proverbId, why) => {
-                await guard(async () => {
-                  await saveWhyItFits(data!.game.id, proverbId, why);
-                  await refresh();
-                  say('Explanation saved.');
-                });
-              }}
-              onCreate={async (values) => {
-                await guard(async () => {
-                  const created = await saveProverb({ ...values, kind: 'proverb', forms: [] });
-                  await attachProverb(data!.game.id, created.id, data!.used.length);
-                  await refresh();
-                  say('Proverb created and added.');
-                });
-              }}
-            />
-          {:else if tab === 'settings'}
-            <form
-              class="settings"
-              onsubmit={(e) => {
-                e.preventDefault();
-                const form = new FormData(e.currentTarget as HTMLFormElement);
-                guard(async () => {
-                  await updateGame(data!.game.id, {
-                    title: String(form.get('title') ?? ''),
-                    title_vi: String(form.get('title_vi') ?? '') || null,
-                    summary: String(form.get('summary') ?? ''),
-                    description: String(form.get('description') ?? ''),
-                    thumbnail: String(form.get('thumbnail') ?? '') || null,
-                    start_key: String(form.get('start_key') ?? '') || null,
-                  });
-                  await refresh();
-                  say('Settings saved.');
-                });
-              }}
-            >
-              <label><span>Title</span><input name="title" value={data.game.title} required /></label>
-              <label><span>Title (Vietnamese)</span><input name="title_vi" value={data.game.title_vi ?? ''} /></label>
-              <label><span>One-line summary</span><input name="summary" value={data.game.summary} /></label>
-              <label><span>Description</span><textarea name="description" rows="3">{data.game.description}</textarea></label>
-              <label><span>Thumbnail address</span><input name="thumbnail" value={data.game.thumbnail ?? ''} placeholder="/games/my-game/thumbnail.webp" /></label>
-              <label>
-                <span>First screen</span>
-                <select name="start_key">
-                  <option value="">(the top of the list)</option>
-                  {#each data.scenes as s (s.id)}
-                    <option value={s.key} selected={s.key === data.game.start_key}>{s.key}</option>
-                  {/each}
-                </select>
-              </label>
-              <button class="btn" type="submit" disabled={busy}>Save settings</button>
-            </form>
-          {:else}
-            <div class="check">
-              {#if problems.length}
-                <p class="hint">Publishing is blocked until these are fixed:</p>
-                <ul>
-                  {#each problems as problem, i (i)}<li>{problem}</li>{/each}
-                </ul>
-              {:else}
-                <p class="ok">No problems found. This game is ready to publish.</p>
-              {/if}
-            </div>
-          {/if}
+              </select>
+            </label>
+            <button class="btn" type="submit" disabled={busy}>Save settings</button>
+          </form>
+        {:else}
+          <div class="check">
+            {#if problems.length}
+              <p class="hint">Publishing is blocked until these are fixed:</p>
+              <ul>
+                {#each problems as problem, i (i)}<li>{problem}</li>{/each}
+              </ul>
+            {:else}
+              <p class="ok">No problems found. This game is ready to publish.</p>
+            {/if}
+          </div>
         {/if}
       </div>
-    </div>
+    {/if}
   {/if}
 </section>
 
 <style>
-  .editor { display: grid; gap: 1rem; }
+  .editor { display: grid; gap: .6rem; }
   .panel { max-width: 40rem; margin: 2rem auto; display: grid; gap: .8rem; }
   .login label { display: grid; gap: .25rem; font-weight: 600; }
   .login input { font: inherit; width: 100%; padding: .5rem .6rem; border: 2px solid var(--brown); border-radius: .5rem; background: var(--cream); color: var(--ink); }
-  .topbar { display: flex; justify-content: space-between; align-items: flex-start; gap: 1rem; flex-wrap: wrap; }
-  .topbar h1 { text-align: left; margin: 0; }
-  .who { margin: .2rem 0 0; font-size: .85rem; opacity: .8; }
-  .top-actions { display: flex; gap: .5rem; align-items: center; }
-  .badge { font-size: .8rem; font-weight: 700; text-transform: uppercase; padding: .25rem .55rem; border-radius: 999px; background: var(--pill); }
+  .sr { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); white-space: nowrap; }
+
+  /* ---- top bar: the game, the sections, and what to do with it ---- */
+  .bar { display: flex; align-items: center; gap: .8rem 1.2rem; flex-wrap: wrap; padding: .5rem .8rem; border: 2px solid var(--brown); border-radius: .8rem; background: var(--cream); }
+  .brand h1 { font-size: 1.05rem; text-align: left; margin: 0; letter-spacing: .04em; }
+  .who { margin: 0; font-size: .72rem; opacity: .75; line-height: 1.2; }
+  .game-pick { display: flex; gap: .4rem; align-items: center; position: relative; }
+  .game-pick select { font: inherit; font-size: .95rem; padding: .3rem .5rem; border: 2px solid var(--brown); border-radius: .5rem; background: #fff; color: var(--ink); max-width: 16rem; }
+  .new-game > summary { list-style: none; cursor: pointer; }
+  .new-game > summary::-webkit-details-marker { display: none; }
+  .new-game-form { position: absolute; z-index: 20; top: calc(100% + .4rem); left: 0; width: 18rem; display: grid; gap: .4rem; padding: .7rem; border: 2px solid var(--brown); border-radius: .6rem; background: var(--cream); box-shadow: 0 .4rem 1rem rgba(0,0,0,.2); }
+  .new-game-form input { font: inherit; min-width: 0; width: 100%; padding: .35rem .45rem; border: 2px solid var(--brown); border-radius: .4rem; background: #fff; color: var(--ink); }
+  .modes { display: flex; gap: .25rem; flex: 1 1 auto; flex-wrap: wrap; }
+  .modes button { font: inherit; font-size: .92rem; padding: .3rem .7rem; border-radius: .5rem; border: 2px solid transparent; background: none; color: var(--ink); cursor: pointer; }
+  .modes button:hover { background: rgba(0,0,0,.06); }
+  .modes button.on { background: var(--brown); color: var(--cream); }
+  .modes button.shared { margin-left: auto; border-color: var(--brown); border-style: dashed; }
+  .modes small { opacity: .75; font-size: .75rem; }
+  .top-actions { display: flex; gap: .4rem; align-items: center; }
+  .badge { font-size: .75rem; font-weight: 700; text-transform: uppercase; padding: .2rem .5rem; border-radius: 999px; background: var(--pill); }
   .badge.live { background: var(--hill); color: var(--ink); }
-  .layout { display: grid; grid-template-columns: minmax(0, 15rem) minmax(0, 1fr); gap: 1.2rem; align-items: start; }
-  aside { border-right: 2px solid rgba(0,0,0,.12); padding-right: 1rem; display: grid; gap: .6rem; min-width: 0; }
-  aside h2 { font-size: 1rem; text-transform: uppercase; margin: 0; }
-  .games { list-style: none; margin: 0; padding: 0; display: grid; gap: .3rem; min-width: 0; }
-  .game { width: 100%; min-width: 0; text-align: left; background: none; border: 2px solid transparent; border-radius: .5rem; padding: .35rem .5rem; font: inherit; cursor: pointer; display: flex; justify-content: space-between; gap: .5rem; }
-  .game:hover { background: rgba(0,0,0,.05); }
-  .game.active { border-color: var(--brown); background: rgba(0,0,0,.06); font-weight: 700; }
-  .game small { opacity: .7; text-transform: uppercase; font-size: .7rem; }
-  .new-game { display: grid; gap: .35rem; min-width: 0; }
-  .new-game input { font: inherit; min-width: 0; width: 100%; padding: .35rem .45rem; border: 2px solid var(--brown); border-radius: .4rem; background: var(--cream); color: var(--ink); }
-  .pane { min-width: 0; display: grid; gap: .8rem; }
-  .tabs { display: flex; gap: .4rem; flex-wrap: wrap; }
-  .tabs button { font: inherit; padding: .35rem .7rem; border-radius: .5rem; border: 2px solid var(--brown); background: var(--cream); color: var(--ink); cursor: pointer; }
-  .tabs button.on { background: var(--brown); color: var(--cream); }
-  .story { display: grid; grid-template-columns: minmax(0, 17rem) minmax(0, 1fr); gap: 1rem; align-items: start; }
-  .scenes { display: grid; gap: .4rem; max-height: 70vh; overflow-y: auto; overflow-x: hidden; padding-right: .3rem; min-width: 0; }
-  .find { font: inherit; min-width: 0; padding: .4rem .5rem; border: 2px solid var(--brown); border-radius: .45rem; background: var(--cream); color: var(--ink); }
-  .scenes h3 { font-size: .8rem; text-transform: uppercase; margin: .6rem 0 .2rem; opacity: .8; display: flex; justify-content: space-between; gap: .5rem; align-items: baseline; }
-  .scenes h3 .link { font-size: .8rem; }
-  .scenes ol { list-style: none; margin: 0; padding: 0; display: grid; gap: .2rem; }
-  .scenes > button, .bulk { justify-self: start; width: 100%; }
-  .scene-link { display: grid; text-align: left; width: 100%; min-width: 0; background: none; border: 2px solid transparent; border-radius: .45rem; padding: .3rem .45rem; font: inherit; cursor: pointer; }
+
+  /* ---- the workbench: screens | stage | inspector ---- */
+  .workbench {
+    --chrome: 11.6rem;
+    display: grid;
+    grid-template-columns: minmax(13rem, 17rem) minmax(0, 1fr) minmax(22rem, 28rem);
+    gap: .8rem;
+    height: max(32rem, calc(100dvh - var(--chrome)));
+    align-items: stretch;
+  }
+  .outline, .inspector, .canvas { min-height: 0; min-width: 0; }
+  .outline { display: flex; flex-direction: column; gap: .5rem; border: 2px solid rgba(0,0,0,.14); border-radius: .8rem; padding: .6rem; background: rgba(255,255,255,.55); overflow: hidden; }
+  .outline-list { flex: 1 1 auto; overflow-y: auto; overflow-x: hidden; min-height: 0; padding-right: .2rem; }
+  .outline > button, .bulk { flex: 0 0 auto; }
+  .inspector { font-size: .95rem; overflow-y: auto; overflow-x: hidden; border: 2px solid rgba(0,0,0,.14); border-radius: .8rem; padding: .7rem; background: rgba(255,255,255,.55); }
+  .canvas { display: flex; flex-direction: column; gap: .6rem; overflow-y: auto; border: 2px solid rgba(0,0,0,.14); border-radius: .8rem; padding: .7rem; background: #e9e8f7; }
+  .canvas-bar { display: flex; align-items: center; gap: .5rem; }
+  .canvas-bar .icon { font-size: 1.3rem; padding: 0 .55rem; border-color: var(--brown); background: var(--cream); }
+  .canvas-bar .icon:disabled { opacity: .35; cursor: default; }
+  .where { display: grid; line-height: 1.2; min-width: 0; }
+  .where strong { font-size: 1rem; }
+  .where span { font-size: .78rem; opacity: .75; }
+  .spacer { flex: 1; }
+  .seg { display: inline-flex; border: 2px solid var(--brown); border-radius: .5rem; overflow: hidden; }
+  .seg button { font: inherit; font-size: .8rem; font-weight: 700; padding: .15rem .6rem; border: 0; background: #fff; color: var(--ink); cursor: pointer; }
+  .seg button.on { background: var(--brown); color: var(--cream); }
+  /* the stage keeps the game's own look: a framed 16:9 screen */
+  .stage { border: 3px solid #3b3953; border-radius: .5rem; overflow: hidden; background: #c8c6f2; box-shadow: 0 .3rem 0 rgba(59,57,83,.35); }
+  .canvas-note { margin: 0; font-size: .8rem; opacity: .8; }
+  .unsaved { color: var(--danger); margin-left: .4rem; }
+  .leads { display: flex; flex-wrap: wrap; gap: .4rem; align-items: center; font-size: .82rem; }
+  .leads > span { font-weight: 700; text-transform: uppercase; font-size: .72rem; letter-spacing: .05em; opacity: .75; }
+  .chip { font: inherit; font-size: .8rem; padding: .1rem .55rem; border: 2px solid var(--brown); border-radius: 999px; background: #fff; color: var(--ink); cursor: pointer; }
+  .chip:hover { background: var(--cream); }
+  .chip.missing { border-style: dashed; color: var(--danger); cursor: default; }
+
+  .pane { min-width: 0; max-width: 72rem; display: grid; gap: .8rem; align-content: start; }
+  .find { font: inherit; min-width: 0; padding: .4rem .5rem; border: 2px solid var(--brown); border-radius: .45rem; background: #fff; color: var(--ink); }
+  .outline h3 { font-size: .74rem; text-transform: uppercase; margin: .6rem 0 .2rem; opacity: .8; display: flex; justify-content: space-between; gap: .5rem; align-items: baseline; }
+  .outline h3 .link { font-size: .78rem; }
+  .outline ol { list-style: none; margin: 0; padding: 0; display: grid; gap: .15rem; }
+  .scene-link { display: grid; text-align: left; width: 100%; min-width: 0; background: none; border: 2px solid transparent; border-radius: .45rem; padding: .25rem .45rem; font: inherit; cursor: pointer; }
   .scene-link:hover { background: rgba(0,0,0,.05); }
-  .scene-link.active { border-color: var(--brown); background: rgba(0,0,0,.06); }
-  .scenes li { display: flex; align-items: center; gap: .2rem; min-width: 0; }
-  .scenes li.chosen .row-actions { opacity: 1; }
+  .scene-link.active { border-color: var(--brown); background: var(--cream); }
+  .outline li { display: flex; align-items: center; gap: .2rem; min-width: 0; }
+  .outline li.chosen .row-actions { opacity: 1; }
   .row-actions { display: flex; gap: .1rem; opacity: 0; transition: opacity .1s; flex: 0 0 auto; }
-  .scenes li:hover .row-actions, .scenes li:focus-within .row-actions { opacity: 1; }
+  .outline li:hover .row-actions, .outline li:focus-within .row-actions { opacity: 1; }
   .icon { background: none; border: 2px solid transparent; border-radius: .35rem; padding: 0 .25rem; font-size: .85rem; cursor: pointer; color: inherit; line-height: 1.4; }
-  .icon:hover { border-color: var(--brown); background: var(--cream); }
+  .icon:hover:not(:disabled) { border-color: var(--brown); background: var(--cream); }
   .tag { font-size: .65rem; text-transform: uppercase; letter-spacing: .04em; opacity: .8; border: 1px solid currentColor; border-radius: 999px; padding: 0 .3rem; justify-self: start; }
-  .tag.art { opacity: .55; }
-  .bulk { border: 2px dashed var(--brown); border-radius: .6rem; padding: .5rem .6rem; display: grid; gap: .4rem; min-width: 0; }
+  .bulk { border: 2px dashed var(--brown); border-radius: .6rem; padding: .5rem .6rem; display: grid; gap: .4rem; min-width: 0; max-height: 18rem; overflow-y: auto; }
   .bulk summary { cursor: pointer; font-weight: 700; font-size: .85rem; }
-  .bulk textarea, .bulk input, .bulk select { font: inherit; min-width: 0; padding: .4rem .5rem; border: 2px solid var(--brown); border-radius: .45rem; background: var(--cream); color: var(--ink); width: 100%; }
+  .bulk textarea, .bulk input, .bulk select { font: inherit; min-width: 0; padding: .4rem .5rem; border: 2px solid var(--brown); border-radius: .45rem; background: #fff; color: var(--ink); width: 100%; }
   .bulk-row { display: flex; gap: .4rem; flex-wrap: wrap; }
   .bulk-row label { flex: 1 1 8rem; display: grid; gap: .2rem; font-size: .8rem; font-weight: 600; }
   .key { font-weight: 700; font-size: .82rem; }
-  .preview { font-size: .78rem; opacity: .75; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-  .scene-form { border: 2px solid rgba(0,0,0,.14); border-radius: .8rem; padding: .9rem; background: rgba(255,255,255,.35); }
+  .preview { font-size: .76rem; opacity: .75; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+
   .settings { display: grid; gap: .7rem; max-width: 34rem; }
   .settings label { display: grid; gap: .25rem; font-weight: 600; font-size: .85rem; }
   .settings input, .settings textarea, .settings select { font: inherit; padding: .45rem .55rem; border: 2px solid var(--brown); border-radius: .5rem; background: var(--cream); color: var(--ink); }
@@ -753,12 +872,21 @@
   .check li { font-size: .9rem; }
   .hint { opacity: .8; font-size: .85rem; margin: 0; }
   .ok { color: var(--hill); font-weight: 700; }
-  .notice { margin: 0; padding: .5rem .8rem; border-radius: .5rem; background: var(--hill-light); color: var(--ink); }
-  .error { margin: 0; padding: .5rem .8rem; border-radius: .5rem; background: #f3c9c0; color: var(--danger); }
+  .notice { margin: 0; padding: .4rem .8rem; border-radius: .5rem; background: var(--hill-light); color: var(--ink); }
+  .error { margin: 0; padding: .4rem .8rem; border-radius: .5rem; background: #f3c9c0; color: var(--danger); }
   .link { background: none; border: none; padding: 0; font: inherit; text-decoration: underline; cursor: pointer; color: inherit; }
   .small { font-size: .85rem; padding: .35rem .7rem; }
-  @media (max-width: 60rem) {
-    .layout, .story { grid-template-columns: 1fr; }
-    aside { border-right: none; border-bottom: 2px solid rgba(0,0,0,.12); padding: 0 0 .8rem; }
+
+  /* narrower windows: the stage first, then the settings, then the screen list */
+  @media (max-width: 80rem) {
+    .workbench { grid-template-columns: minmax(12rem, 15rem) minmax(0, 1fr); height: auto; }
+    .inspector { grid-column: 1 / -1; overflow: visible; }
+    .outline { max-height: 70dvh; }
+    .canvas { overflow: visible; }
+  }
+  @media (max-width: 52rem) {
+    .workbench { grid-template-columns: 1fr; }
+    .canvas { order: -1; }
+    .outline { max-height: 24rem; }
   }
 </style>
