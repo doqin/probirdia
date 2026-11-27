@@ -382,6 +382,18 @@ export async function saveProverb(row: Partial<ProverbRow> & { id?: string }): P
   return data as ProverbRow;
 }
 
+/** The shared hard-word list: not tied to any game, picked up by every game's text. */
+export async function fetchWordList(): Promise<ProverbRow[]> {
+  const { data, error } = await client().from('proverb').select('*').eq('kind', 'word').order('term');
+  if (error) throw error;
+  return (data ?? []) as ProverbRow[];
+}
+
+export async function deleteWord(id: string): Promise<void> {
+  const { error } = await client().from('proverb').delete().eq('id', id).eq('kind', 'word');
+  if (error) throw error;
+}
+
 export async function attachProverb(gameId: string, proverbId: string, position: number): Promise<void> {
   const { error } = await client()
     .from('game_proverb')
