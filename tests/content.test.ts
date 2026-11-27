@@ -2,7 +2,7 @@ import { describe, expect, it } from 'vitest';
 import { mkdtempSync, mkdirSync, writeFileSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import path from 'node:path';
-import { ContentError, loadGame, loadGlossary, loadWords } from '../src/lib/content';
+import { ContentError, loadGame, loadGlossary, loadWords, usedProverbSlugs } from '../src/lib/content';
 import { resolveScene } from '../src/lib/presentation';
 import { parseMarkup } from '../src/lib/markup';
 import { advance, choose, isEnd, isValidState, recapOf, startState, type PlayState } from '../src/lib/engine';
@@ -426,5 +426,16 @@ describe('base path', () => {
     expect(joinBase('/probirdia', 'https://example.com/x')).toBe('https://example.com/x');
     expect(joinBase('/probirdia', '//cdn.example.com/x')).toBe('//cdn.example.com/x');
     expect(joinBase('/probirdia', 'relative.png')).toBe('relative.png');
+  });
+});
+
+describe('usedProverbSlugs', () => {
+  it('lists proverbs offered as choices or linked in text, and nothing else', () => {
+    const dir = fixture(
+      'id,text,next,choice_1_proverb,choice_1_next\nstart,"Remember [[Better late than never]].",end,,\nend,Done,,,\n',
+      'proverb,meaning\nBetter late than never,Late is fine.\nHe who hesitates is lost,Do not wait.\n',
+    );
+    const g = loadGame('g', loadGlossary(dir), dir);
+    expect([...usedProverbSlugs([g])]).toEqual(['better-late-than-never']);
   });
 });

@@ -389,3 +389,22 @@ export function loadAllGames(glossary = loadGlossary(), dir = contentDir(), opts
   if (problems.length) throw new ContentError(problems);
   return games.sort((a, b) => a.title.en.localeCompare(b.title.en));
 }
+
+/** Slugs of every proverb the given games use: offered as a choice, or linked with [[...]] in their text. */
+export function usedProverbSlugs(games: Game[]): Set<string> {
+  const used = new Set<string>();
+  for (const game of games) {
+    for (const scene of Object.values(game.scenes)) {
+      for (const c of scene.choices) {
+        if (c.proverb) used.add(c.proverb);
+      }
+      const fields = [scene.text, scene.note, scene.noteSimple, scene.heading, scene.explanation, ...scene.choices.map((c) => c.why)];
+      for (const field of fields) {
+        for (const value of Object.values(field ?? {})) {
+          for (const seg of parseMarkup(value ?? '')) if (seg.kind === 'proverb') used.add(seg.slug);
+        }
+      }
+    }
+  }
+  return used;
+}
