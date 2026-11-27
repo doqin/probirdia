@@ -22,7 +22,21 @@
     glossary,
     words = [],
     lang = 'en',
-  }: { game: Game; glossary: Record<string, GlossaryEntry>; words?: GlossaryEntry[]; lang?: Lang } = $props();
+    previewScene,
+  }: {
+    game: Game;
+    glossary: Record<string, GlossaryEntry>;
+    words?: GlossaryEntry[];
+    lang?: Lang;
+    /**
+     * The editor's live preview: show this one screen as the player would see it, with no save
+     * file, no sound, no site links and no way to wander off it (clicks leave it where it is).
+     */
+    previewScene?: string;
+  } = $props();
+
+  const embedded = $derived(previewScene !== undefined);
+  const stateFor = (id: string): PlayState => ({ sceneId: id, items: [], status: [], chosen: [], picks: [], reveal: null, lives: MAX_LIVES });
 
   // Hard words are linked automatically in every text block (see RichText).
   setContext('vocab', untrack(() => ({
@@ -44,7 +58,7 @@
 
   // Download every picture and sound up front, so a screen never waits on its own artwork.
   onMount(() =>
-    preloadAssets(
+    untrack(() => previewScene) !== undefined ? undefined : preloadAssets(
       assetUrls(
         untrack(() => game.presentation),
         untrack(() => Object.values(game.scenes)),
@@ -56,17 +70,18 @@
 
   const storageKey = `probirdia:v1:${untrack(() => game.slug)}`;
 
-  let play = $state<PlayState>(startState(untrack(() => game)));
+  let play = $state<PlayState>(untrack(() => (previewScene !== undefined ? stateFor(previewScene) : startState(game))));
   let loaded = $state(false);
   let simpleOpen = $state(false);
 
-  const scene = $derived(currentScene(game, play));
+  // in the editor the selection decides the screen, so a rebuilt game never meets a stale save
+  const scene = $derived(embedded ? game.scenes[previewScene as string] : currentScene(game, play));
   const view = $derived(resolveScene(game.presentation, scene.id));
   const ground = $derived(view.stage?.ground ?? 90);
   const noteProp = $derived(
     scene.note && view.noteOn ? view.props.find((p) => p.id === view.noteOn && p.def.text) : undefined,
   );
-  const ended = $derived(isEnd(game, play));
+  const ended = $derived(isEnd(game, embedded ? stateFor(previewScene as string) : play));
   const revealed = $derived(play.reveal ? glossary[play.reveal.proverb] : undefined);
   /** The run split by verdict: proverbs taken well, and the ones to try again. */
   const recap = $derived(recapOf(play));
@@ -125,6 +140,7 @@
   };
 
   onMount(() => {
+    if (untrack(() => previewScene) !== undefined) return;
     try {
       const saved = JSON.parse(localStorage.getItem(storageKey) ?? 'null');
       if (isValidState(game, saved)) play = saved;
@@ -145,6 +161,16 @@
   });
 
   const restart = () => (play = startState(game));
+
+  // Preview mode: follow the editor's selection, and snap back if a click tries to move on.
+  $effect(() => {
+    if (previewScene !== undefined && game) play = stateFor(previewScene);
+  });
+  $effect(() => {
+    if (previewScene !== undefined && (play.sceneId !== previewScene || play.reveal || play.segment || play.lost)) {
+      play = stateFor(previewScene);
+    }
+  });
 
   // a new scene starts with the poem in its original wording
   $effect(() => {
@@ -273,12 +299,13 @@
   });
 </script>
 
-<svelte:window onpointerdown={() => (started = true)} />
+<svelte:window onpointerdown={() => !embedded && (started = true)} />
 
 <section
   class="scene"
   aria-live="polite"
   class:intro={isTitle || isDivider}
+  class:embedded
   style:--display={fontFamily}
   style:--body={fontFamily}
   style:font-family={fontFamily}
@@ -338,7 +365,7 @@
     <!-- The game's own chrome: it lives on the stage, not in a site header. -->
     <div class="hud">
       <div class="hud-left">
-        <a class="chip-btn" href={withBase('/')} aria-label={t('nav.home', lang)}>← {t('nav.home', lang)}</a>
+        {#if !embedded}<a class="chip-btn" href={withBase('/')} aria-label={t('nav.home', lang)}>← {t('nav.home', lang)}</a>{/if}
         {#if !isTitle}<span class="hud-tag">{pick(game.title, lang)}</span>{/if}
         {#if !isTitle && !play.segment}
           <span class="hearts" role="img" aria-label={`${t('lives', lang)}: ${Math.min(lives, MAX_LIVES)} / ${MAX_LIVES}`}>
@@ -357,12 +384,12 @@
         {/if}
       </div>
       <div class="hud-actions">
-        {#if musicDefs}
+        {#if musicDefs && !embedded}
           <button class="chip-btn" onclick={toggleMusic} aria-pressed={!muted}>
             {muted ? t('music_off', lang) : t('music_on', lang)}
           </button>
         {/if}
-        {#if !ended && !isTitle}
+        {#if !ended && !isTitle && !embedded}
           <button class="chip-btn" onclick={restart}>{t('start_over', lang)}</button>
         {/if}
       </div>
@@ -414,7 +441,7 @@
       </ul>
       <div class="bubble {speakerSide} ask" style:--inset={inset !== undefined ? `${inset}cqw` : undefined}>
         {#if scene.heading}<span class="plate">{pick(scene.heading, lang)}</span>{/if}
-        {#key scene.id}<p class="text" use:typewriter={{ onTyping }}>{pick(scene.text, lang) || t('what_advice', lang)}</p>{/key}
+        {#key scene.id}<p class="text" use:typewriter={{ onTyping, instant: embedded }}>{pick(scene.text, lang) || t('what_advice', lang)}</p>{/key}
       </div>
     {:else if !ended}
       <div class="bubble {speakerSide}" class:revealed={!!revealed} style:--inset={inset !== undefined ? `${inset}cqw` : undefined}>
@@ -466,7 +493,7 @@
           {/if}
 
           {#key scene.id}
-            <p class="text" use:typewriter={{ onTyping }}><RichText text={pick(scene.text, lang)} {glossary} {lang} /></p>
+            <p class="text" use:typewriter={{ onTyping, instant: embedded }}><RichText text={pick(scene.text, lang)} {glossary} {lang} /></p>
           {/key}
 
           {#if hasGains}
@@ -549,6 +576,9 @@
     place-items: center;
     background: var(--wall-deep);
   }
+  /* In the editor the stage fills its column instead of the window. */
+  .scene.embedded { min-height: 0; display: block; background: transparent; }
+  .scene.embedded .frame { width: 100%; }
   .frame {
     position: relative;
     width: min(100vw, calc(100dvh * 16 / 9));

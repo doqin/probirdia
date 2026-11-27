@@ -17,8 +17,10 @@ interface Props {
    * The player draws its own HUD inside the artwork.
    */
   bare?: boolean;
+  /** A work surface (the editor): the page column is lifted and the footer is dropped. */
+  wide?: boolean;
 }
-const { title, description = 'Learn English proverbs by playing choose-your-own-adventure games.', bare = false } = Astro.props;
+const { title, description = 'Learn English proverbs by playing choose-your-own-adventure games.', bare = false, wide = false } = Astro.props;
 const fullTitle = title ? `${title} | Probirdia` : 'Probirdia';
 ---
 
@@ -38,7 +40,7 @@ const fullTitle = title ? `${title} | Probirdia` : 'Probirdia';
   <body class:list={[{ bare }]}>
     {!bare && <Header overlay={Astro.slots.has('hero')} />}
     <slot name="hero" />
-    <main class:list={[{ bare }]}><slot /></main>
-    {!bare && <Footer />}
+    <main class:list={[{ bare, wide }]}><slot /></main>
+    {!bare && !wide && <Footer />}
   </body>
 </html>
