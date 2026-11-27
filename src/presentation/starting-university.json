@@ -102,7 +102,8 @@
       "characters": {
         "left": null,
         "right": null
-      }
+      },
+      "music": "theme"
     },
     {
       "ids": [
@@ -112,7 +113,8 @@
       "characters": {
         "left": null,
         "right": null
-      }
+      },
+      "music": "story-a"
     },
     {
       "ids": [
@@ -122,7 +124,8 @@
       "characters": {
         "left": "minh",
         "right": null
-      }
+      },
+      "music": "story-a"
     },
     {
       "ids": [
@@ -132,7 +135,8 @@
       "characters": {
         "left": "minh",
         "right": null
-      }
+      },
+      "music": "story-a"
     },
     {
       "ids": [
@@ -142,7 +146,8 @@
       "characters": {
         "left": "minh",
         "right": null
-      }
+      },
+      "music": "story-a"
     },
     {
       "ids": [
@@ -152,7 +157,8 @@
       "characters": {
         "left": "minh",
         "right": null
-      }
+      },
+      "music": "story-a"
     },
     {
       "ids": [
@@ -162,7 +168,8 @@
       "characters": {
         "left": "minh",
         "right": null
-      }
+      },
+      "music": "story-a"
     },
     {
       "ids": [
@@ -172,7 +179,8 @@
       "characters": {
         "left": "minh",
         "right": null
-      }
+      },
+      "music": "story-a"
     },
     {
       "ids": [
@@ -182,7 +190,8 @@
       "characters": {
         "left": null,
         "right": "bird"
-      }
+      },
+      "music": "think"
     },
     {
       "ids": [
@@ -192,7 +201,8 @@
       "characters": {
         "left": null,
         "right": "bird"
-      }
+      },
+      "music": "story-a"
     },
     {
       "ids": [
@@ -202,7 +212,8 @@
       "characters": {
         "left": "minh",
         "right": null
-      }
+      },
+      "music": "story-a"
     },
     {
       "ids": [
@@ -212,7 +223,8 @@
       "characters": {
         "left": null,
         "right": null
-      }
+      },
+      "music": "story-a"
     },
     {
       "ids": [
@@ -222,7 +234,8 @@
       "characters": {
         "left": null,
         "right": null
-      }
+      },
+      "music": "story-a"
     },
     {
       "ids": [
@@ -232,7 +245,8 @@
       "characters": {
         "left": null,
         "right": null
-      }
+      },
+      "music": "story-a"
     },
     {
       "ids": [
@@ -242,7 +256,8 @@
       "characters": {
         "left": null,
         "right": "bird"
-      }
+      },
+      "music": "story-a"
     },
     {
       "ids": [
@@ -252,7 +267,8 @@
       "characters": {
         "left": "minh",
         "right": null
-      }
+      },
+      "music": "story-a"
     },
     {
       "ids": [
@@ -262,7 +278,8 @@
       "characters": {
         "left": null,
         "right": null
-      }
+      },
+      "music": "story-a"
     },
     {
       "ids": [
@@ -272,7 +289,8 @@
       "characters": {
         "left": null,
         "right": null
-      }
+      },
+      "music": "story-a"
     },
     {
       "ids": [
@@ -282,7 +300,8 @@
       "characters": {
         "left": "minh-happy",
         "right": null
-      }
+      },
+      "music": "story-a"
     },
     {
       "ids": [
@@ -292,7 +311,8 @@
       "characters": {
         "left": null,
         "right": null
-      }
+      },
+      "music": "theme"
     },
     {
       "ids": [
@@ -302,7 +322,8 @@
       "characters": {
         "left": null,
         "right": null
-      }
+      },
+      "music": "story-b"
     },
     {
       "ids": [
@@ -312,7 +333,8 @@
       "characters": {
         "left": "minh",
         "right": null
-      }
+      },
+      "music": "story-b"
     },
     {
       "ids": [
@@ -322,7 +344,8 @@
       "characters": {
         "left": "minh",
         "right": null
-      }
+      },
+      "music": "story-b"
     },
     {
       "ids": [
@@ -332,7 +355,8 @@
       "characters": {
         "left": "minh",
         "right": null
-      }
+      },
+      "music": "story-b"
     },
     {
       "ids": [
@@ -342,7 +366,8 @@
       "characters": {
         "left": null,
         "right": "bird"
-      }
+      },
+      "music": "think"
     },
     {
       "ids": [
@@ -352,7 +377,8 @@
       "characters": {
         "left": null,
         "right": "bird"
-      }
+      },
+      "music": "story-b"
     },
     {
       "ids": [
@@ -362,7 +388,8 @@
       "characters": {
         "left": "minh",
         "right": null
-      }
+      },
+      "music": "story-b"
     },
     {
       "ids": [
@@ -372,7 +399,8 @@
       "characters": {
         "left": null,
         "right": null
-      }
+      },
+      "music": "story-b"
     },
     {
       "ids": [
@@ -382,7 +410,8 @@
       "characters": {
         "left": null,
         "right": null
-      }
+      },
+      "music": "story-b"
     },
     {
       "ids": [
@@ -392,7 +421,8 @@
       "characters": {
         "left": null,
         "right": null
-      }
+      },
+      "music": "story-b"
     },
     {
       "ids": [
@@ -402,7 +432,8 @@
       "characters": {
         "left": null,
         "right": "bird"
-      }
+      },
+      "music": "story-b"
     },
     {
       "ids": [
@@ -412,7 +443,8 @@
       "characters": {
         "left": "minh",
         "right": null
-      }
+      },
+      "music": "story-b"
     },
     {
       "ids": [
@@ -422,7 +454,8 @@
       "characters": {
         "left": null,
         "right": null
-      }
+      },
+      "music": "story-b"
     },
     {
       "ids": [
@@ -432,7 +465,8 @@
       "characters": {
         "left": null,
         "right": null
-      }
+      },
+      "music": "story-b"
     },
     {
       "ids": [
@@ -442,7 +476,8 @@
       "characters": {
         "left": "minh-happy",
         "right": null
-      }
+      },
+      "music": "story-b"
     },
     {
       "ids": [
@@ -452,7 +487,8 @@
       "characters": {
         "left": null,
         "right": null
-      }
+      },
+      "music": "theme"
     },
     {
       "ids": [
@@ -462,7 +498,8 @@
       "characters": {
         "left": null,
         "right": null
-      }
+      },
+      "music": "story-a"
     },
     {
       "ids": [
@@ -472,7 +509,8 @@
       "characters": {
         "left": "minh-travel",
         "right": null
-      }
+      },
+      "music": "story-a"
     },
     {
       "ids": [
@@ -482,7 +520,8 @@
       "characters": {
         "left": "minh-travel",
         "right": null
-      }
+      },
+      "music": "story-a"
     },
     {
       "ids": [
@@ -492,7 +531,8 @@
       "characters": {
         "left": "minh-travel",
         "right": null
-      }
+      },
+      "music": "story-a"
     },
     {
       "ids": [
@@ -502,7 +542,8 @@
       "characters": {
         "left": null,
         "right": "bird"
-      }
+      },
+      "music": "think"
     },
     {
       "ids": [
@@ -512,7 +553,8 @@
       "characters": {
         "left": null,
         "right": "bird"
-      }
+      },
+      "music": "story-a"
     },
     {
       "ids": [
@@ -522,7 +564,8 @@
       "characters": {
         "left": "minh-travel",
         "right": null
-      }
+      },
+      "music": "story-a"
     },
     {
       "ids": [
@@ -532,7 +575,8 @@
       "characters": {
         "left": null,
         "right": null
-      }
+      },
+      "music": "story-a"
     },
     {
       "ids": [
@@ -542,7 +586,8 @@
       "characters": {
         "left": null,
         "right": null
-      }
+      },
+      "music": "story-a"
     },
     {
       "ids": [
@@ -552,7 +597,8 @@
       "characters": {
         "left": null,
         "right": null
-      }
+      },
+      "music": "story-a"
     },
     {
       "ids": [
@@ -562,7 +608,8 @@
       "characters": {
         "left": null,
         "right": "bird"
-      }
+      },
+      "music": "story-a"
     },
     {
       "ids": [
@@ -572,7 +619,8 @@
       "characters": {
         "left": "minh-travel",
         "right": null
-      }
+      },
+      "music": "story-a"
     },
     {
       "ids": [
@@ -582,7 +630,8 @@
       "characters": {
         "left": "minh-travel",
         "right": null
-      }
+      },
+      "music": "story-a"
     },
     {
       "ids": [
@@ -592,7 +641,8 @@
       "characters": {
         "left": null,
         "right": null
-      }
+      },
+      "music": "story-a"
     },
     {
       "ids": [
@@ -602,7 +652,8 @@
       "characters": {
         "left": "minh-travel",
         "right": null
-      }
+      },
+      "music": "story-a"
     },
     {
       "ids": [
@@ -612,7 +663,8 @@
       "characters": {
         "left": null,
         "right": null
-      }
+      },
+      "music": "theme"
     },
     {
       "ids": [
@@ -622,7 +674,8 @@
       "characters": {
         "left": null,
         "right": null
-      }
+      },
+      "music": "story-b"
     },
     {
       "ids": [
@@ -632,7 +685,8 @@
       "characters": {
         "left": "minh-cheer",
         "right": null
-      }
+      },
+      "music": "story-b"
     },
     {
       "ids": [
@@ -642,7 +696,8 @@
       "characters": {
         "left": "minh-cheer",
         "right": null
-      }
+      },
+      "music": "story-b"
     },
     {
       "ids": [
@@ -652,7 +707,8 @@
       "characters": {
         "left": "minh-cheer",
         "right": null
-      }
+      },
+      "music": "story-b"
     },
     {
       "ids": [
@@ -662,7 +718,8 @@
       "characters": {
         "left": "minh-cheer",
         "right": null
-      }
+      },
+      "music": "story-b"
     },
     {
       "ids": [
@@ -672,7 +729,8 @@
       "characters": {
         "left": "minh-cheer",
         "right": null
-      }
+      },
+      "music": "story-b"
     },
     {
       "ids": [
@@ -682,7 +740,8 @@
       "characters": {
         "left": "minh-cheer",
         "right": null
-      }
+      },
+      "music": "story-b"
     },
     {
       "ids": [
@@ -692,7 +751,8 @@
       "characters": {
         "left": null,
         "right": "bird"
-      }
+      },
+      "music": "think"
     },
     {
       "ids": [
@@ -702,7 +762,8 @@
       "characters": {
         "left": null,
         "right": "bird"
-      }
+      },
+      "music": "story-b"
     },
     {
       "ids": [
@@ -712,7 +773,8 @@
       "characters": {
         "left": "minh-cheer",
         "right": null
-      }
+      },
+      "music": "story-b"
     },
     {
       "ids": [
@@ -722,7 +784,8 @@
       "characters": {
         "left": null,
         "right": null
-      }
+      },
+      "music": "story-b"
     },
     {
       "ids": [
@@ -732,7 +795,8 @@
       "characters": {
         "left": null,
         "right": null
-      }
+      },
+      "music": "story-b"
     },
     {
       "ids": [
@@ -742,7 +806,8 @@
       "characters": {
         "left": null,
         "right": null
-      }
+      },
+      "music": "story-b"
     },
     {
       "ids": [
@@ -752,7 +817,8 @@
       "characters": {
         "left": null,
         "right": "bird"
-      }
+      },
+      "music": "story-b"
     },
     {
       "ids": [
@@ -762,7 +828,8 @@
       "characters": {
         "left": "minh-cheer",
         "right": null
-      }
+      },
+      "music": "story-b"
     },
     {
       "ids": [
@@ -772,7 +839,8 @@
       "characters": {
         "left": null,
         "right": null
-      }
+      },
+      "music": "story-b"
     },
     {
       "ids": [
@@ -782,7 +850,8 @@
       "characters": {
         "left": null,
         "right": null
-      }
+      },
+      "music": "story-b"
     },
     {
       "ids": [
@@ -792,7 +861,8 @@
       "characters": {
         "left": "minh-cheer",
         "right": null
-      }
+      },
+      "music": "story-b"
     },
     {
       "ids": [
@@ -802,7 +872,8 @@
       "characters": {
         "left": null,
         "right": null
-      }
+      },
+      "music": "theme"
     },
     {
       "ids": [
@@ -812,7 +883,8 @@
       "characters": {
         "left": null,
         "right": null
-      }
+      },
+      "music": "story-a"
     },
     {
       "ids": [
@@ -822,7 +894,8 @@
       "characters": {
         "left": "minh",
         "right": null
-      }
+      },
+      "music": "story-a"
     },
     {
       "ids": [
@@ -832,7 +905,8 @@
       "characters": {
         "left": "minh",
         "right": null
-      }
+      },
+      "music": "story-a"
     },
     {
       "ids": [
@@ -842,7 +916,8 @@
       "characters": {
         "left": "minh",
         "right": null
-      }
+      },
+      "music": "story-a"
     },
     {
       "ids": [
@@ -852,7 +927,8 @@
       "characters": {
         "left": "minh",
         "right": null
-      }
+      },
+      "music": "story-a"
     },
     {
       "ids": [
@@ -862,7 +938,8 @@
       "characters": {
         "left": "minh",
         "right": null
-      }
+      },
+      "music": "story-a"
     },
     {
       "ids": [
@@ -872,7 +949,8 @@
       "characters": {
         "left": null,
         "right": "bird"
-      }
+      },
+      "music": "think"
     },
     {
       "ids": [
@@ -882,7 +960,8 @@
       "characters": {
         "left": null,
         "right": "bird"
-      }
+      },
+      "music": "story-a"
     },
     {
       "ids": [
@@ -892,7 +971,8 @@
       "characters": {
         "left": "minh",
         "right": null
-      }
+      },
+      "music": "story-a"
     },
     {
       "ids": [
@@ -902,7 +982,8 @@
       "characters": {
         "left": null,
         "right": null
-      }
+      },
+      "music": "story-a"
     },
     {
       "ids": [
@@ -912,7 +993,8 @@
       "characters": {
         "left": null,
         "right": null
-      }
+      },
+      "music": "story-a"
     },
     {
       "ids": [
@@ -922,7 +1004,8 @@
       "characters": {
         "left": "minh",
         "right": null
-      }
+      },
+      "music": "story-a"
     },
     {
       "ids": [
@@ -932,7 +1015,8 @@
       "characters": {
         "left": null,
         "right": null
-      }
+      },
+      "music": "story-a"
     },
     {
       "ids": [
@@ -942,7 +1026,8 @@
       "characters": {
         "left": null,
         "right": "bird"
-      }
+      },
+      "music": "story-a"
     },
     {
       "ids": [
@@ -952,7 +1037,8 @@
       "characters": {
         "left": "minh",
         "right": null
-      }
+      },
+      "music": "story-a"
     },
     {
       "ids": [
@@ -962,7 +1048,8 @@
       "characters": {
         "left": null,
         "right": null
-      }
+      },
+      "music": "story-a"
     },
     {
       "ids": [
@@ -972,7 +1059,8 @@
       "characters": {
         "left": null,
         "right": null
-      }
+      },
+      "music": "story-a"
     },
     {
       "ids": [
@@ -982,7 +1070,8 @@
       "characters": {
         "left": "minh-happy",
         "right": null
-      }
+      },
+      "music": "story-a"
     },
     {
       "ids": [
@@ -992,7 +1081,8 @@
       "characters": {
         "left": "minh",
         "right": null
-      }
+      },
+      "music": "win"
     },
     {
       "ids": [
@@ -1002,7 +1092,8 @@
       "characters": {
         "left": "minh",
         "right": null
-      }
+      },
+      "music": "lose"
     },
     {
       "ids": [
@@ -1012,8 +1103,55 @@
       "characters": {
         "left": null,
         "right": null
-      }
+      },
+      "music": "lose"
     }
   ],
-  "heart": "/games/starting-university/icon-heart.webp"
+  "heart": "/games/starting-university/icon-heart.webp",
+  "music": {
+    "theme": {
+      "file": "/games/starting-university/audio/theme.mp3",
+      "loop": true
+    },
+    "story-a": {
+      "file": "/games/starting-university/audio/story-a.mp3",
+      "loop": true
+    },
+    "story-b": {
+      "file": "/games/starting-university/audio/story-b.mp3",
+      "loop": true
+    },
+    "think": {
+      "file": "/games/starting-university/audio/think.mp3",
+      "loop": true
+    },
+    "win": {
+      "file": "/games/starting-university/audio/win.mp3"
+    },
+    "lose": {
+      "file": "/games/starting-university/audio/lose.mp3"
+    },
+    "sfx-hover": {
+      "file": "/games/starting-university/audio/sfx-hover.mp3"
+    },
+    "sfx-select": {
+      "file": "/games/starting-university/audio/sfx-select.mp3"
+    },
+    "sfx-correct": {
+      "file": "/games/starting-university/audio/sfx-correct.mp3"
+    },
+    "sfx-wrong": {
+      "file": "/games/starting-university/audio/sfx-wrong.mp3"
+    },
+    "sfx-typing": {
+      "file": "/games/starting-university/audio/sfx-typing.mp3"
+    }
+  },
+  "sfx": {
+    "hover": "sfx-hover",
+    "select": "sfx-select",
+    "correct": "sfx-correct",
+    "wrong": "sfx-wrong",
+    "typing": "sfx-typing"
+  }
 }

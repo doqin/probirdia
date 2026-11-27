@@ -1,8 +1,8 @@
 <script lang="ts">
   import { untrack } from 'svelte';
-  import type { Presentation } from '../lib/types';
+  import { SFX_NAMES, type Presentation, type SfxName } from '../lib/types';
   import { uploadArt } from '../lib/remote';
-  import { emptyPresentation, keyFrom, withCharacter, withStage, withoutCharacter, withoutStage } from '../lib/look';
+  import { emptyPresentation, keyFrom, withCharacter, withStage, withoutCharacter, withoutMusic, withoutStage } from '../lib/look';
 
   let {
     presentation,
@@ -24,6 +24,8 @@
     characters: { ...(p?.characters ?? {}) },
     props: { ...(p?.props ?? {}) },
     items: { ...(p?.items ?? {}) },
+    music: { ...(p?.music ?? {}) },
+    sfx: { ...(p?.sfx ?? {}) },
     scenes: [...(p?.scenes ?? [])],
   });
 
@@ -38,6 +40,29 @@
   let characterKeyInput = $state('');
   const stages = $derived(Object.entries(draft.stages ?? {}));
   const characters = $derived(Object.entries(draft.characters ?? {}));
+  let trackKeyInput = $state('');
+  const tracks = $derived(Object.entries(draft.music ?? {}));
+  const trackKeys = $derived(tracks.map(([id]) => id));
+  const SFX_LABELS: Record<SfxName, string> = {
+    hover: 'Pointing at an option',
+    select: 'Picking an option',
+    correct: 'A proverb that fits',
+    wrong: 'A proverb that does not fit',
+    typing: 'Letters appearing (loops while typing)',
+  };
+
+  const addTrack = () => {
+    const key = keyFrom(trackKeyInput, Object.keys(draft.music ?? {}), 'track');
+    draft.music = { ...draft.music, [key]: { file: '', loop: true } };
+    trackKeyInput = '';
+  };
+
+  const setSfx = (name: SfxName, key: string) => {
+    const next = { ...(draft.sfx ?? {}) };
+    if (key) next[name] = key;
+    else delete next[name];
+    draft.sfx = next;
+  };
 
   const upload = async (event: Event, apply: (url: string) => void) => {
     const file = (event.currentTarget as HTMLInputElement).files?.[0];
@@ -203,6 +228,56 @@
     </div>
   </fieldset>
 
+  <fieldset>
+    <legend>Music and sounds</legend>
+    <p class="hint">
+      Tracks are audio files. Looping tracks play behind a screen until another track takes over;
+      the others play once. Pick the track for each screen in the Story tab.
+    </p>
+    {#if !tracks.length}
+      <p class="hint">No tracks yet.</p>
+    {/if}
+    {#each tracks as [id, track] (id)}
+      <div class="card">
+        <div class="row">
+          <label class="grow">
+            <span>Track: <strong>{id}</strong> (audio address)</span>
+            <input bind:value={track.file} placeholder="/games/my-game/audio/theme.mp3" />
+          </label>
+          <label class="upload">
+            <span>…or upload</span>
+            <input type="file" accept="audio/*" onchange={(e) => upload(e, (url) => (track.file = url))} />
+          </label>
+          <label class="check">
+            <input type="checkbox" checked={!!track.loop} onchange={(e) => (track.loop = e.currentTarget.checked)} />
+            <span>Loops</span>
+          </label>
+          <button type="button" class="btn secondary small" onclick={() => (draft = withoutMusic(draft, id))}>Remove</button>
+        </div>
+        {#if track.file}
+          <audio controls preload="none" src={track.file}></audio>
+        {/if}
+      </div>
+    {/each}
+    <div class="add">
+      <input bind:value={trackKeyInput} placeholder="New track name (e.g. campus-theme)" />
+      <button type="button" class="btn secondary small" onclick={addTrack} disabled={!trackKeyInput.trim()}>Add track</button>
+    </div>
+    <div class="row">
+      {#each SFX_NAMES as name (name)}
+        <label>
+          <span>Sound: {SFX_LABELS[name]}</span>
+          <select value={draft.sfx?.[name] ?? ''} onchange={(e) => setSfx(name, e.currentTarget.value)}>
+            <option value="">(silent)</option>
+            {#each trackKeys as key (key)}
+              <option value={key}>{key}</option>
+            {/each}
+          </select>
+        </label>
+      {/each}
+    </div>
+  </fieldset>
+
   {#if uploading}<p class="hint">Uploading {uploading}…</p>{/if}
   {#if uploadError}<p class="bad">{uploadError}</p>{/if}
 
@@ -224,6 +299,9 @@
   .row > label.grow { flex: 1 1 14rem; }
   label { display: grid; gap: .2rem; font-size: .82rem; font-weight: 600; }
   input, select { font: inherit; font-size: .95rem; padding: .35rem .5rem; border: 2px solid var(--brown); border-radius: .45rem; background: var(--cream); color: var(--ink); width: 100%; }
+  .check { display: flex; align-items: center; gap: .4rem; flex: 0 0 auto !important; }
+  .check input { width: auto; }
+  audio { width: 100%; max-width: 26rem; height: 2.2rem; }
   .upload input { border: none; background: none; padding: 0; }
   .thumb { width: 6rem; height: auto; border-radius: .4rem; border: 2px solid rgb(59 57 83 / .3); }
   .thumb.wide { width: 100%; max-width: 26rem; }

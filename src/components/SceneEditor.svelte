@@ -3,6 +3,7 @@
   import { uploadArt } from '../lib/remote';
   import { slugify } from '../lib/slug';
   import type { SceneLook } from '../lib/look';
+  import type { TextKind } from '../lib/types';
   import { untrack } from 'svelte';
 
   let {
@@ -12,7 +13,8 @@
     chapters = [],
     stages = [],
     characters = [],
-    look = { stage: '', left: null, right: null },
+    musics = [],
+    look = { stage: '', left: null, right: null, music: '', size: {} },
     gameSlug = 'game',
     saving = false,
     onSave,
@@ -24,6 +26,7 @@
     chapters?: string[];
     stages?: string[];
     characters?: string[];
+    musics?: string[];
     look?: SceneLook;
     gameSlug?: string;
     saving?: boolean;
@@ -45,6 +48,12 @@
 
   let uploading = $state(false);
   let uploadError = $state('');
+
+  const SIZES: [TextKind, string][] = [
+    ['heading', 'Headings and name tags'],
+    ['text', 'Story text'],
+    ['note', 'Notes and poems'],
+  ];
 
   const targets = $derived(scenes.map((s) => s.key).filter((k) => k !== draft.key));
 
@@ -181,7 +190,45 @@
         </select>
       </label>
     </div>
-    <small>Stages and characters are listed in the Look tab.</small>
+    <div class="row">
+      <label>
+        <span>Music on this screen</span>
+        <select bind:value={draftLook.music}>
+          <option value="">(none)</option>
+          {#each musics as key (key)}
+            <option value={key}>{key}</option>
+          {/each}
+        </select>
+      </label>
+    </div>
+    <small>Stages, characters and music tracks are listed in the Look tab. The same track keeps playing across screens.</small>
+  </fieldset>
+
+  <fieldset class="art">
+    <legend>Text size on this screen</legend>
+    <div class="row">
+      {#each SIZES as [kind, label] (kind)}
+        <label>
+          <span>{label} (% of the default)</span>
+          <input
+            type="number"
+            min="40"
+            max="300"
+            step="5"
+            placeholder="100"
+            value={draftLook.size[kind] ?? ''}
+            oninput={(e) => {
+              const n = Number(e.currentTarget.value);
+              const next = { ...draftLook.size };
+              if (e.currentTarget.value === '' || !(n > 0)) delete next[kind];
+              else next[kind] = n;
+              draftLook.size = next;
+            }}
+          />
+        </label>
+      {/each}
+    </div>
+    <small>Leave a box empty to keep the default size.</small>
   </fieldset>
 
   <fieldset class="art">

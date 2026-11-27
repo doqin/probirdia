@@ -126,6 +126,9 @@ export interface PropDef {
   /** Area (in % of the prop image) where the scene note is printed, e.g. the face of a signpost. */
   text?: { x: number; y: number; width: number; height: number };
 }
+export const TEXT_KINDS = ['heading', 'text', 'note'] as const;
+export type TextKind = (typeof TEXT_KINDS)[number];
+
 export interface SceneRule {
   /** Scene ids this rule applies to, or "*" for all. Later rules override earlier ones. */
   ids: string[] | '*';
@@ -139,9 +142,14 @@ export interface SceneRule {
   noteOn?: string;
   /** Show the scene heading as a title inside the artwork. */
   headingInArt?: boolean;
+  /** Text size in percent of the default (100). Absent kinds keep the default. */
+  size?: Partial<Record<TextKind, number>>;
   /** Background music for these scenes (a key of `music`); stays playing across scenes with the same track. */
   music?: string;
 }
+export const SFX_NAMES = ['hover', 'select', 'correct', 'wrong', 'typing'] as const;
+export type SfxName = (typeof SFX_NAMES)[number];
+
 export interface Presentation {
   stages: Record<string, StageDef>;
   characters: Record<string, CharacterDef>;
@@ -152,6 +160,8 @@ export interface Presentation {
   music?: Record<string, { file: string; loop?: boolean }>;
   /** Short sound played when a proverb is revealed (a key of `music`). */
   proverbSting?: string;
+  /** Short sounds for the choice cards (each a key of `music`): hovered, picked, the verdict on a proverb, and the typing that plays while a line is printed (a looping clip). */
+  sfx?: Partial<Record<SfxName, string>>;
   /** Image for one confidence heart (a path under /public). Without it the player draws a small pixel heart. */
   heart?: string;
   scenes: SceneRule[];

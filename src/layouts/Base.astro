@@ -2,16 +2,12 @@
 import '../styles/global.css';
 import Header from '../components/Header.astro';
 import Footer from '../components/Footer.astro';
-import { getImage } from 'astro:assets';
+import { withBase } from '../lib/url';
 import { ClientRouter } from 'astro:transitions';
-import display400 from '@fontsource/pixelify-sans/files/pixelify-sans-latin-400-normal.woff2?url';
-import display600 from '@fontsource/pixelify-sans/files/pixelify-sans-latin-600-normal.woff2?url';
-import display700 from '@fontsource/pixelify-sans/files/pixelify-sans-latin-700-normal.woff2?url';
-import reading400 from '@fontsource/vt323/files/vt323-latin-400-normal.woff2?url';
+import partita from '../assets/fonts/Partita1990-Regular.otf?url';
 import font400 from '@fontsource/zilla-slab/files/zilla-slab-latin-400-normal.woff2?url';
 import font600 from '@fontsource/zilla-slab/files/zilla-slab-latin-600-normal.woff2?url';
 import font700 from '@fontsource/zilla-slab/files/zilla-slab-latin-700-normal.woff2?url';
-import logo from '../assets/brand/logo.webp';
 
 interface Props {
   title?: string;
@@ -23,7 +19,6 @@ interface Props {
   bare?: boolean;
 }
 const { title, description = 'Learn English proverbs by playing choose-your-own-adventure games.', bare = false } = Astro.props;
-const favicon = await getImage({ src: logo, width: 64, height: 64, format: 'png' });
 const fullTitle = title ? `${title} | Probirdia` : 'Probirdia';
 ---
 
@@ -33,8 +28,10 @@ const fullTitle = title ? `${title} | Probirdia` : 'Probirdia';
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <meta name="description" content={description} />
-    <link rel="icon" type="image/png" href={favicon.src} />
-    {(bare ? [display400, display600, display700, reading400] : [font400, font600, font700]).map((href) => <link rel="preload" as="font" type="font/woff2" href={href} crossorigin />)}
+    <link rel="icon" href={withBase('/favicon.ico')} sizes="48x48" />
+    <link rel="icon" type="image/png" href={withBase('/favicon.png')} sizes="192x192" />
+    <link rel="apple-touch-icon" href={withBase('/apple-touch-icon.png')} />
+    {(bare ? [partita] : [font400, font600, font700]).map((href) => <link rel="preload" as="font" type={href.endsWith('.otf') ? 'font/otf' : 'font/woff2'} href={href} crossorigin />)}
     <ClientRouter />
     <title>{fullTitle}</title>
   </head>

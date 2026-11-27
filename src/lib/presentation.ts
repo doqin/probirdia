@@ -1,4 +1,4 @@
-import type { CharacterDef, DialoguePosition, Presentation, PropDef, Slot, StageDef } from './types';
+import type { CharacterDef, TextKind, DialoguePosition, Presentation, PropDef, Slot, StageDef } from './types';
 
 export const SLOT_X: Record<Slot, number> = { left: 14, center: 50, right: 86 };
 
@@ -10,11 +10,13 @@ export interface ResolvedScene {
   noteOn?: string;
   headingInArt: boolean;
   music?: string;
+  /** Multipliers on the default text size (1 = default). */
+  size: Record<TextKind, number>;
 }
 
 /** Merges every matching rule, in file order, into what one scene should look like. */
 export function resolveScene(presentation: Presentation | undefined, sceneId: string): ResolvedScene {
-  const out: ResolvedScene = { dialogue: 'bottom', characters: [], props: [], headingInArt: false };
+  const out: ResolvedScene = { dialogue: 'bottom', characters: [], props: [], headingInArt: false, size: { heading: 1, text: 1, note: 1 } };
   if (!presentation) return out;
 
   let stageId: string | undefined;
@@ -31,6 +33,9 @@ export function resolveScene(presentation: Presentation | undefined, sceneId: st
     if (rule.noteOn !== undefined) out.noteOn = rule.noteOn;
     if (rule.headingInArt !== undefined) out.headingInArt = rule.headingInArt;
     if (rule.music !== undefined) out.music = rule.music;
+    for (const [kind, pct] of Object.entries(rule.size ?? {}) as [TextKind, number | undefined][]) {
+      if (pct && pct > 0) out.size[kind] = pct / 100;
+    }
   }
 
   out.stage = stageId ? presentation.stages[stageId] : undefined;
