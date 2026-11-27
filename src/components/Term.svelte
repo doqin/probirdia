@@ -19,22 +19,44 @@
   const open = $derived(hovered || pinned);
   const anchor = $derived(withBase(`/glossary/#${entry.kind === 'word' ? 'word-' : ''}${entry.slug}`));
 
-  // Keep the popup inside the viewport: slide sideways on narrow screens, open upwards near the bottom.
+  /** The visible box the popup must stay inside: the viewport, narrowed by every clipping ancestor (like the game stage). */
+  function visibleBox(el: HTMLElement) {
+    let top = 0;
+    let left = 0;
+    let right = window.innerWidth;
+    let bottom = window.innerHeight;
+    for (let node = el.parentElement; node && node !== document.body; node = node.parentElement) {
+      const style = getComputedStyle(node);
+      if (/(hidden|clip|auto|scroll)/.test(style.overflow + style.overflowX + style.overflowY)) {
+        const r = node.getBoundingClientRect();
+        top = Math.max(top, r.top);
+        left = Math.max(left, r.left);
+        right = Math.min(right, r.right);
+        bottom = Math.min(bottom, r.bottom);
+      }
+    }
+    return { top, left, right, bottom };
+  }
+
+  // Keep the popup inside what the player can actually see: slide sideways at the edges and open
+  // upwards when there is more room above the word than below it.
   $effect(() => {
     if (!open || !pop) return;
     const margin = 8;
+    const box = visibleBox(wrap);
     const r = pop.getBoundingClientRect();
     const left = r.left - shift;
     const right = r.right - shift;
     let next = 0;
-    if (left < margin) next = margin - left;
-    else if (right > window.innerWidth - margin) next = window.innerWidth - margin - right;
+    if (left < box.left + margin) next = box.left + margin - left;
+    else if (right > box.right - margin) next = box.right - margin - right;
     if (next !== shift) shift = next;
 
     const w = wrap.getBoundingClientRect();
-    const below = window.innerHeight - w.bottom;
+    const below = box.bottom - w.bottom;
+    const above = w.top - box.top;
     const needed = pop.offsetHeight + margin;
-    flip = below < needed && w.top > below;
+    flip = below < needed && above > below;
   });
 
   function close() {

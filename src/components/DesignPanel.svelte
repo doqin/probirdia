@@ -2,6 +2,7 @@
   import { untrack } from 'svelte';
   import { SFX_NAMES, type Presentation, type SfxName } from '../lib/types';
   import { uploadArt } from '../lib/remote';
+  import { CUSTOM_FAMILY, FONT_CHOICES, FONT_LABELS, fontStack, type FontChoice } from '../lib/fonts';
   import { emptyPresentation, keyFrom, withCharacter, withStage, withoutCharacter, withoutMusic, withoutStage } from '../lib/look';
 
   let {
@@ -40,6 +41,22 @@
   let characterKeyInput = $state('');
   const stages = $derived(Object.entries(draft.stages ?? {}));
   const characters = $derived(Object.entries(draft.characters ?? {}));
+  const fontFamily = $derived(draft.font?.family ?? 'default');
+  const sampleStack = $derived(fontStack(draft.font) ?? "'Partita 1990', 'Zilla Slab', system-ui, sans-serif");
+  const setFont = (family: FontChoice) => {
+    draft.font = { family, ...(family === 'custom' && draft.font?.url ? { url: draft.font.url } : {}) };
+  };
+  // so the sample under the picker shows an uploaded font too
+  $effect(() => {
+    const url = draft.font?.family === 'custom' ? draft.font.url : '';
+    if (!url) return;
+    const face = new FontFace(CUSTOM_FAMILY, `url(${url})`);
+    face.load().then(() => document.fonts.add(face)).catch(() => {});
+    return () => {
+      document.fonts.delete(face);
+    };
+  });
+
   let trackKeyInput = $state('');
   const tracks = $derived(Object.entries(draft.music ?? {}));
   const trackKeys = $derived(tracks.map(([id]) => id));
@@ -229,6 +246,41 @@
   </fieldset>
 
   <fieldset>
+    <legend>Text font</legend>
+    <p class="hint">The typeface for every line of text in this game (dialogue, buttons, notes, the quiz). Sizes are set per screen in the Story tab.</p>
+    <div class="row">
+      <label class="grow">
+        <span>Font</span>
+        <select value={fontFamily} onchange={(e) => setFont(e.currentTarget.value as FontChoice)}>
+          {#each FONT_CHOICES as choice (choice)}
+            <option value={choice}>{FONT_LABELS[choice]}</option>
+          {/each}
+        </select>
+      </label>
+    </div>
+    {#if fontFamily === 'custom'}
+      <div class="row">
+        <label class="grow">
+          <span>Font file address (.woff2, .woff, .ttf or .otf)</span>
+          <input
+            value={draft.font?.url ?? ''}
+            placeholder="https://…/my-font.woff2"
+            oninput={(e) => (draft.font = { family: 'custom', url: e.currentTarget.value.trim() })}
+          />
+        </label>
+        <label class="upload">
+          <span>…or upload</span>
+          <input type="file" accept=".woff2,.woff,.ttf,.otf,font/*" onchange={(e) => upload(e, (url) => (draft.font = { family: 'custom', url }))} />
+        </label>
+      </div>
+      <p class="hint">Check that the font includes Vietnamese letters (ă â đ ê ô ơ ư and tone marks), or they will fall back to the default font.</p>
+    {/if}
+    <p class="sample" style:font-family={sampleStack}>
+      Time will tell. Thời gian sẽ trả lời. — The quick brown fox jumps over the lazy dog.
+    </p>
+  </fieldset>
+
+  <fieldset>
     <legend>Music and sounds</legend>
     <p class="hint">
       Tracks are audio files. Looping tracks play behind a screen until another track takes over;
@@ -302,6 +354,7 @@
   .check { display: flex; align-items: center; gap: .4rem; flex: 0 0 auto !important; }
   .check input { width: auto; }
   audio { width: 100%; max-width: 26rem; height: 2.2rem; }
+  .sample { margin: 0; padding: .6rem .8rem; border: 2px solid rgb(59 57 83 / .25); border-radius: .6rem; background: var(--cream); font-size: 1.3rem; line-height: 1.3; }
   .upload input { border: none; background: none; padding: 0; }
   .thumb { width: 6rem; height: auto; border-radius: .4rem; border: 2px solid rgb(59 57 83 / .3); }
   .thumb.wide { width: 100%; max-width: 26rem; }

@@ -11,6 +11,8 @@
   import { t } from '../i18n/ui';
   import { withBase } from '../lib/url';
   import { buildMatcher } from '../lib/words';
+  import { CUSTOM_FAMILY, fontStack } from '../lib/fonts';
+  import { assetUrls, preloadAssets } from '../lib/preload';
   import RichText from './RichText.svelte';
   import Quiz from './Quiz.svelte';
 
@@ -27,6 +29,30 @@
     matcher: buildMatcher(words),
     map: Object.fromEntries(words.map((w) => [w.slug, w])),
   })));
+
+  // The game's text face, set in the editor; every font-size rule below is unaffected.
+  const fontFamily = $derived(fontStack(game.presentation?.font));
+  $effect(() => {
+    const font = game.presentation?.font;
+    if (font?.family !== 'custom' || !font.url) return;
+    const face = new FontFace(CUSTOM_FAMILY, `url(${font.url})`);
+    face.load().then(() => document.fonts.add(face)).catch(() => {});
+    return () => {
+      document.fonts.delete(face);
+    };
+  });
+
+  // Download every picture and sound up front, so a screen never waits on its own artwork.
+  onMount(() =>
+    preloadAssets(
+      assetUrls(
+        untrack(() => game.presentation),
+        untrack(() => Object.values(game.scenes)),
+        untrack(() => game.start),
+      ),
+      withBase,
+    ),
+  );
 
   const storageKey = `probirdia:v1:${untrack(() => game.slug)}`;
 
@@ -253,6 +279,9 @@
   class="scene"
   aria-live="polite"
   class:intro={isTitle || isDivider}
+  style:--display={fontFamily}
+  style:--body={fontFamily}
+  style:font-family={fontFamily}
   style:--s-heading={view.size.heading}
   style:--s-text={view.size.text}
   style:--s-note={view.size.note}

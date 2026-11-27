@@ -5,6 +5,8 @@ import path from 'node:path';
 import { ContentError, loadGame, loadGlossary, loadWords, usedProverbSlugs } from '../src/lib/content';
 import { resolveScene } from '../src/lib/presentation';
 import { parseMarkup } from '../src/lib/markup';
+import { fontStack } from '../src/lib/fonts';
+import { assetUrls } from '../src/lib/preload';
 import { advance, choose, isEnd, isValidState, recapOf, startState, type PlayState } from '../src/lib/engine';
 import { evaluate, parseCondition } from '../src/lib/condition';
 
@@ -437,5 +439,33 @@ describe('usedProverbSlugs', () => {
     );
     const g = loadGame('g', loadGlossary(dir), dir);
     expect([...usedProverbSlugs([g])]).toEqual(['better-late-than-never']);
+  });
+});
+
+describe('fonts and preloading', () => {
+  it('maps a font choice to a CSS stack and keeps the default untouched', () => {
+    expect(fontStack(undefined)).toBeUndefined();
+    expect(fontStack({ family: 'default' })).toBeUndefined();
+    expect(fontStack({ family: 'serif' })).toContain('Georgia');
+    expect(fontStack({ family: 'custom' })).toBeUndefined();
+    expect(fontStack({ family: 'custom', url: 'x.woff2' })).toContain('Probirdia Custom');
+  });
+
+  it('lists every picture and sound once, the start screen first', () => {
+    const p = {
+      stages: { a: { background: '/a.webp' }, b: { background: '/b.webp' } },
+      characters: { c: { image: '/c.webp', width: 30 } },
+      props: {},
+      items: {},
+      music: { m: { file: '/m.mp3' } },
+      heart: '/h.webp',
+      scenes: [
+        { ids: ['x'], stage: 'b' },
+        { ids: ['start'], stage: 'a' },
+      ],
+    } as never;
+    const out = assetUrls(p, [{ id: 's', image: '/b.webp' } as never], 'start');
+    expect(out.images).toEqual(['/a.webp', '/b.webp', '/c.webp', '/h.webp']);
+    expect(out.audio).toEqual(['/m.mp3']);
   });
 });
