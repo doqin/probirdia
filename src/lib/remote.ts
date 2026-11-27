@@ -183,6 +183,7 @@ export function toGame(row: GameRow, scenes: SceneRow[], slugById: Map<string, s
         music: dev.music,
         proverbSting: dev.proverbSting,
         sfx: dev.sfx,
+        font: dev.font,
         scenes: [...(art?.scenes ?? []), ...(dev.scenes ?? [])],
       }
     : art;

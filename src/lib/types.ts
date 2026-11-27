@@ -150,6 +150,13 @@ export interface SceneRule {
 export const SFX_NAMES = ['hover', 'select', 'correct', 'wrong', 'typing'] as const;
 export type SfxName = (typeof SFX_NAMES)[number];
 
+/** The face the game's text is set in; `default` keeps Partita 1990. A `custom` font is a file the editor uploaded. */
+export interface GameFont {
+  family: 'default' | 'zilla' | 'serif' | 'sans' | 'mono' | 'custom';
+  /** Address of the uploaded font file (.woff2, .woff, .ttf or .otf) when `family` is `custom`. */
+  url?: string;
+}
+
 export interface Presentation {
   stages: Record<string, StageDef>;
   characters: Record<string, CharacterDef>;
@@ -162,6 +169,8 @@ export interface Presentation {
   proverbSting?: string;
   /** Short sounds for the choice cards (each a key of `music`): hovered, picked, the verdict on a proverb, and the typing that plays while a line is printed (a looping clip). */
   sfx?: Partial<Record<SfxName, string>>;
+  /** The font for all of the game's text. */
+  font?: GameFont;
   /** Image for one confidence heart (a path under /public). Without it the player draws a small pixel heart. */
   heart?: string;
   scenes: SceneRule[];

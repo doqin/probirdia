@@ -32,6 +32,7 @@ const blank = (p: Presentation | null | undefined): Presentation => ({
   scenes: [...(p?.scenes ?? [])],
   ...(p?.music ? { music: { ...p.music } } : {}),
   ...(p?.sfx ? { sfx: { ...p.sfx } } : {}),
+  ...(p?.font ? { font: { ...p.font } } : {}),
 });
 
 /** Every rule that names this screen, later rules winning. */
