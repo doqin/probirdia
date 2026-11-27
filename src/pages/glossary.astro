@@ -1,9 +1,12 @@
 ---
 import Base from '../layouts/Base.astro';
 import Glossary from '../components/Glossary.svelte';
-import { loadGlossary, loadWords } from '../lib/content';
+import { loadAllGames, loadGlossary, loadWords, usedProverbSlugs } from '../lib/content';
 
-const entries = loadGlossary();
+// glossary.csv holds every proverb ever written; show only the ones the current games use.
+const all = loadGlossary();
+const used = usedProverbSlugs(loadAllGames(all));
+const entries = all.filter((e) => used.has(e.slug));
 const words = loadWords();
 ---
 
