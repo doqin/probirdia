@@ -4,6 +4,7 @@
   import SceneEditor from './SceneEditor.svelte';
   import ProverbPanel from './ProverbPanel.svelte';
   import DesignPanel from './DesignPanel.svelte';
+  import WordsPanel from './WordsPanel.svelte';
   import { supabase, supabaseConfigured } from '../lib/supabase';
   import type { Presentation } from '../lib/types';
   import { sceneLook, withSceneLook, type SceneLook } from '../lib/look';
@@ -12,6 +13,8 @@
     attachProverb,
     createGame,
     deleteScene,
+    deleteWord,
+    fetchWordList,
     detachProverb,
     fetchEditorData,
     fetchEditorGames,
@@ -28,6 +31,7 @@
     proverbSlug,
     type EditorData,
     type GameRow,
+    type ProverbRow,
     type SceneRow,
   } from '../lib/remote';
   import { validateGame } from '../lib/validate-game';
@@ -44,6 +48,9 @@
 
   let games = $state<GameRow[]>([]);
   let data = $state<EditorData | null>(null);
+  /** The hard-word list belongs to the whole site, so it is edited outside any one game. */
+  let view = $state<'game' | 'words'>('game');
+  let words = $state<ProverbRow[]>([]);
   let tab = $state<'story' | 'design' | 'proverbs' | 'settings' | 'check'>('story');
   let sceneId = $state<string | null>(null);
   let notice = $state('');
@@ -106,6 +113,7 @@
 
   async function loadGames() {
     games = await fetchEditorGames();
+    words = await fetchWordList();
     if (!data && games.length) await openGame(games[0].id);
   }
 
@@ -115,6 +123,7 @@
       data = await fetchEditorData(id);
       sceneId = data.scenes[0]?.id ?? null;
       tab = 'story';
+      view = 'game';
     } catch (e) {
       error = (e as Error).message;
     } finally {
@@ -443,6 +452,11 @@
             </li>
           {/each}
         </ul>
+        <h2>Shared</h2>
+        <button class="game" class:active={view === 'words'} onclick={() => (view = 'words')}>
+          Hard words
+          <small>{words.length}</small>
+        </button>
         <div class="new-game">
           <input bind:value={newTitle} placeholder="New game title" />
           <input bind:value={newSlug} placeholder="web-address (lowercase-dashes)" />
@@ -451,7 +465,40 @@
       </aside>
 
       <div class="pane">
-        {#if !data}
+        {#if view === 'words'}
+          <WordsPanel
+            {words}
+            {busy}
+            onCreate={async (v) => {
+              await guard(async () => {
+                await saveProverb({
+                  kind: 'word',
+                  term: v.term,
+                  meaning: v.meaning,
+                  meaning_vi: v.meaning_vi || null,
+                  example: v.example || null,
+                  forms: v.forms,
+                });
+                words = await fetchWordList();
+                say('Word added.');
+              });
+            }}
+            onUpdate={async (id, patch) => {
+              await guard(async () => {
+                await saveProverb({ id, ...patch });
+                words = await fetchWordList();
+                say('Word saved.');
+              });
+            }}
+            onDelete={async (w) => {
+              await guard(async () => {
+                await deleteWord(w.id);
+                words = await fetchWordList();
+                say('Word deleted.');
+              });
+            }}
+          />
+        {:else if !data}
           <p>Pick a game, or create one.</p>
         {:else}
           <nav class="tabs">
