@@ -12,6 +12,7 @@
   import { withBase } from '../lib/url';
   import { buildMatcher } from '../lib/words';
   import { CUSTOM_FAMILY, fontStack } from '../lib/fonts';
+  import { uiCss } from '../lib/ui-style';
   import { assetUrls, preloadAssets } from '../lib/preload';
   import RichText from './RichText.svelte';
   import Quiz from './Quiz.svelte';
@@ -23,6 +24,7 @@
     words = [],
     lang = 'en',
     previewScene,
+    previewShow = 'story',
   }: {
     game: Game;
     glossary: Record<string, GlossaryEntry>;
@@ -33,10 +35,36 @@
      * file, no sound, no site links and no way to wander off it (clicks leave it where it is).
      */
     previewScene?: string;
+    /**
+     * Preview only: which part of the player to hold on screen. The Style tab uses this to show the
+     * quizzes, the verdict card and the ending recap, which a click-proof single screen never reaches.
+     */
+    previewShow?: 'story' | 'reveal' | 'quiz-preview' | 'quiz-review' | 'ending' | 'gameover';
   } = $props();
 
   const embedded = $derived(previewScene !== undefined);
   const stateFor = (id: string): PlayState => ({ sceneId: id, items: [], status: [], chosen: [], picks: [], reveal: null, lives: MAX_LIVES });
+  /** The state the preview holds the player in: the screen, plus whatever previewShow asks to see. */
+  const previewState = (id: string, show: typeof previewShow): PlayState => {
+    const base = stateFor(id);
+    if (show === 'quiz-preview') return { ...base, segment: 'preview' };
+    if (show === 'quiz-review') return { ...base, segment: 'review' };
+    if (show === 'reveal') {
+      const index = game.scenes[id]?.choices.findIndex((c) => c.proverb) ?? -1;
+      return index >= 0 ? choose(base, game, index) : base;
+    }
+    if (show === 'ending' || show === 'gameover') {
+      // a made-up run, so both recap headings have something under them
+      const slugs = taughtProverbs(game, glossary).map((e) => e.slug);
+      const picks = [slugs[0] && { slug: slugs[0], correct: true }, slugs[1] && { slug: slugs[1], correct: false, intended: slugs[2] }].filter(Boolean) as PlayState['picks'];
+      return { ...base, picks, chosen: picks.map((p) => p.slug), lost: show === 'gameover' };
+    }
+    return base;
+  };
+  const sameView = (a: PlayState, b: PlayState) =>
+    a.sceneId === b.sceneId && !!a.reveal === !!b.reveal && a.segment === b.segment && !!a.lost === !!b.lost;
+  /** Injected CSS for the Style tab's choices (colours, sizes, ... of the interface pieces). */
+  const styleRules = $derived(uiCss(game.presentation?.ui));
 
   // Hard words are linked automatically in every text block (see RichText).
   setContext('vocab', untrack(() => ({
@@ -70,7 +98,7 @@
 
   const storageKey = `probirdia:v1:${untrack(() => game.slug)}`;
 
-  let play = $state<PlayState>(untrack(() => (previewScene !== undefined ? stateFor(previewScene) : startState(game))));
+  let play = $state<PlayState>(untrack(() => (previewScene !== undefined ? previewState(previewScene, previewShow) : startState(game))));
   let loaded = $state(false);
   let simpleOpen = $state(false);
 
@@ -164,11 +192,11 @@
 
   // Preview mode: follow the editor's selection, and snap back if a click tries to move on.
   $effect(() => {
-    if (previewScene !== undefined && game) play = stateFor(previewScene);
+    if (previewScene !== undefined && game) play = previewState(previewScene, previewShow);
   });
   $effect(() => {
-    if (previewScene !== undefined && (play.sceneId !== previewScene || play.reveal || play.segment || play.lost)) {
-      play = stateFor(previewScene);
+    if (previewScene !== undefined && !sameView(play, untrack(() => previewState(previewScene, previewShow)))) {
+      play = previewState(previewScene, previewShow);
     }
   });
 
@@ -316,6 +344,7 @@
   style:--opt-y="{view.options.y}%"
   style:--opt-w="{view.options.width}%"
 >
+  {#if styleRules}{@html `<style>${styleRules}</style>`}{/if}
   <div class="frame">
     <div
       class="art"
@@ -636,7 +665,7 @@
     top: 45%;
     margin: 0;
     font-family: var(--display);
-    font-size: calc(3.4cqw * var(--s-heading, 1));
+    font-size: calc(3.4cqw * var(--s-heading, 1) * var(--ui-art-heading, 1));
     letter-spacing: .04em;
     text-transform: uppercase;
     color: var(--cyan);
@@ -656,7 +685,7 @@
   .hud-tag {
     padding: .25em 1em;
     font-family: var(--display);
-    font-size: max(1.4cqw, .8rem);
+    font-size: calc(max(1.4cqw, .8rem) * var(--ui-top-bar, 1));
     font-weight: 600;
     letter-spacing: var(--label-track);
     text-transform: uppercase;
@@ -674,7 +703,7 @@
     min-height: max(2.4cqw, 2rem);
     text-decoration: none;
     font-family: var(--display);
-    font-size: max(1.4cqw, .8rem);
+    font-size: calc(max(1.4cqw, .8rem) * var(--ui-top-bar, 1));
     font-weight: 600;
     letter-spacing: var(--label-track);
     text-transform: uppercase;
@@ -722,7 +751,7 @@
   .bubble:not(.revealed) { overflow: visible; }
   /* A verdict carries term, why, meaning, translation and example: smaller type, wider use of the box. */
   .bubble.revealed { font-size: calc(1.95cqw * var(--s-text, 1)); bottom: 6%; padding-top: 1.6cqw; padding-bottom: 1.6cqw; overflow: auto; }
-  .bubble.revealed .reveal-term { font-size: 1.35em; }
+  .bubble.revealed .reveal-term { font-size: calc(1.35em * var(--ui-reveal-term, 1)); }
   .bubble.revealed .btn { margin-top: .5em; }
   .bubble.center { left: 12%; right: 12%; }
   /* Dr. Bird stands on the right: the box runs left and its text stops short of his solid edge. */
@@ -755,7 +784,7 @@
   .reveal-term {
     margin: 0;
     font-family: var(--display);
-    font-size: 1.5em;
+    font-size: calc(1.5em * var(--ui-reveal-term, 1));
     line-height: 1.15;
     text-transform: uppercase;
     letter-spacing: .02em;
@@ -796,7 +825,7 @@
     display: grid;
     place-items: center;
     padding: .5cqw 1.6cqw;
-    font-size: 1.9cqw;
+    font-size: calc(1.9cqw * var(--ui-choice-card, 1));
     line-height: 1.15;
     text-align: center;
     background: var(--teal);
@@ -815,7 +844,7 @@
     width: 28cqw;
     padding: .9cqw 1.4cqw;
     transform: translateY(-50%);
-    font-size: 1.6cqw;
+    font-size: calc(1.6cqw * var(--ui-choice-meaning, 1));
     line-height: 1.2;
     color: var(--ink);
     background: #fff;
@@ -855,7 +884,7 @@
   .title-card .kicker {
     margin: 0 0 .4em;
     font-family: var(--display);
-    font-size: calc(1.5cqw * var(--s-heading, 1));
+    font-size: calc(1.5cqw * var(--s-heading, 1) * var(--ui-title-kicker, 1));
     font-weight: 600;
     letter-spacing: .1em;
     text-transform: uppercase;
@@ -864,12 +893,12 @@
   .title-name {
     margin: 0 0 .4em;
     font-family: var(--display);
-    font-size: calc(4.2cqw * var(--s-heading, 1));
+    font-size: calc(4.2cqw * var(--s-heading, 1) * var(--ui-title-name, 1));
     line-height: 1.05;
     text-transform: uppercase;
     letter-spacing: .01em;
   }
-  .title-sub { margin: 0 0 1.3em; font-size: calc(2.4cqw * var(--s-text, 1)); line-height: 1.25; }
+  .title-sub { margin: 0 0 1.3em; font-size: calc(2.4cqw * var(--s-text, 1) * var(--ui-title-sub, 1)); line-height: 1.25; }
   .title-card .btn.play, .divider-card .btn.play {
     font-size: 1.5cqw;
     padding: .4em 2.4em;
@@ -879,11 +908,11 @@
   .divider-card h2 {
     margin: 0 0 .3em;
     font-family: var(--display);
-    font-size: calc(2.6cqw * var(--s-heading, 1));
+    font-size: calc(2.6cqw * var(--s-heading, 1) * var(--ui-divider-title, 1));
     text-transform: uppercase;
     letter-spacing: .02em;
   }
-  .divider-card p { margin: 0 0 1.2em; font-size: calc(1.4cqw * var(--s-text, 1)); }
+  .divider-card p { margin: 0 0 1.2em; font-size: calc(1.4cqw * var(--s-text, 1) * var(--ui-divider-text, 1)); }
   .divider-card .btn.play { font-size: 1.2cqw; }
 
   /* ---- ink: body copy in the bubble ---- */
@@ -891,7 +920,7 @@
     display: block;
     margin-left: auto;
     margin-top: .7em;
-    font-size: .82em;
+    font-size: calc(.82em * var(--ui-continue-button, 1));
     padding: .35em 1.4em;
   }
 
@@ -912,7 +941,7 @@
   .simple-wrap { position: relative; margin-top: .4em; }
   .simple-btn {
     font-family: var(--display);
-    font-size: .74em;
+    font-size: calc(.74em * var(--ui-note-help, 1));
     font-weight: 600;
     font-style: normal;
     letter-spacing: var(--label-track);
@@ -984,11 +1013,11 @@
     border: var(--pixel) solid var(--outline);
     border-radius: 1.8cqw;
     box-shadow: var(--lift-3);
-    font-size: 1.5cqw;
+    font-size: calc(1.5cqw * var(--ui-ending-panel, 1));
     line-height: 1.2;
   }
-  .the-end { margin: 0 0 .15em; font-size: 2.2em; text-transform: uppercase; text-align: center; }
-  .epilogue { margin: 0 0 .5em; text-align: center; font-size: 1.12em; }
+  .the-end { margin: 0 0 .15em; font-size: calc(2.2em * var(--ui-ending-title, 1)); text-transform: uppercase; text-align: center; }
+  .epilogue { margin: 0 0 .5em; text-align: center; font-size: calc(1.12em * var(--ui-ending-epilogue, 1)); }
   /* game over: the deck's dark room with the heading on the left and a frosted panel on the right */
   .gave-up {
     position: absolute;
@@ -997,7 +1026,7 @@
     top: 33%;
     margin: 0;
     max-width: 36%;
-    font-size: 4cqw;
+    font-size: calc(4cqw * var(--ui-gameover-title, 1));
     line-height: 1.1;
     color: #fff;
     text-shadow: 0 .3cqw 0 rgb(0 0 0 / .45);
@@ -1009,8 +1038,8 @@
   .recap li { margin-bottom: .15em; }
   /* The game font ships one weight, so the browser cannot make it bolder: thicken the strokes by hand. */
   .recap strong, .finale h3 { font-weight: 800; -webkit-text-stroke: .035em currentColor; }
-  .finale h3.well { color: var(--good); }
-  .finale h3.retry { color: var(--bad); }
+  .finale h3.well { color: var(--good); font-size: calc(1.1em * var(--ui-recap-good, 1)); }
+  .finale h3.retry { color: var(--bad); font-size: calc(1.1em * var(--ui-recap-bad, 1)); }
   .finale .btn.play { font-size: 1.05em; background: var(--cyan); }
   .finale .btn.secondary { font-size: 1.05em; }
   .finale .btn { white-space: nowrap; }
@@ -1048,7 +1077,7 @@
     }
     .art { position: relative; aspect-ratio: 16 / 9; }
     .hud { inset: .5rem .5rem auto .5rem; }
-    .hud-tag, .chip-btn { font-size: .78rem; }
+    .hud-tag, .chip-btn { font-size: calc(.78rem * var(--ui-top-bar, 1)); }
     .chip-btn { padding: .4rem .9rem; min-height: 2.25rem; }
     .bubble, .choice-cards, .finale, .title-card, .divider-card {
       position: static;
@@ -1074,21 +1103,22 @@
       padding: .1rem .8rem;
       font-size: calc(.85rem * var(--s-heading, 1));
     }
-    .choice-cards .btn { min-height: 3rem; font-size: 1.05rem; padding: .5rem 1rem; border-radius: 1rem; }
-    .title-card .kicker { font-size: calc(.85rem * var(--s-heading, 1)); }
-    .title-name { font-size: calc(2rem * var(--s-heading, 1)); }
-    .title-sub { font-size: calc(1.2rem * var(--s-text, 1)); }
+    .choice-cards .btn { min-height: 3rem; font-size: calc(1.05rem * var(--ui-choice-card, 1)); padding: .5rem 1rem; border-radius: 1rem; }
+    .title-card .kicker { font-size: calc(.85rem * var(--s-heading, 1) * var(--ui-title-kicker, 1)); }
+    .title-name { font-size: calc(2rem * var(--s-heading, 1) * var(--ui-title-name, 1)); }
+    .title-sub { font-size: calc(1.2rem * var(--s-text, 1) * var(--ui-title-sub, 1)); }
     .title-card .btn.play, .divider-card .btn.play { font-size: 1rem; }
-    .divider-card h2 { font-size: calc(1.5rem * var(--s-heading, 1)); }
-    .divider-card p { font-size: calc(.95rem * var(--s-text, 1)); }
-    .the-end { font-size: 1.8rem; }
-    .gave-up { position: static; max-width: none; margin: .75rem; font-size: 1.8rem; }
+    .divider-card h2 { font-size: calc(1.5rem * var(--s-heading, 1) * var(--ui-divider-title, 1)); }
+    .divider-card p { font-size: calc(.95rem * var(--s-text, 1) * var(--ui-divider-text, 1)); }
+    .finale { font-size: calc(1.15rem * var(--s-text, 1) * var(--ui-ending-panel, 1)); }
+    .the-end { font-size: calc(1.8rem * var(--ui-ending-title, 1)); }
+    .gave-up { position: static; max-width: none; margin: .75rem; font-size: calc(1.8rem * var(--ui-gameover-title, 1)); }
     .finale.over { left: auto; right: auto; }
     .def { display: none; }
     .heart { width: 1.1rem; }
     .prop-text { display: none; }
     .mobile-only { display: block; }
-    .art-heading { font-size: calc(1.1rem * var(--s-heading, 1)); }
+    .art-heading { font-size: calc(1.1rem * var(--s-heading, 1) * var(--ui-art-heading, 1)); }
     .bag { position: static; margin: .5rem .75rem 1rem; font-size: .9rem; max-width: none; }
   }
 </style>

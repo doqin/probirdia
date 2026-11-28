@@ -168,6 +168,25 @@ export interface GameFont {
   url?: string;
 }
 
+/**
+ * How one piece of the game's interface looks, set in the editor's Style tab. Every field is optional:
+ * absent = the designed look. Colours are hex (`#rrggbb[aa]`) or `transparent`.
+ */
+export interface UiStyle {
+  /** Text size in percent of the designed size (100). */
+  size?: number;
+  /** Text colour. */
+  color?: string;
+  background?: string;
+  /** Colour of the outline. */
+  border?: string;
+  weight?: 'bold' | 'normal';
+  italic?: 'italic' | 'normal';
+  caps?: 'upper' | 'normal';
+  underline?: 'none' | 'solid' | 'dotted' | 'dashed' | 'wavy' | 'double';
+  underlineColor?: string;
+}
+
 export interface Presentation {
   stages: Record<string, StageDef>;
   characters: Record<string, CharacterDef>;
@@ -184,6 +203,8 @@ export interface Presentation {
   font?: GameFont;
   /** Image for one confidence heart (a path under /public). Without it the player draws a small pixel heart. */
   heart?: string;
+  /** Look of the interface pieces (hover cards, buttons, quizzes, ...), keyed by the ids in `ui-style.ts`. */
+  ui?: Record<string, UiStyle>;
   scenes: SceneRule[];
 }
 

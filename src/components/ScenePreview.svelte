@@ -2,7 +2,7 @@
   import Player from './Player.svelte';
   import { toGame, toGlossary, slugById, type EditorData, type ProverbRow, type SceneRow } from '../lib/remote';
   import { emptyPresentation, withSceneLook, type SceneLook } from '../lib/look';
-  import type { GlossaryEntry, Lang } from '../lib/types';
+  import type { GlossaryEntry, Lang, UiStyle } from '../lib/types';
 
   /**
    * The editor's live stage: the selected screen drawn by the real player, from the screen's
@@ -14,6 +14,8 @@
     draft = null,
     words = [],
     lang = 'en',
+    ui,
+    show = 'story',
   }: {
     data: EditorData;
     sceneId: string;
@@ -21,6 +23,10 @@
     draft?: { row: SceneRow; look: SceneLook } | null;
     words?: ProverbRow[];
     lang?: Lang;
+    /** Interface styles that are being edited and not saved yet; replaces the saved ones. */
+    ui?: Record<string, UiStyle>;
+    /** Which part of the player to hold on screen (the Style tab shows quizzes, verdicts, the ending). */
+    show?: 'story' | 'reveal' | 'quiz-preview' | 'quiz-review' | 'ending' | 'gameover';
   } = $props();
 
   const live = $derived(draft && draft.row.id === sceneId ? draft : null);
@@ -30,7 +36,8 @@
       const scenes = data.scenes.map((s) => (live && s.id === live.row.id ? live.row : s));
       const target = scenes.find((s) => s.id === sceneId);
       if (!target) return { error: 'Pick a screen to see it here.' };
-      const base = data.game.presentation ?? emptyPresentation();
+      const saved = data.game.presentation ?? emptyPresentation();
+      const base = ui ? { ...saved, ui } : saved;
       const presentation = live ? withSceneLook(base, target.key, live.look) : base;
       const game = toGame({ ...data.game, presentation }, scenes, slugById(data.proverbs));
       return { game, key: target.key };
@@ -51,7 +58,7 @@
   <p class="empty">{built.error}</p>
 {:else}
   {#key `${data.game.id}|${wordsSignature}`}
-    <Player game={built.game} {glossary} words={wordEntries} {lang} previewScene={built.key} />
+    <Player game={built.game} {glossary} words={wordEntries} {lang} previewScene={built.key} previewShow={show} />
   {/key}
 {/if}
 
