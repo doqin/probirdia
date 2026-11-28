@@ -1,4 +1,4 @@
-import type { DialoguePosition, Presentation, Slot, TextKind } from './types';
+import type { OptionsBox, DialoguePosition, Presentation, Slot, TextKind } from './types';
 
 /**
  * What one screen looks like, in the shape the editor edits and the player
@@ -12,6 +12,8 @@ export interface SceneLook {
   music: string;
   /** Text size in percent of the default, per kind of text; absent = default. */
   size: Partial<Record<TextKind, number>>;
+  /** Where the answer cards sit; absent values use the default place. */
+  options: OptionsBox;
 }
 
 export const emptyPresentation = (): Presentation => ({
@@ -37,12 +39,13 @@ const blank = (p: Presentation | null | undefined): Presentation => ({
 
 /** Every rule that names this screen, later rules winning. */
 export function sceneLook(presentation: Presentation | null | undefined, key: string): SceneLook {
-  const out: SceneLook = { stage: '', left: null, right: null, music: '', size: {} };
+  const out: SceneLook = { stage: '', left: null, right: null, music: '', size: {}, options: {} };
   for (const rule of presentation?.scenes ?? []) {
     if (rule.ids !== '*' && !rule.ids.includes(key)) continue;
     if (rule.stage) out.stage = rule.stage;
     if (rule.music !== undefined) out.music = rule.music;
     if (rule.size) out.size = { ...out.size, ...rule.size };
+    if (rule.options) out.options = { ...out.options, ...rule.options };
     const slots = rule.characters ?? {};
     if (slots.left !== undefined) out.left = slots.left;
     if (slots.right !== undefined) out.right = slots.right;
@@ -68,6 +71,9 @@ export function withSceneLook(
     characters: { left: look.left, right: look.right },
     music: look.music || undefined,
     size: Object.fromEntries(Object.entries(look.size ?? {}).filter(([, v]) => v && v !== 100)) as SceneLook['size'],
+    options: Object.fromEntries(
+      Object.entries(look.options ?? {}).filter(([, v]) => typeof v === 'number' && Number.isFinite(v)),
+    ) as OptionsBox,
   });
   return next;
 }

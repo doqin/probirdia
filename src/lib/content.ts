@@ -190,6 +190,10 @@ function loadPresentation(slug: string, scenes: Record<string, Scene>, opts: Pre
       if (!TEXT_KINDS.includes(kind as TextKind)) bad(`${r}: unknown text size "${kind}" (use ${TEXT_KINDS.join(', ')})`);
       else if (!(Number(pct) > 0)) bad(`${r}: size "${kind}" must be a percentage above 0`);
     }
+    for (const [k, v] of Object.entries(rule.options ?? {})) {
+      if (!['x', 'y', 'width'].includes(k)) bad(`${r}: unknown options field "${k}" (use x, y, width)`);
+      else if (typeof v !== 'number' || !Number.isFinite(v) || (k === 'width' && v <= 0)) bad(`${r}: options.${k} must be a number (width above 0)`);
+    }
     if (rule.music && !(rule.music in (p.music ?? {}))) bad(`${r}: unknown music "${rule.music}"`);
     if (rule.noteOn && !(rule.noteOn in p.props)) bad(`${r}: unknown prop "${rule.noteOn}" in noteOn`);
   });
