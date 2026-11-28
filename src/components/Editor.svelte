@@ -639,7 +639,7 @@
             {#if leadsTo.length}
               <div class="leads">
                 <span>Leads to</span>
-                {#each leadsTo as target (target.key)}
+                {#each leadsTo as target, i (`${i}|${target.label}|${target.key}`)}
                   <button class="chip" class:missing={!target.row} onclick={() => target.row && (sceneId = target.row.id)} title={target.row ? 'Go to this screen' : 'No screen has this name'}>
                     {target.label ? `${target.label} → ` : ''}{target.key}
                   </button>
