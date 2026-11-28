@@ -16,7 +16,12 @@
     onDone,
   }: { mode: 'preview' | 'review'; entries: GlossaryEntry[]; lang?: Lang; onDone: () => void } = $props();
 
-  const pages = $derived(chunk(entries, PAGE_SIZE));
+  /** Review only: the rows still to be asked. Starts as every entry; each redo round shrinks to the ones missed. */
+  let pool = $state<GlossaryEntry[] | null>(null);
+  let missed = $state<GlossaryEntry[]>([]);
+  let round = $state(0);
+  const active = $derived(pool ?? entries);
+  const pages = $derived(chunk(active, PAGE_SIZE));
   let page = $state(0);
   let checked = $state(false);
   /** preview: chosen definition slug per proverb; review: typed word per proverb. */
@@ -46,15 +51,39 @@
 
   const rows = $derived(pages[page] ?? []);
   const last = $derived(page >= pages.length - 1);
-  const options = $derived(shuffled(rows, `${mode}:${page}`));
-  const heading = $derived(mode === 'preview' ? t('preview_title', lang) : t('review_title', lang));
+  const options = $derived(shuffled(rows, `${mode}:${round}:${page}`));
+  const heading = $derived(mode === 'preview' ? t('preview_title', lang) : round > 0 ? t('review_redo', lang) : t('review_title', lang));
 
   const right = (e: GlossaryEntry) =>
     mode === 'preview' ? (answers[e.slug] ?? '') === e.slug : isRightBlank(answers[e.slug] ?? '', e);
   const score = $derived(rows.filter(right).length);
+  const complete = $derived(rows.every((e) => (answers[e.slug] ?? '').trim() !== ''));
+
+  function check() {
+    if (!complete) return;
+    checked = true;
+    if (mode === 'review') {
+      const slugs = new Set(missed.map((e) => e.slug));
+      missed = [...missed, ...rows.filter((e) => !right(e) && !slugs.has(e.slug))];
+    }
+  }
 
   function next() {
-    if (last) return onDone();
+    if (last) {
+      // review: whatever was missed comes round again until every row is right
+      if (mode === 'review' && missed.length) {
+        for (const e of missed) delete answers[e.slug];
+        pool = missed;
+        missed = [];
+        round += 1;
+        page = 0;
+        checked = false;
+        openHint = null;
+        openRow = null;
+        return;
+      }
+      return onDone();
+    }
     page += 1;
     checked = false;
     openHint = null;
@@ -66,7 +95,7 @@
 
 <section class="quiz" aria-labelledby="quiz-title">
   <h2 id="quiz-title">{heading}</h2>
-  <p class="count">{page + 1} / {pages.length}</p>
+  <p class="count">{page + 1} / {pages.length}{#if round > 0} · {t('review_redo_note', lang)}{/if}</p>
 
   <ol class="rows" start={page * PAGE_SIZE + 1}>
     {#each rows as e, i (e.slug)}
@@ -151,10 +180,10 @@
   <div class="foot">
     {#if checked}<p class="score" role="status">{score} / {rows.length}</p>{/if}
     {#if !checked}
-      <button class="btn go" onclick={() => (checked = true)}>{t('check_answers', lang)}</button>
+      <button class="btn go" disabled={!complete} onclick={check}>{t('check_answers', lang)}</button>
     {:else}
       <button class="btn go" onclick={next}>
-        {last ? (mode === 'preview' ? t('start_story', lang) : t('finish_review', lang)) : t('continue', lang)}
+        {last && mode === 'review' && missed.length ? t('redo_missed', lang) : last ? (mode === 'preview' ? t('start_story', lang) : t('finish_review', lang)) : t('continue', lang)}
       </button>
     {/if}
   </div>
@@ -307,6 +336,8 @@
     box-shadow: none;
   }
   .btn.go:hover { background: #3f8a57; }
+  .btn.go:disabled { background: #9aa39c; cursor: not-allowed; }
+  .btn.go:disabled:hover { background: #9aa39c; }
 
   @media (max-width: 40rem) {
     .quiz {
