@@ -29,6 +29,7 @@
     slugById,
     toGame,
     updateGame,
+    uploadArt,
     proverbSlug,
     type EditorData,
     type GameRow,
@@ -37,6 +38,7 @@
   } from '../lib/remote';
   import { validateGame } from '../lib/validate-game';
   import { slugify } from '../lib/slug';
+  import { withBase } from '../lib/url';
   import { NO_CHAPTER, filterScenes, groupByChapter, orderScenes, positionBetween } from '../lib/scene-list';
 
   let session = $state<Session | null>(null);
@@ -46,6 +48,31 @@
   let linkSent = $state(false);
   let error = $state('');
   let busy = $state(false);
+  let thumbField = $state<HTMLInputElement | null>(null);
+  /** Address shown under the thumbnail field; follows typing and uploads. */
+  let thumbShown = $state('');
+  let thumbUploading = $state(false);
+
+  async function uploadThumb(event: Event) {
+    const input = event.currentTarget as HTMLInputElement;
+    const file = input.files?.[0];
+    if (!file || !data) return;
+    thumbUploading = true;
+    error = '';
+    try {
+      const url = await uploadArt(file, data.game.slug);
+      await updateGame(data.game.id, { thumbnail: url });
+      data.game.thumbnail = url;
+      if (thumbField) thumbField.value = url;
+      thumbShown = url;
+      say('Thumbnail uploaded and saved.');
+    } catch (e) {
+      error = (e as Error).message;
+    } finally {
+      thumbUploading = false;
+      input.value = '';
+    }
+  }
 
   let games = $state<GameRow[]>([]);
   let data = $state<EditorData | null>(null);
@@ -751,7 +778,24 @@
             <label><span>Title (Vietnamese)</span><input name="title_vi" value={data.game.title_vi ?? ''} /></label>
             <label><span>One-line summary</span><input name="summary" value={data.game.summary} /></label>
             <label><span>Description</span><textarea name="description" rows="3">{data.game.description}</textarea></label>
-            <label><span>Thumbnail address</span><input name="thumbnail" value={data.game.thumbnail ?? ''} placeholder="/games/my-game/thumbnail.webp" /></label>
+            <label>
+              <span>Thumbnail address</span>
+              <input
+                name="thumbnail"
+                bind:this={thumbField}
+                value={data.game.thumbnail ?? ''}
+                oninput={(e) => (thumbShown = e.currentTarget.value)}
+                placeholder="/games/my-game/thumbnail.webp"
+              />
+            </label>
+            <label class="upload">
+              <span>…or upload a picture (saved right away)</span>
+              <input type="file" accept="image/*" onchange={uploadThumb} disabled={thumbUploading} />
+            </label>
+            {#if thumbUploading}<p class="hint">Uploading…</p>{/if}
+            {#if thumbShown || data.game.thumbnail}
+              <img class="thumb-preview" src={withBase(thumbShown || data.game.thumbnail || '')} alt="Thumbnail preview" />
+            {/if}
             <label>
               <span>First screen</span>
               <select name="start_key">
@@ -867,6 +911,8 @@
 
   .settings { display: grid; gap: .7rem; max-width: 34rem; }
   .settings label { display: grid; gap: .25rem; font-weight: 600; font-size: .85rem; }
+  .thumb-preview { width: 12rem; aspect-ratio: 1; object-fit: cover; border-radius: .5rem; border: 2px solid var(--brown); }
+  .settings .upload input { border: none; background: none; padding: 0; }
   .settings input, .settings textarea, .settings select { font: inherit; padding: .45rem .55rem; border: 2px solid var(--brown); border-radius: .5rem; background: var(--cream); color: var(--ink); }
   .check ul { margin: 0; padding-left: 1.2rem; display: grid; gap: .3rem; }
   .check li { font-size: .9rem; }

@@ -6,14 +6,16 @@ import { loadAllGames } from '../../lib/content';
 import { supabaseConfigured } from '../../lib/supabase';
 import { t } from '../../i18n/ui';
 
-const games = loadAllGames();
+// With the content database connected, every game (including the ones first imported from content/)
+// comes from it, so the editor is the one place to change them. The CSV games are only a fallback.
+const games = supabaseConfigured ? [] : loadAllGames();
 ---
 
 <Base title="Games">
   <h1 class="page-title">{t('nav.games')}</h1>
   <ul class="grid">
     {games.map((g) => <li><GameCard game={g} /></li>)}
-    {supabaseConfigured && <RemoteGames client:load skip={games.map((g) => g.slug)} />}
+    {supabaseConfigured && <RemoteGames client:load />}
     {!games.length && !supabaseConfigured && <li class="empty">No games are published yet.</li>}
   </ul>
 </Base>

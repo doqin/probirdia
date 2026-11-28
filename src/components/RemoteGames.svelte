@@ -4,17 +4,14 @@
   import type { Game } from '../lib/types';
   import { withBase } from '../lib/url';
 
-  /** Slugs of the spreadsheet games already on the page, so a game that exists in both places shows once. */
-  let { skip = [] }: { skip?: string[] } = $props();
-
-  /** Games published from the content studio. Rendered after the spreadsheet games. */
+  /** Every published game, straight from the content database. */
   let games = $state<Game[]>([]);
   let failed = $state(false);
   let loaded = $state(false);
 
   onMount(async () => {
     try {
-      games = (await fetchPublishedGames()).filter((game) => !skip.includes(game.slug));
+      games = await fetchPublishedGames();
     } catch {
       failed = true;
     } finally {
@@ -38,12 +35,12 @@
   {/each}
 {:else if failed}
   <li class="notice">Could not load the online games right now.</li>
-{:else if loaded && !skip.length}
+{:else if loaded}
   <li class="notice">No games are published yet.</li>
 {/if}
 
 <style>
-  .card { position: relative; display: block; aspect-ratio: 16 / 10; text-align: center; text-decoration: none; overflow: hidden; border-radius: .4rem; background: var(--parchment); }
+  .card { position: relative; display: block; aspect-ratio: 16 / 10; text-align: center; text-decoration: none; overflow: hidden; border-radius: .4rem; }
   .name { position: absolute; left: 50%; top: 38%; transform: translate(-50%, -50%); font-size: 1.4rem; white-space: nowrap; max-width: 92%; overflow: hidden; text-overflow: ellipsis; }
   .play { position: absolute; left: 50%; bottom: .6rem; transform: translateX(-50%); }
   .card:hover .name, .card:focus-visible .name { filter: brightness(1.08); }
