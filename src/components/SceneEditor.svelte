@@ -3,7 +3,7 @@
   import { uploadArt } from '../lib/remote';
   import { slugify } from '../lib/slug';
   import type { SceneLook } from '../lib/look';
-  import type { TextKind } from '../lib/types';
+  import { DEFAULT_OPTIONS, type OptionsBox, type TextKind } from '../lib/types';
   import { untrack } from 'svelte';
 
   let {
@@ -14,7 +14,7 @@
     stages = [],
     characters = [],
     musics = [],
-    look = { stage: '', left: null, right: null, music: '', size: {} },
+    look = { stage: '', left: null, right: null, music: '', size: {}, options: {} },
     gameSlug = 'game',
     saving = false,
     onSave,
@@ -56,6 +56,11 @@
   let uploading = $state(false);
   let uploadError = $state('');
 
+  const OPTION_FIELDS: [keyof OptionsBox, string, number][] = [
+    ['x', 'From the left', DEFAULT_OPTIONS.x],
+    ['y', 'From the top', DEFAULT_OPTIONS.y],
+    ['width', 'Width', DEFAULT_OPTIONS.width],
+  ];
   const SIZES: [TextKind, string][] = [
     ['heading', 'Headings and name tags'],
     ['text', 'Story text'],
@@ -217,6 +222,34 @@
       </label>
     </div>
     <small>Stages, characters and music tracks are listed in the Look tab. The same track keeps playing across screens.</small>
+  </details>
+
+  <details class="sect">
+    <summary>Answer cards position</summary>
+    <p class="hint">Where the answer cards sit on this screen, in % of the stage. Empty = the usual place.</p>
+    <div class="row">
+      {#each OPTION_FIELDS as [field, label, fallback] (field)}
+        <label>
+          <span>{label} (%)</span>
+          <input
+            type="number"
+            min={field === 'width' ? 10 : -20}
+            max={field === 'width' ? 100 : 100}
+            step="1"
+            placeholder={String(fallback)}
+            value={draftLook.options[field] ?? ''}
+            oninput={(e) => {
+              const raw = e.currentTarget.value;
+              const next = { ...draftLook.options };
+              if (raw === '' || !Number.isFinite(Number(raw))) delete next[field];
+              else next[field] = Number(raw);
+              draftLook.options = next;
+            }}
+          />
+        </label>
+      {/each}
+      <button type="button" class="btn secondary small" onclick={() => (draftLook.options = {})}>Reset</button>
+    </div>
   </details>
 
   <details class="sect">

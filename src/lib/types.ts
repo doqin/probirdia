@@ -129,6 +129,15 @@ export interface PropDef {
 export const TEXT_KINDS = ['heading', 'text', 'note'] as const;
 export type TextKind = (typeof TEXT_KINDS)[number];
 
+/** The answer cards' box: left edge, top edge and width, each in percent of the stage. */
+export interface OptionsBox {
+  x?: number;
+  y?: number;
+  width?: number;
+}
+/** Where the cards go when a screen does not say. */
+export const DEFAULT_OPTIONS = { x: 3.9, y: 40, width: 36.6 } as const;
+
 export interface SceneRule {
   /** Scene ids this rule applies to, or "*" for all. Later rules override earlier ones. */
   ids: string[] | '*';
@@ -144,6 +153,8 @@ export interface SceneRule {
   headingInArt?: boolean;
   /** Text size in percent of the default (100). Absent kinds keep the default. */
   size?: Partial<Record<TextKind, number>>;
+  /** Where the answer cards sit, in percent of the stage; absent values keep the default. */
+  options?: OptionsBox;
   /** Background music for these scenes (a key of `music`); stays playing across scenes with the same track. */
   music?: string;
 }

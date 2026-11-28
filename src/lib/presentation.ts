@@ -1,4 +1,5 @@
-import type { CharacterDef, TextKind, DialoguePosition, Presentation, PropDef, Slot, StageDef } from './types';
+import { DEFAULT_OPTIONS } from './types';
+import type { OptionsBox, CharacterDef, TextKind, DialoguePosition, Presentation, PropDef, Slot, StageDef } from './types';
 
 export const SLOT_X: Record<Slot, number> = { left: 14, center: 50, right: 86 };
 
@@ -12,11 +13,13 @@ export interface ResolvedScene {
   music?: string;
   /** Multipliers on the default text size (1 = default). */
   size: Record<TextKind, number>;
+  /** Where the answer cards sit (percent of the stage). */
+  options: Required<OptionsBox>;
 }
 
 /** Merges every matching rule, in file order, into what one scene should look like. */
 export function resolveScene(presentation: Presentation | undefined, sceneId: string): ResolvedScene {
-  const out: ResolvedScene = { dialogue: 'bottom', characters: [], props: [], headingInArt: false, size: { heading: 1, text: 1, note: 1 } };
+  const out: ResolvedScene = { dialogue: 'bottom', characters: [], props: [], headingInArt: false, size: { heading: 1, text: 1, note: 1 }, options: { ...DEFAULT_OPTIONS } };
   if (!presentation) return out;
 
   let stageId: string | undefined;
@@ -33,6 +36,10 @@ export function resolveScene(presentation: Presentation | undefined, sceneId: st
     if (rule.noteOn !== undefined) out.noteOn = rule.noteOn;
     if (rule.headingInArt !== undefined) out.headingInArt = rule.headingInArt;
     if (rule.music !== undefined) out.music = rule.music;
+    for (const k of ['x', 'y', 'width'] as const) {
+      const v = rule.options?.[k];
+      if (typeof v === 'number' && Number.isFinite(v)) out.options[k] = v;
+    }
     for (const [kind, pct] of Object.entries(rule.size ?? {}) as [TextKind, number | undefined][]) {
       if (pct && pct > 0) out.size[kind] = pct / 100;
     }

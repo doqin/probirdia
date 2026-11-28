@@ -312,6 +312,9 @@
   style:--s-heading={view.size.heading}
   style:--s-text={view.size.text}
   style:--s-note={view.size.note}
+  style:--opt-x="{view.options.x}%"
+  style:--opt-y="{view.options.y}%"
+  style:--opt-w="{view.options.width}%"
 >
   <div class="frame">
     <div
@@ -778,9 +781,9 @@
   .choice-cards {
     position: absolute;
     z-index: 2;
-    left: 3.9%;
-    top: 40%;
-    width: 36.6%;
+    left: var(--opt-x, 3.9%);
+    top: var(--opt-y, 40%);
+    width: var(--opt-w, 36.6%);
     margin: 0;
     padding: 0;
     list-style: none;
