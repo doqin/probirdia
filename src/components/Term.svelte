@@ -134,7 +134,7 @@
     width: min(21rem, calc(100vw - 2rem));
     transform: translateX(calc(-50% + var(--shift, 0px)));
     padding-top: .4rem;
-    font-size: 1rem;
+    font-size: calc(1rem * var(--ui-hover-card, 1));
     line-height: 1.4;
     text-align: left;
     font-style: normal;

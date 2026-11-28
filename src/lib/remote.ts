@@ -184,6 +184,7 @@ export function toGame(row: GameRow, scenes: SceneRow[], slugById: Map<string, s
         proverbSting: dev.proverbSting,
         sfx: dev.sfx,
         font: dev.font,
+        ui: dev.ui,
         scenes: [...(art?.scenes ?? []), ...(dev.scenes ?? [])],
       }
     : art;

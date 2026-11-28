@@ -2,6 +2,7 @@ import { readFileSync, readdirSync, existsSync } from 'node:fs';
 import path from 'node:path';
 import { parse } from 'csv-parse/sync';
 import { FONT_CHOICES } from './fonts';
+import { validateUi } from './ui-style';
 import { LANGS, SFX_NAMES, TEXT_KINDS, type SfxName, type TextKind, type Choice, type Game, type GlossaryEntry, type Localized, type Route, type Scene } from './types';
 import { namesIn, parseCondition } from './condition';
 import { parseMarkup } from './markup';
@@ -147,6 +148,7 @@ function loadPresentation(slug: string, scenes: Record<string, Scene>, opts: Pre
     proverbSting: raw.proverbSting,
     sfx: raw.sfx,
     font: raw.font,
+    ui: raw.ui,
     scenes: raw.scenes ?? [],
   };
 
@@ -169,6 +171,7 @@ function loadPresentation(slug: string, scenes: Record<string, Scene>, opts: Pre
   if (p.proverbSting && !(p.proverbSting in (p.music ?? {}))) bad(`proverbSting: unknown music "${p.proverbSting}"`);
   if (p.font && !FONT_CHOICES.includes(p.font.family as never)) bad(`font: unknown family "${p.font.family}" (use ${FONT_CHOICES.join(', ')})`);
   if (p.font?.family === 'custom' && !p.font.url) bad('font: a custom font needs a url');
+  for (const problem of validateUi(p.ui)) bad(problem);
   for (const [name, key] of Object.entries(p.sfx ?? {})) {
     if (!SFX_NAMES.includes(name as SfxName)) bad(`sfx: unknown sound \"${name}\" (use ${SFX_NAMES.join(', ')})`);
     else if (key && !(key in (p.music ?? {}))) bad(`sfx "${name}": unknown music "${key}"`);

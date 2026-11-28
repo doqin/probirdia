@@ -207,8 +207,8 @@
     box-shadow: 0 0 0 100vmax rgb(215 214 251 / .55);
     clip-path: inset(-100vmax);
   }
-  h2 { margin: 0; text-align: center; font-size: 3.4cqw; letter-spacing: .03em; }
-  .count { margin: 0 0 .6cqw; text-align: center; font-size: 1.4cqw; opacity: .6; }
+  h2 { margin: 0; text-align: center; font-size: calc(3.4cqw * var(--ui-quiz-title, 1)); letter-spacing: .03em; }
+  .count { margin: 0 0 .6cqw; text-align: center; font-size: calc(1.4cqw * var(--ui-quiz-counter, 1)); opacity: .6; }
   /* long definitions scroll inside the panel; the button below never leaves it */
   .rows { list-style: none; margin: 0; padding: 0 .4cqw 0 0; display: grid; grid-auto-rows: max-content; align-content: space-evenly; gap: .6cqw; min-height: 0; overflow-y: auto; overscroll-behavior: contain; scrollbar-width: thin; }
   .row {
@@ -224,8 +224,8 @@
   .row.ok { background: #e6f5e8; }
   .row.bad { background: #fbe9e5; }
   .term strong, .sentence { font-family: var(--display); font-weight: 600; }
-  .term strong { font-size: 2.1cqw; }
-  .sentence { display: flex; gap: .6em; font-size: 2.1cqw; }
+  .term strong { font-size: calc(2.1cqw * var(--ui-quiz-proverb, 1)); }
+  .sentence { display: flex; gap: .6em; font-size: calc(2.1cqw * var(--ui-quiz-sentence, 1)); }
   .num { flex: none; }
 
   .gap {
@@ -246,7 +246,7 @@
     padding: .7cqw 1.6cqw;
     font-family: var(--display);
     font-weight: 600;
-    font-size: 1.7cqw;
+    font-size: calc(1.7cqw * var(--ui-quiz-answer, 1));
     line-height: 1.15;
     text-align: left;
     color: var(--ink);
@@ -279,7 +279,7 @@
     padding: .8cqw 1.2cqw;
     font-family: var(--display);
     font-weight: 600;
-    font-size: 1.6cqw;
+    font-size: calc(1.6cqw * var(--ui-quiz-options, 1));
     line-height: 1.2;
     text-align: left;
     white-space: normal;
@@ -315,7 +315,7 @@
     text-align: center;
     font-family: var(--display);
     font-weight: 600;
-    font-size: 1.9cqw;
+    font-size: calc(1.9cqw * var(--ui-quiz-hint, 1));
     background: #fff;
     border: .3cqw solid var(--ink);
     border-radius: 1.6cqw;
@@ -328,7 +328,7 @@
   .score { margin: 0; font-family: var(--display); font-weight: 600; }
   .btn.go {
     min-width: 28cqw;
-    font-size: 2cqw;
+    font-size: calc(2cqw * var(--ui-quiz-check, 1));
     background: #4a9a63;
     color: #fff;
     border: .3cqw solid var(--ink);
@@ -352,22 +352,23 @@
       clip-path: none;
       display: block;
     }
-    h2 { font-size: 1.6rem; }
-    .count { font-size: .85rem; }
+    h2 { font-size: calc(1.6rem * var(--ui-quiz-title, 1)); }
+    .count { font-size: calc(.85rem * var(--ui-quiz-counter, 1)); }
     .rows { gap: .6rem; overflow: visible; padding: 0; }
     .row { grid-template-columns: 1fr; gap: .4rem; padding: .6rem .5rem; }
-    .term strong, .sentence { font-size: 1.1rem; }
-    .pick { font-size: 1rem; padding: .5rem 1rem; border-width: 2px; border-radius: 1.2rem; }
+    .term strong { font-size: calc(1.1rem * var(--ui-quiz-proverb, 1)); }
+    .sentence { font-size: calc(1.1rem * var(--ui-quiz-sentence, 1)); }
+    .pick { font-size: calc(1rem * var(--ui-quiz-answer, 1)); padding: .5rem 1rem; border-width: 2px; border-radius: 1.2rem; }
     .caret { font-size: .8rem; }
     .options { position: static; margin-top: .4rem; border-width: 2px; border-radius: 1rem; padding: .25rem; }
-    .options button { font-size: 1rem; padding: .6rem .8rem; }
+    .options button { font-size: calc(1rem * var(--ui-quiz-options, 1)); padding: .6rem .8rem; }
     .gap { border-width: 2px; }
     .fix { font-size: .95rem; }
     .hint { justify-content: flex-start; }
     .bulb { width: 2.2rem; height: 2.2rem; }
-    .tip, .tip.down { position: static; margin: 0; font-size: 1rem; border-width: 2px; border-radius: .8rem; }
+    .tip, .tip.down { position: static; margin: 0; font-size: calc(1rem * var(--ui-quiz-hint, 1)); border-width: 2px; border-radius: .8rem; }
     .mark { position: static; transform: none; font-size: 1.4rem; justify-self: end; }
     .foot { padding-top: 1rem; }
-    .btn.go { min-width: 0; width: 100%; font-size: 1.05rem; }
+    .btn.go { min-width: 0; width: 100%; font-size: calc(1.05rem * var(--ui-quiz-check, 1)); }
   }
 </style>

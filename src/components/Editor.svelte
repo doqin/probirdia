@@ -4,11 +4,12 @@
   import SceneEditor from './SceneEditor.svelte';
   import ProverbPanel from './ProverbPanel.svelte';
   import DesignPanel from './DesignPanel.svelte';
+  import StylePanel from './StylePanel.svelte';
   import WordsPanel from './WordsPanel.svelte';
   import ScenePreview from './ScenePreview.svelte';
   import { supabase, supabaseConfigured } from '../lib/supabase';
   import type { Lang, Presentation } from '../lib/types';
-  import { sceneLook, withSceneLook, type SceneLook } from '../lib/look';
+  import { emptyPresentation, sceneLook, withSceneLook, type SceneLook } from '../lib/look';
   import {
     amAnEditor,
     attachProverb,
@@ -79,7 +80,7 @@
   /** The hard-word list belongs to the whole site, so it is edited outside any one game. */
   let view = $state<'game' | 'words'>('game');
   let words = $state<ProverbRow[]>([]);
-  let tab = $state<'story' | 'design' | 'proverbs' | 'settings' | 'check'>('story');
+  let tab = $state<'story' | 'design' | 'style' | 'proverbs' | 'settings' | 'check'>('story');
   let sceneId = $state<string | null>(null);
   /** The selected screen as it is being edited (unsaved); the stage preview draws from it. */
   let liveDraft = $state<{ row: SceneRow; look: SceneLook } | null>(null);
@@ -519,6 +520,7 @@
         {#if data}
           <button class:on={view === 'game' && tab === 'story'} onclick={() => go('story')}>Screens <small>{counts.game}</small></button>
           <button class:on={view === 'game' && tab === 'design'} onclick={() => go('design')}>Look</button>
+          <button class:on={view === 'game' && tab === 'style'} onclick={() => go('style')}>Style</button>
           <button class:on={view === 'game' && tab === 'proverbs'} onclick={() => go('proverbs')}>Proverbs <small>{data.used.length}</small></button>
           <button class:on={view === 'game' && tab === 'settings'} onclick={() => go('settings')}>Settings</button>
           <button class:on={view === 'game' && tab === 'check'} onclick={() => go('check')}>
@@ -701,8 +703,22 @@
         </aside>
       </div>
     {:else}
-      <div class="pane">
-        {#if tab === 'design'}
+      <div class="pane" class:wide={tab === 'style'}>
+        {#if tab === 'style'}
+          <StylePanel
+            {data}
+            {words}
+            saving={busy}
+            onSave={async (ui) => {
+              await guard(async () => {
+                const base = data!.game.presentation ?? emptyPresentation();
+                await savePresentation(data!.game.id, { ...base, ui: Object.keys(ui).length ? ui : undefined });
+                await refresh();
+                say('Style saved.');
+              });
+            }}
+          />
+        {:else if tab === 'design'}
           <DesignPanel
             presentation={data.game.presentation}
             gameSlug={data.game.slug}
@@ -887,6 +903,7 @@
   .chip.missing { border-style: dashed; color: var(--danger); cursor: default; }
 
   .pane { min-width: 0; max-width: 72rem; display: grid; gap: .8rem; align-content: start; }
+  .pane.wide { max-width: none; }
   .find { font: inherit; min-width: 0; padding: .4rem .5rem; border: 2px solid var(--brown); border-radius: .45rem; background: #fff; color: var(--ink); }
   .outline h3 { font-size: .74rem; text-transform: uppercase; margin: .6rem 0 .2rem; opacity: .8; display: flex; justify-content: space-between; gap: .5rem; align-items: baseline; }
   .outline h3 .link { font-size: .78rem; }
