@@ -528,7 +528,7 @@
         <h2 class="the-end">{t('the_end', lang)}</h2>
         {#if scene.text.en}<p class="epilogue"><RichText text={pick(scene.text, lang)} {glossary} {lang} /></p>{/if}
         {#if well.length || lost}
-          <h3>{lost ? t('proverb_you_used_well', lang) : t('recap_well', lang)}</h3>
+          <h3 class="well">{lost ? t('proverb_you_used_well', lang) : t('recap_well', lang)}</h3>
           {#if well.length}
             <ul class="recap">
               {#each well as e}<li><strong>{e.term}</strong>: {pick(e.meaning, lang)}</li>{/each}
@@ -538,7 +538,7 @@
           {/if}
         {/if}
         {#if revisit.length || lost}
-          <h3>{lost ? t('proverbs_you_got_wrong', lang) : t('recap_revisit', lang)}</h3>
+          <h3 class="retry">{lost ? t('proverbs_you_got_wrong', lang) : t('recap_revisit', lang)}</h3>
           {#if revisit.length}
             <ul class="recap revisit">
               {#each revisit as m}
@@ -1007,6 +1007,10 @@
   .finale h3 { font-size: 1.1em; margin: .5em 0 .15em; text-transform: uppercase; }
   .recap { text-align: left; padding-left: 1.2em; margin: 0 0 .5em; }
   .recap li { margin-bottom: .15em; }
+  /* The game font ships one weight, so the browser cannot make it bolder: thicken the strokes by hand. */
+  .recap strong, .finale h3 { font-weight: 800; -webkit-text-stroke: .035em currentColor; }
+  .finale h3.well { color: var(--good); }
+  .finale h3.retry { color: var(--bad); }
   .finale .btn.play { font-size: 1.05em; background: var(--cyan); }
   .finale .btn.secondary { font-size: 1.05em; }
   .finale .btn { white-space: nowrap; }
